@@ -1,25 +1,22 @@
 package com.liamlang.fyp;
 
-import com.liamlang.fyp.Model.Block;
-import com.liamlang.fyp.Model.BlockData;
 import com.liamlang.fyp.Model.Blockchain;
+import com.liamlang.fyp.Utils.NetworkUtils;
+import com.liamlang.fyp.service.Node;
 
 public class Demo {
 
     public static void main(String[] args) {
         try {
             
-           Blockchain bc = new Blockchain();
+           Blockchain bc = new Blockchain(true);           
+           Node node = new Node(bc);
            
-           BlockData newData = new BlockData("This is my block");
-           Block newBlock = new Block(bc.getTop(), newData);
+           //Blockchain bc = new Blockchain(false);
+           //Node node = new Node(bc);
+           //node.addConnection(NetworkUtils.toIp("192.168.0.249"));
             
-           System.out.println(Boolean.toString(bc.addToTop(newBlock)));
-            
-           System.out.println(bc.toString());
-           
-            
-        } catch (Exception e) {   
+        } catch (Exception e) {
         }
     }    
 }

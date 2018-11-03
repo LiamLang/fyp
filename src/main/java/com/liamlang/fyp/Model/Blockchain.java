@@ -5,36 +5,50 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Blockchain implements Serializable {
-    
+
     private ArrayList<Block> blocks = new ArrayList<>();
-    
-    public Blockchain() throws IOException {
-        
-        Block firstBlock = new Block(null, new BlockData("Hello world!"));
-        blocks.add(firstBlock);
+
+    public Blockchain(boolean createFirstBlock) throws IOException {
+        if (createFirstBlock) {
+            Block firstBlock = new Block(null, new BlockData("Hello world!"));
+            blocks.add(firstBlock);
+        }
     }
-    
+
     public Block getTop() {
+        if (blocks.isEmpty()) {
+            return null;
+        }
         return blocks.get(blocks.size() - 1);
     }
-    
+
+    public int getHeight() {
+        Block top = getTop();
+        if (top == null) {
+            return -1;
+        }
+        return top.getHeight();
+    }
+
     public boolean addToTop(Block block) {
         if (block == null) {
             return false;
         }
-        
-        if (block.getPreviousHash() == getTop().getHash()) {
+
+        if (blocks.isEmpty() || block.getPreviousHash() == getTop().getHash()) {
             blocks.add(block);
             return true;
         }
-        
+
         return false;
     }
-    
+
     public String toString() {
         String res = "";
-        for (Block block : blocks) {
-            res = res + "\n" + block.toString();
+        if (!blocks.isEmpty()) {
+            for (Block block : blocks) {
+                res = res + "\n" + block.toString();
+            }
         }
         return res;
     }

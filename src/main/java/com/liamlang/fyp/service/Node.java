@@ -79,9 +79,6 @@ public class Node {
         try {
             addConnection(NetworkUtils.toIp(ip));
             int height = Integer.parseInt(heightStr);
-            if (height < 0) {
-                return;
-            }
             if (height < bc.getHeight()) {
 
                 System.out.println("I need to send block(s)!");

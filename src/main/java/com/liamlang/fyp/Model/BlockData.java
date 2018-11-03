@@ -13,4 +13,8 @@ public class BlockData implements Serializable {
     public BlockData(String data) {
         this.data = data;
     }
+    
+    public String toString() {
+        return data;
+    }
 }

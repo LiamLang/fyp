@@ -1,6 +1,7 @@
 package com.liamlang.fyp.Model;
 
 import com.liamlang.fyp.Utils.HashUtils;
+import com.liamlang.fyp.Utils.Utils;
 import java.io.IOException;
 import java.io.Serializable;
 
@@ -17,7 +18,7 @@ public class Block implements Serializable {
     }
     
     public String toString() {
-        return Integer.toString(getHeight()) + "\t" + getHash() + "\t" + getPreviousHash();
+        return Integer.toString(getHeight()) + " " + Utils.bytesToHex(getHash()) + " " + Utils.bytesToHex(getPreviousHash()) + " " + body.toString();
     }
     
     public byte[] getHash() {

@@ -11,7 +11,7 @@ public class Blockchain implements Serializable {
     public Blockchain(boolean createFirstBlock) throws IOException {
         if (createFirstBlock) {
             Block firstBlock = new Block(null, new BlockData("Hello world!"));
-            blocks.add(firstBlock);
+            addToTop(firstBlock);
         }
     }
 
@@ -37,6 +37,7 @@ public class Blockchain implements Serializable {
 
         if (blocks.isEmpty() || block.getPreviousHash() == getTop().getHash()) {
             blocks.add(block);
+            System.out.println("Added block to my blockchain! " + block.toString());
             return true;
         }
 

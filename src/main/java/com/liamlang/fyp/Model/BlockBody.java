@@ -43,4 +43,8 @@ public class BlockBody implements Serializable {
     public long getTimestamp() {
         return timestamp;
     }
+    
+    public String toString() {
+        return data.toString();
+    }
 }

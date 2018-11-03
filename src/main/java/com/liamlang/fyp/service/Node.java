@@ -67,16 +67,15 @@ public class Node {
             return;
         }
         String[] parts = packet.split(" ");
-        if (parts.length < 3) {
-            return;
-        }
-        if (parts[0].equals("SYNC")) {
-            onSyncPacketReceived(parts[1], parts[2]);
+        
+        if (parts[0].equals("SYNC") && parts.length == 3) {
+            onSyncPacketReceived(parts[1], parts[2].trim());
         }
     }
 
     private void onSyncPacketReceived(String ip, String heightStr) {
         try {
+            // TODO need to de-dup here!
             addConnection(NetworkUtils.toIp(ip));
             int height = Integer.parseInt(heightStr);
             if (height < bc.getHeight()) {

@@ -24,7 +24,7 @@ public class BlockBody implements Serializable {
             height = previousBlock.getHeight() + 1;
         } else {
             previousHash = new byte[]{};
-            height = 0;
+            height = 1;
         }
     }
 

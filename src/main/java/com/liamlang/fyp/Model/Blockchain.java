@@ -25,7 +25,7 @@ public class Blockchain implements Serializable {
     public int getHeight() {
         Block top = getTop();
         if (top == null) {
-            return -1;
+            return 0;
         }
         return top.getHeight();
     }

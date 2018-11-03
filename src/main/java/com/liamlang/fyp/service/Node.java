@@ -19,7 +19,7 @@ public class Node {
         NetworkAdapter.runWhenPacketReceived(new NetworkAdapter.PacketReceivedListener() {
             @Override
             public void onPacketReceived(String packet) {
-                System.out.println("Packet received!\n" + packet);
+                packetReceived(packet);
             }
         });
 
@@ -61,7 +61,7 @@ public class Node {
         }
     }
 
-    private void onPacketReceived(String packet) {
+    private void packetReceived(String packet) {
         System.out.println("Packet received!\n" + packet);
         if (packet.equals("")) {
             return;
@@ -70,7 +70,7 @@ public class Node {
         if (parts.length < 3) {
             return;
         }
-        if (parts[0] == "SYNC") {
+        if (parts[0].equals("SYNC")) {
             onSyncPacketReceived(parts[1], parts[2]);
         }
     }

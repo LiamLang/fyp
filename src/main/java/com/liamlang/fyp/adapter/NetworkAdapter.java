@@ -1,5 +1,6 @@
 package com.liamlang.fyp.adapter;
 
+import com.liamlang.fyp.Utils.Utils;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -17,7 +18,7 @@ public class NetworkAdapter {
     public static byte[] makeSyncRequest(int height) throws UnknownHostException {
         String str = "SYNC " + getMyIp() + " " + Integer.toString(height);
         System.out.println(str);
-        return str.getBytes();
+        return Utils.toByteArray(str);
     }
 
     public static void sendPacket(byte[] packet, InetAddress ip) throws Exception {
@@ -46,7 +47,7 @@ public class NetworkAdapter {
             public void run() {
                 try {
                     byte[] packet = receivePacket();
-                    listener.onPacketReceived(packet.toString());
+                    listener.onPacketReceived(Utils.toString(packet));
                 } catch (Exception ex) {
                     System.out.println("Exception in NetworkAdapter.runWhenPacketReceived");
                 }

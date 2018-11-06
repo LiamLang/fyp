@@ -73,11 +73,19 @@ public class Node {
         String[] parts = packet.split(" ");
 
         if (parts[0].equals("SYNC") && parts.length == 3) {
-            onSyncPacketReceived(parts[1], parts[2].trim());
+            onSyncPacketReceived(parts[1], parts[2]);
         }
 
-        if (parts[0].equals("BLOCK") && parts.length == 3) {
-            onBlockPacketReceived(parts[1], parts[2].trim());
+        if (parts[0].equals("BLOCK") && parts.length >= 3) {
+            
+            // Recombine parts of the serialized block which may be split up because there happen to be spaces present
+            String blockStr = "";
+            for (int i = 2; i < parts.length; i++) {
+                blockStr += parts[i] + " ";
+            }
+            blockStr = blockStr.substring(0, blockStr.length() - 1);
+            
+            onBlockPacketReceived(parts[1], blockStr);
         }
     }
 

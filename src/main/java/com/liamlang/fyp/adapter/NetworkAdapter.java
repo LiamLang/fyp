@@ -51,7 +51,7 @@ public class NetworkAdapter {
             public void run() {
                 try {
                     byte[] packet = receivePacket();
-                    String packetStr = Utils.toString(packet);
+                    String packetStr = Utils.toString(packet).trim();
                     System.out.println("Received " + packetStr);
                     listener.onPacketReceived(packetStr);
                 } catch (Exception ex) {

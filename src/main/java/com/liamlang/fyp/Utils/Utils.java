@@ -8,6 +8,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -29,23 +30,16 @@ public class Utils {
     }
 
     public static byte[] toByteArray(String str) {
-        try {
-            return str.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            return new byte[0];
-        }
+        return str.getBytes(StandardCharsets.ISO_8859_1);
     }
 
     public static String toString(byte[] bytes) {
-        try {
-            return new String(bytes, "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            return "";
-        }
+        return new String(bytes, StandardCharsets.ISO_8859_1);
     }
 
     // From Stack Overflow
     private final static char[] hexArray = "0123456789ABCDEF".toCharArray();
+
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
         for (int j = 0; j < bytes.length; j++) {
@@ -55,7 +49,7 @@ public class Utils {
         }
         return new String(hexChars);
     }
-    
+
     public static byte[] serialize(Serializable input) {
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -70,7 +64,7 @@ public class Utils {
             return new byte[]{};
         }
     }
-    
+
     public static Serializable deserialize(byte[] input) {
         try {
             ByteArrayInputStream bis = new ByteArrayInputStream(input);

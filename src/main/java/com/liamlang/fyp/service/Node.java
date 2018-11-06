@@ -2,21 +2,25 @@ package com.liamlang.fyp.service;
 
 import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Blockchain;
+import com.liamlang.fyp.Utils.FileUtils;
 import com.liamlang.fyp.Utils.NetworkUtils;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.adapter.NetworkAdapter;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
-public class Node {
+public class Node implements Serializable {
 
     private Blockchain bc;
     private ArrayList<InetAddress> connections = new ArrayList<>();
 
     public Node(Blockchain bc) {
         this.bc = bc;
+    }
 
+    public void init() {
         NetworkAdapter.runWhenPacketReceived(new NetworkAdapter.PacketReceivedListener() {
             @Override
             public void onPacketReceived(String packet) {
@@ -34,7 +38,7 @@ public class Node {
         try {
             System.out.println("Started node with IP " + NetworkAdapter.getMyIp());
         } catch (UnknownHostException ex) {
-            System.out.println("Exception in Node constructor");
+            System.out.println("Exception in Node.init");
         }
     }
 
@@ -45,6 +49,25 @@ public class Node {
             }
         }
         connections.add(ip);
+        saveSelf();
+    }
+
+    public String toString() {
+        String res = "My blockchain:" + bc.toString() + "\nMy connections:";
+        if (!connections.isEmpty()) {
+            for (InetAddress connection : connections) {
+                res = res + "\n" + connection.toString();
+            }
+        }
+        return res;
+    }
+
+    private void saveSelf() {
+        try {
+            FileUtils.saveToFile(this, "node.txt");
+        } catch (Exception ex) {
+            System.out.println("Exception saving node state");
+        }
     }
 
     private void pollConnections() {
@@ -77,14 +100,14 @@ public class Node {
         }
 
         if (parts[0].equals("BLOCK") && parts.length >= 3) {
-            
+
             // Recombine parts of the serialized block which may be split up because there happen to be spaces present
             String blockStr = "";
             for (int i = 2; i < parts.length; i++) {
                 blockStr += parts[i] + " ";
             }
             blockStr = blockStr.substring(0, blockStr.length() - 1);
-            
+
             onBlockPacketReceived(parts[1], blockStr);
         }
     }
@@ -100,18 +123,18 @@ public class Node {
             System.out.println("Exception in Node.onSyncPacketReceived");
         }
     }
-    
+
     private void onBlockPacketReceived(String heightStr, String blockStr) {
         try {
             int height = Integer.parseInt(heightStr);
-            
+
             // TODO this is very naive
-            
             if (height == bc.getHeight() + 1) {
                 Block block = (Block) Utils.deserialize(Utils.toByteArray(blockStr));
                 bc.addToTop(block);
+                saveSelf();
             }
-            
+
         } catch (Exception ex) {
             System.out.println("Exception in Node.onBlockPacketReceived");
         }

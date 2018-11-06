@@ -2,11 +2,11 @@ package com.liamlang.fyp.Model;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Blockchain implements Serializable {
 
-    private ArrayList<Block> blocks = new ArrayList<>();
+    private LinkedList<Block> blocks = new LinkedList<>();
 
     public Blockchain(boolean createFirstBlock) throws IOException {
         if (createFirstBlock) {
@@ -19,7 +19,7 @@ public class Blockchain implements Serializable {
         if (blocks.isEmpty()) {
             return null;
         }
-        return blocks.get(blocks.size() - 1);
+        return blocks.getLast();
     }
 
     public int getHeight() {
@@ -28,6 +28,14 @@ public class Blockchain implements Serializable {
             return 0;
         }
         return top.getHeight();
+    }
+    
+    public Block getAtHeight(int height) {
+        if (height < 1 || height > getHeight()) {
+            return null;
+        }
+        
+        return blocks.get(height - 1);
     }
 
     public boolean addToTop(Block block) {

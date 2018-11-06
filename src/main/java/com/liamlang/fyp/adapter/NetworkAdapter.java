@@ -9,19 +9,23 @@ import java.net.UnknownHostException;
 public class NetworkAdapter {
 
     static final int PORT = 12345;
-    static final int MAX_PACKET_SIZE = 1024;
+    static final int MAX_PACKET_SIZE = 1000000;
 
     public static String getMyIp() throws UnknownHostException {
         return InetAddress.getLocalHost().getHostAddress();
     }
 
-    public static byte[] makeSyncRequest(int height) throws UnknownHostException {
-        String str = "SYNC " + getMyIp() + " " + Integer.toString(height);
-        System.out.println(str);
-        return Utils.toByteArray(str);
+    public static void sendSyncPacket(int height, InetAddress ip) throws Exception {
+        sendPacket("SYNC " + getMyIp() + " " + Integer.toString(height), ip);
+    }
+    
+    public static void sendBlockPacket(int height, String block, InetAddress ip) throws Exception {
+        sendPacket("BLOCK " + Integer.toString(height) + " " + block, ip);
     }
 
-    public static void sendPacket(byte[] packet, InetAddress ip) throws Exception {
+    public static void sendPacket(String packetStr, InetAddress ip) throws Exception {
+        System.out.println("Sending " + packetStr);
+        byte[] packet = Utils.toByteArray(packetStr);
         DatagramSocket datagramSocket = new DatagramSocket();
         DatagramPacket datagramPacket = new DatagramPacket(packet, packet.length, ip, PORT);
         datagramSocket.send(datagramPacket);
@@ -47,7 +51,9 @@ public class NetworkAdapter {
             public void run() {
                 try {
                     byte[] packet = receivePacket();
-                    listener.onPacketReceived(Utils.toString(packet));
+                    String packetStr = Utils.toString(packet);
+                    System.out.println("Received " + packetStr);
+                    listener.onPacketReceived(packetStr);
                 } catch (Exception ex) {
                     System.out.println("Exception in NetworkAdapter.runWhenPacketReceived");
                 }

@@ -14,11 +14,11 @@ public class Block implements Serializable {
         
         body = new BlockBody(previousBlock, data);
         
-        hash = HashUtils.sha256(body);
+        hash = HashUtils.sha256(Utils.serialize(body));
     }
     
     public String toString() {
-        return Integer.toString(getHeight()) + " " + Utils.bytesToHex(getHash()) + " " + Utils.bytesToHex(getPreviousHash()) + " " + body.toString();
+        return Integer.toString(getHeight()) + " " + Utils.bytesToHex(getHash()) + " " + body.toString();
     }
     
     public byte[] getHash() {

@@ -1,5 +1,6 @@
 package com.liamlang.fyp.service;
 
+import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Blockchain;
 import com.liamlang.fyp.Utils.NetworkUtils;
 import com.liamlang.fyp.Utils.Utils;
@@ -29,7 +30,7 @@ public class Node {
                 pollConnections();
             }
         });
-        
+
         try {
             System.out.println("Started node with IP " + NetworkAdapter.getMyIp());
         } catch (UnknownHostException ex) {
@@ -38,6 +39,11 @@ public class Node {
     }
 
     public void addConnection(InetAddress ip) {
+        for (InetAddress connection : connections) {
+            if (connection.equals(ip)) {
+                return;
+            }
+        }
         connections.add(ip);
     }
 
@@ -54,38 +60,63 @@ public class Node {
     private void pollConnection(InetAddress ip) {
         try {
             System.out.println("Polling connecction " + ip.toString());
-            byte[] packet = NetworkAdapter.makeSyncRequest(bc.getHeight());
-            NetworkAdapter.sendPacket(packet, ip);
+            NetworkAdapter.sendSyncPacket(bc.getHeight(), ip);
         } catch (Exception ex) {
             System.out.println("Exception in Node.pollConnection");
         }
     }
 
     private void packetReceived(String packet) {
-        System.out.println("Packet received!\n" + packet);
         if (packet.equals("")) {
             return;
         }
         String[] parts = packet.split(" ");
-        
+
         if (parts[0].equals("SYNC") && parts.length == 3) {
             onSyncPacketReceived(parts[1], parts[2].trim());
+        }
+
+        if (parts[0].equals("BLOCK") && parts.length == 3) {
+            onBlockPacketReceived(parts[1], parts[2].trim());
         }
     }
 
     private void onSyncPacketReceived(String ip, String heightStr) {
         try {
-            // TODO need to de-dup here!
             addConnection(NetworkUtils.toIp(ip));
             int height = Integer.parseInt(heightStr);
             if (height < bc.getHeight()) {
-
-                System.out.println("I need to send block(s)!");
-                // TODO
-
+                sendBlocks(InetAddress.getByName(ip), height, bc.getHeight());
             }
         } catch (Exception ex) {
             System.out.println("Exception in Node.onSyncPacketReceived");
+        }
+    }
+    
+    private void onBlockPacketReceived(String heightStr, String blockStr) {
+        try {
+            int height = Integer.parseInt(heightStr);
+            
+            // TODO this is very naive
+            
+            if (height == bc.getHeight() + 1) {
+                Block block = (Block) Utils.deserialize(Utils.toByteArray(blockStr));
+                bc.addToTop(block);
+            }
+            
+        } catch (Exception ex) {
+            System.out.println("Exception in Node.onBlockPacketReceived");
+        }
+    }
+
+    private void sendBlocks(InetAddress ip, int theirHeight, int myHeight) {
+        for (int i = theirHeight + 1; i <= myHeight; i++) {
+            try {
+                String block = Utils.toString(Utils.serialize(bc.getAtHeight(i)));
+                NetworkAdapter.sendBlockPacket(i, block, ip);
+            } catch (Exception ex) {
+                System.out.println("Exception in Node.sendBlocks");
+            }
         }
     }
 }

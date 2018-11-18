@@ -83,7 +83,7 @@ public class Node implements Serializable {
 
     private void pollConnection(InetAddress ip) {
         try {
-            System.out.println("Polling connecction " + ip.toString());
+            //System.out.println("Polling connecction " + ip.toString());
             NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), ip);
         } catch (Exception ex) {
             System.out.println("Exception in Node.pollConnection");

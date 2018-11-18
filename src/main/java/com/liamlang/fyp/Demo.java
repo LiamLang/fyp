@@ -10,10 +10,10 @@ public class Demo {
         try {
 
             //Node node = NodeManager.startNodeWithFirstBlock();
-            //Node node = NodeManager.startNodeWithEmptyBlockchain();
-            Node node = NodeManager.getSavedNode("node.txt");
+            Node node = NodeManager.startNodeWithEmptyBlockchain();
+            //Node node = NodeManager.getSavedNode("node.txt");
             
-            //node.addConnection(NetworkUtils.toIp("192.168.0.249"));
+            node.addConnection(NetworkUtils.toIp("192.168.0.249"));
             
             System.out.println(node.toString());
             

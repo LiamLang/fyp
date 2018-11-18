@@ -83,7 +83,7 @@ public class Node implements Serializable {
     private void pollConnection(InetAddress ip) {
         try {
             System.out.println("Polling connecction " + ip.toString());
-            NetworkAdapter.sendSyncPacket(bc.getHeight(), ip);
+            NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), ip);
         } catch (Exception ex) {
             System.out.println("Exception in Node.pollConnection");
         }
@@ -95,8 +95,8 @@ public class Node implements Serializable {
         }
         String[] parts = packet.split(" ");
 
-        if (parts[0].equals("SYNC") && parts.length == 3) {
-            onSyncPacketReceived(parts[1], parts[2]);
+        if (parts[0].equals("SYNC") && parts.length == 4) {
+            onSyncPacketReceived(parts[1], parts[2], parts[3]);
         }
 
         if (parts[0].equals("BLOCK") && parts.length >= 3) {
@@ -110,14 +110,29 @@ public class Node implements Serializable {
 
             onBlockPacketReceived(parts[1], blockStr);
         }
+        
+        if (parts[0].equals("CONNECTIONS") && parts.length >= 2) {
+
+            // Recombine parts of the serialized connections object which may be split up because there happen to be spaces present
+            String connectionsStr = "";
+            for (int i = 1; i < parts.length; i++) {
+                connectionsStr += parts[i] + " ";
+            }
+            connectionsStr = connectionsStr.substring(0, connectionsStr.length() - 1);
+
+            onConnectionsPacketReceived(connectionsStr);
+        } 
     }
 
-    private void onSyncPacketReceived(String ip, String heightStr) {
+    private void onSyncPacketReceived(String ip, String heightStr, String numConnections) {
         try {
             addConnection(NetworkUtils.toIp(ip));
             int height = Integer.parseInt(heightStr);
             if (height < bc.getHeight()) {
                 sendBlocks(InetAddress.getByName(ip), height, bc.getHeight());
+            }
+            if (Integer.parseInt(numConnections) < connections.size()) {
+                sendConnections(InetAddress.getByName(ip));
             }
         } catch (Exception ex) {
             System.out.println("Exception in Node.onSyncPacketReceived");
@@ -139,6 +154,19 @@ public class Node implements Serializable {
             System.out.println("Exception in Node.onBlockPacketReceived");
         }
     }
+    
+    private void onConnectionsPacketReceived(String otherConnectionsStr) {
+        try {
+            ArrayList<InetAddress> otherConnections = (ArrayList<InetAddress>) Utils.deserialize(Utils.toByteArray(otherConnectionsStr));
+            for (InetAddress ip : otherConnections) {
+                if (!connections.contains(ip) && !ip.toString().equals(NetworkAdapter.getMyIp())) {
+                    connections.add(ip);
+                }
+            }            
+        } catch (Exception ex) {
+            System.out.println("Exception in Node.onConnectionsPacketRecevied");
+        }
+    }
 
     private void sendBlocks(InetAddress ip, int theirHeight, int myHeight) {
         for (int i = theirHeight + 1; i <= myHeight; i++) {
@@ -148,6 +176,15 @@ public class Node implements Serializable {
             } catch (Exception ex) {
                 System.out.println("Exception in Node.sendBlocks");
             }
+        }
+    }
+
+    private void sendConnections(InetAddress ip) {
+        try {
+            String str = Utils.toString(Utils.serialize(connections));
+            NetworkAdapter.sendConnectionsPacket(str, ip);
+        } catch (Exception ex) {
+            System.out.println("Exception in Node.sendConnections");
         }
     }
 }

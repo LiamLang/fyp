@@ -15,12 +15,16 @@ public class NetworkAdapter {
         return InetAddress.getLocalHost().getHostAddress();
     }
 
-    public static void sendSyncPacket(int height, InetAddress ip) throws Exception {
-        sendPacket("SYNC " + getMyIp() + " " + Integer.toString(height), ip);
+    public static void sendSyncPacket(int height, int numConnections, InetAddress ip) throws Exception {
+        sendPacket("SYNC " + getMyIp() + " " + Integer.toString(height) + " " + Integer.toString(numConnections), ip);
     }
-    
+
     public static void sendBlockPacket(int height, String block, InetAddress ip) throws Exception {
         sendPacket("BLOCK " + Integer.toString(height) + " " + block, ip);
+    }
+
+    public static void sendConnectionsPacket(String connections, InetAddress ip) throws Exception {
+        sendPacket("CONNECTIONS " + connections, ip);
     }
 
     public static void sendPacket(String packetStr, InetAddress ip) throws Exception {
@@ -42,11 +46,12 @@ public class NetworkAdapter {
     }
 
     public interface PacketReceivedListener {
+
         void onPacketReceived(String packet);
     }
 
     public static void runWhenPacketReceived(PacketReceivedListener listener) {
-        Thread thread = new Thread(){
+        Thread thread = new Thread() {
             @Override
             public void run() {
                 try {

@@ -50,6 +50,7 @@ public class Node implements Serializable {
         }
         connections.add(ip);
         saveSelf();
+        sendConnections(ip);
     }
 
     public String toString() {
@@ -159,7 +160,7 @@ public class Node implements Serializable {
         try {
             ArrayList<InetAddress> otherConnections = (ArrayList<InetAddress>) Utils.deserialize(Utils.toByteArray(otherConnectionsStr));
             for (InetAddress ip : otherConnections) {
-                if (!connections.contains(ip) && !ip.toString().equals(NetworkAdapter.getMyIp())) {
+                if (!connections.contains(ip) && !ip.getHostAddress().equals(NetworkAdapter.getMyIp())) {
                     connections.add(ip);
                 }
             }            

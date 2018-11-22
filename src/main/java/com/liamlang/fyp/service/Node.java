@@ -4,20 +4,24 @@ import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Blockchain;
 import com.liamlang.fyp.Utils.FileUtils;
 import com.liamlang.fyp.Utils.NetworkUtils;
+import com.liamlang.fyp.Utils.SignatureUtils;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.adapter.NetworkAdapter;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.security.KeyPair;
 import java.util.ArrayList;
 
 public class Node implements Serializable {
 
     private Blockchain bc;
     private ArrayList<InetAddress> connections = new ArrayList<>();
+    private KeyPair keyPair;
 
     public Node(Blockchain bc) {
         this.bc = bc;
+        this.keyPair = SignatureUtils.generateKeyPair();
     }
 
     public void init() {
@@ -84,7 +88,7 @@ public class Node implements Serializable {
     private void pollConnection(InetAddress ip) {
         try {
             //System.out.println("Polling connecction " + ip.toString());
-            NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), ip);
+            NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), ip, keyPair);
         } catch (Exception ex) {
             System.out.println("Exception in Node.pollConnection");
         }
@@ -173,7 +177,7 @@ public class Node implements Serializable {
         for (int i = theirHeight + 1; i <= myHeight; i++) {
             try {
                 String block = Utils.toString(Utils.serialize(bc.getAtHeight(i)));
-                NetworkAdapter.sendBlockPacket(i, block, ip);
+                NetworkAdapter.sendBlockPacket(i, block, ip, keyPair);
             } catch (Exception ex) {
                 System.out.println("Exception in Node.sendBlocks");
             }
@@ -183,7 +187,7 @@ public class Node implements Serializable {
     private void sendConnections(InetAddress ip) {
         try {
             String str = Utils.toString(Utils.serialize(connections));
-            NetworkAdapter.sendConnectionsPacket(str, ip);
+            NetworkAdapter.sendConnectionsPacket(str, ip, keyPair);
         } catch (Exception ex) {
             System.out.println("Exception in Node.sendConnections");
         }

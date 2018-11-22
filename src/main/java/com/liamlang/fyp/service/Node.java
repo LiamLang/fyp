@@ -113,6 +113,7 @@ public class Node implements Serializable {
             } else {
                 blacklistedKeys.add(pub);
             }
+            saveSelf();
             return result;
         }
     }

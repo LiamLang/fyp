@@ -2,6 +2,7 @@ package com.liamlang.fyp.service;
 
 import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Blockchain;
+import com.liamlang.fyp.Model.SignedMessage;
 import com.liamlang.fyp.Utils.FileUtils;
 import com.liamlang.fyp.Utils.NetworkUtils;
 import com.liamlang.fyp.Utils.SignatureUtils;
@@ -11,14 +12,19 @@ import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.KeyPair;
+import java.security.PublicKey;
 import java.util.ArrayList;
 
 public class Node implements Serializable {
 
     private Blockchain bc;
     private ArrayList<InetAddress> connections = new ArrayList<>();
+    
     private KeyPair keyPair;
 
+    private ArrayList<PublicKey> trustedKeys = new ArrayList<>();
+    private ArrayList<PublicKey> blacklistedKeys = new ArrayList<>();
+    
     public Node(Blockchain bc) {
         this.bc = bc;
         this.keyPair = SignatureUtils.generateKeyPair();
@@ -27,8 +33,8 @@ public class Node implements Serializable {
     public void init() {
         NetworkAdapter.runWhenPacketReceived(new NetworkAdapter.PacketReceivedListener() {
             @Override
-            public void onPacketReceived(String packet) {
-                packetReceived(packet);
+            public void onPacketReceived(SignedMessage message) {
+                packetReceived(message);
             }
         });
 
@@ -93,12 +99,46 @@ public class Node implements Serializable {
             System.out.println("Exception in Node.pollConnection");
         }
     }
+    
+    private boolean keyIsTrusted(PublicKey pub) {
+        if (trustedKeys.contains(pub)) {
+            return true;
+        } else if (blacklistedKeys.contains(pub)) {
+            return false;
+        } else {
+            
+            boolean result = Utils.showYesNoPopup("Do you want to trust this key?\n" + pub.toString());
+            if (result) {
+                trustedKeys.add(pub);
+            } else {
+                blacklistedKeys.add(pub);
+            }
+            return result;
+        }
+    }
 
-    private void packetReceived(String packet) {
-        if (packet.equals("")) {
+    private void packetReceived(SignedMessage message) {
+        if (message == null) {
             return;
         }
-        String[] parts = packet.split(" ");
+        
+        if (!message.verify()) {
+            System.out.println("Failed to verify the signature of the received message!");
+            return;
+        }
+        
+        if (!keyIsTrusted(message.getPublicKey())) {
+            System.out.println("We do not trust the public key that has signed this message!");
+            return;
+        }
+        
+        System.out.println("Verified that the message is signed by a trusted key");
+        
+        String messageStr = message.getMessage();
+        if (messageStr.equals("")) {
+            return;
+        }
+        String[] parts = messageStr.split(" ");
 
         if (parts[0].equals("SYNC") && parts.length == 4) {
             onSyncPacketReceived(parts[1], parts[2], parts[3]);
@@ -148,7 +188,7 @@ public class Node implements Serializable {
         try {
             int height = Integer.parseInt(heightStr);
 
-            // TODO this is very naive
+            // TODO need to check the block actually fits our chain (w.r.t. data)
             if (height == bc.getHeight() + 1) {
                 Block block = (Block) Utils.deserialize(Utils.toByteArray(blockStr));
                 bc.addToTop(block);

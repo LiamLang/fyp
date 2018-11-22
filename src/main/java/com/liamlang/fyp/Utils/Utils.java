@@ -7,11 +7,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javax.swing.JOptionPane;
 
 public class Utils {
 
@@ -27,6 +27,12 @@ public class Utils {
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.schedule(repeatingTask, delayMillis, TimeUnit.MILLISECONDS);
+    }
+
+    public static boolean showYesNoPopup(String text) {
+        int dialogButton = JOptionPane.YES_NO_OPTION;
+        int dialogResult = JOptionPane.showConfirmDialog(null, text, "", dialogButton);
+        return dialogResult == JOptionPane.YES_OPTION;
     }
 
     public static byte[] toByteArray(String str) {

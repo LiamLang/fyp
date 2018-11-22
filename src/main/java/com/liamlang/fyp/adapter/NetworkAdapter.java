@@ -44,21 +44,19 @@ public class NetworkAdapter {
         datagramSocket.close();
     }
 
-    public static String receivePacket() throws Exception {
+    public static SignedMessage receivePacket() throws Exception {
         DatagramSocket datagramSocket = new DatagramSocket(PORT);
         byte[] buf = new byte[MAX_PACKET_SIZE];
         DatagramPacket datagramPacket = new DatagramPacket(buf, MAX_PACKET_SIZE);
         datagramSocket.receive(datagramPacket);
         datagramSocket.close();
         byte[] bytes = datagramPacket.getData();
-        SignedMessage message = (SignedMessage) Utils.deserialize(bytes);
-
-        return message.verify() ? message.getMessage() : "";
+        return (SignedMessage) Utils.deserialize(bytes);
     }
 
     public interface PacketReceivedListener {
 
-        void onPacketReceived(String packet);
+        void onPacketReceived(SignedMessage message);
     }
 
     public static void runWhenPacketReceived(PacketReceivedListener listener) {
@@ -66,8 +64,8 @@ public class NetworkAdapter {
             @Override
             public void run() {
                 try {
-                    String message = receivePacket();
-                    System.out.println("Received " + message);
+                    SignedMessage message = receivePacket();
+                    System.out.println("Received " + message.getMessage());
                     listener.onPacketReceived(message);
                 } catch (Exception ex) {
                     System.out.println("Exception in NetworkAdapter.runWhenPacketReceived");

@@ -75,7 +75,7 @@ public class Node implements Serializable {
     }
 
     public void startCreatingBlocks() {
-        Utils.scheduleRepeatingTask(30000, new Runnable() {
+        Utils.scheduleRepeatingTask(10000, new Runnable() {
             @Override
             public void run() {
                 createBlock();

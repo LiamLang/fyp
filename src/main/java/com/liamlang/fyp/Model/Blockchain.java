@@ -61,7 +61,7 @@ public class Blockchain implements Serializable {
             return true;
         }
         
-        if (block.getPreviousHash() != getTop().getHash()) {
+        if (block.getPreviousHash().equals(getTop().getHash())) {
             return false;
         }
         

@@ -43,7 +43,7 @@ public class Node implements Serializable {
             }
         });
 
-        Utils.scheduleRepeatingTask(10000, new Runnable() {
+        Utils.scheduleRepeatingTask(2000, new Runnable() {
             @Override
             public void run() {
                 syncWithConnections();

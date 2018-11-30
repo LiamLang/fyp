@@ -2,6 +2,7 @@ package com.liamlang.fyp.Model;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class Blockchain implements Serializable {
@@ -10,7 +11,9 @@ public class Blockchain implements Serializable {
 
     public Blockchain(boolean createFirstBlock) throws IOException {
         if (createFirstBlock) {
-            Block firstBlock = new Block(null, new BlockData("Hello world!"));
+            ArrayList<Transaction> transactions = new ArrayList<>();
+            transactions.add(new Transaction("Hello world!"));
+            Block firstBlock = new Block(null, new BlockData(transactions));
             addToTop(firstBlock);
         }
     }

@@ -3,7 +3,9 @@ package com.liamlang.fyp.service;
 import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Blockchain;
 import com.liamlang.fyp.Model.SignedMessage;
+import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.FileUtils;
+import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.NetworkUtils;
 import com.liamlang.fyp.Utils.SignatureUtils;
 import com.liamlang.fyp.Utils.Utils;
@@ -19,12 +21,13 @@ public class Node implements Serializable {
 
     private Blockchain bc;
     private ArrayList<InetAddress> connections = new ArrayList<>();
-    
+    private ArrayList<Transaction> unconfirmedTransactionSet = new ArrayList<>();
+
     private KeyPair keyPair;
 
     private ArrayList<PublicKey> trustedKeys = new ArrayList<>();
     private ArrayList<PublicKey> blacklistedKeys = new ArrayList<>();
-    
+
     public Node(Blockchain bc) {
         this.bc = bc;
         this.keyPair = SignatureUtils.generateKeyPair();
@@ -41,7 +44,7 @@ public class Node implements Serializable {
         Utils.scheduleRepeatingTask(5000, new Runnable() {
             @Override
             public void run() {
-                pollConnections();
+                syncWithConnections();
             }
         });
 
@@ -81,32 +84,31 @@ public class Node implements Serializable {
         }
     }
 
-    private void pollConnections() {
+    private void syncWithConnections() {
         if (!connections.isEmpty()) {
             for (InetAddress ip : connections) {
-                pollConnection(ip);
+                syncWithConnection(ip);
             }
         } else {
             System.out.println("No connections");
         }
     }
 
-    private void pollConnection(InetAddress ip) {
+    private void syncWithConnection(InetAddress ip) {
         try {
-            //System.out.println("Polling connecction " + ip.toString());
-            NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), ip, keyPair);
+            NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), Utils.toString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))), ip, keyPair);
         } catch (Exception ex) {
             System.out.println("Exception in Node.pollConnection");
         }
     }
-    
+
     private boolean keyIsTrusted(PublicKey pub) {
         if (trustedKeys.contains(pub)) {
             return true;
         } else if (blacklistedKeys.contains(pub)) {
             return false;
         } else {
-            
+
             boolean result = Utils.showYesNoPopup("Do you want to trust this key?\n" + pub.toString());
             if (result) {
                 trustedKeys.add(pub);
@@ -118,31 +120,39 @@ public class Node implements Serializable {
         }
     }
 
+    private boolean isValidTransaction(Transaction t) {
+        // Check whether an incoming unconfirmed transaction is valid, according to my blockchain
+        
+        // TODO
+        
+        return true;
+    }
+    
     private void packetReceived(SignedMessage message) {
         if (message == null) {
             return;
         }
-        
+
         if (!message.verify()) {
             System.out.println("Failed to verify the signature of the received message!");
             return;
         }
-        
+
         if (!keyIsTrusted(message.getPublicKey())) {
             System.out.println("We do not trust the public key that has signed this message!");
             return;
         }
-        
+
         System.out.println("Verified that the message is signed by a trusted key");
-        
+
         String messageStr = message.getMessage();
         if (messageStr.equals("")) {
             return;
         }
         String[] parts = messageStr.split(" ");
 
-        if (parts[0].equals("SYNC") && parts.length == 4) {
-            onSyncPacketReceived(parts[1], parts[2], parts[3]);
+        if (parts[0].equals("SYNC") && parts.length == 5) {
+            onSyncPacketReceived(parts[1], parts[2], parts[3], parts[4]);
         }
 
         if (parts[0].equals("BLOCK") && parts.length >= 3) {
@@ -156,7 +166,7 @@ public class Node implements Serializable {
 
             onBlockPacketReceived(parts[1], blockStr);
         }
-        
+
         if (parts[0].equals("CONNECTIONS") && parts.length >= 2) {
 
             // Recombine parts of the serialized connections object which may be split up because there happen to be spaces present
@@ -167,10 +177,22 @@ public class Node implements Serializable {
             connectionsStr = connectionsStr.substring(0, connectionsStr.length() - 1);
 
             onConnectionsPacketReceived(connectionsStr);
-        } 
+        }
+
+        if (parts[0].equals("UNCONFIRMED_TRANSACTION_SET") && parts.length >= 2) {
+
+            // Recombine parts of the serialized unconfirmed transactions set object which may be split up because there happen to be spaces present
+            String transactionsStr = "";
+            for (int i = 1; i < parts.length; i++) {
+                transactionsStr += parts[i] + " ";
+            }
+            transactionsStr = transactionsStr.substring(0, transactionsStr.length() - 1);
+
+            onTransactionsPacketReceived(transactionsStr);
+        }
     }
 
-    private void onSyncPacketReceived(String ip, String heightStr, String numConnections) {
+    private void onSyncPacketReceived(String ip, String heightStr, String numConnections, String unconfirmedTransactionSetHash) {
         try {
             addConnection(NetworkUtils.toIp(ip));
             int height = Integer.parseInt(heightStr);
@@ -179,6 +201,9 @@ public class Node implements Serializable {
             }
             if (Integer.parseInt(numConnections) < connections.size()) {
                 sendConnections(InetAddress.getByName(ip));
+            }
+            if (!unconfirmedTransactionSetHash.equals(Utils.toString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))))) {
+                sendTransactions(InetAddress.getByName(ip));
             }
         } catch (Exception ex) {
             System.out.println("Exception in Node.onSyncPacketReceived");
@@ -189,7 +214,6 @@ public class Node implements Serializable {
         try {
             int height = Integer.parseInt(heightStr);
 
-            // TODO need to check the block actually fits our chain (w.r.t. data)
             if (height == bc.getHeight() + 1) {
                 Block block = (Block) Utils.deserialize(Utils.toByteArray(blockStr));
                 bc.addToTop(block);
@@ -200,7 +224,7 @@ public class Node implements Serializable {
             System.out.println("Exception in Node.onBlockPacketReceived");
         }
     }
-    
+
     private void onConnectionsPacketReceived(String otherConnectionsStr) {
         try {
             ArrayList<InetAddress> otherConnections = (ArrayList<InetAddress>) Utils.deserialize(Utils.toByteArray(otherConnectionsStr));
@@ -208,9 +232,22 @@ public class Node implements Serializable {
                 if (!connections.contains(ip) && !ip.getHostAddress().equals(NetworkAdapter.getMyIp())) {
                     connections.add(ip);
                 }
-            }            
+            }
         } catch (Exception ex) {
             System.out.println("Exception in Node.onConnectionsPacketRecevied");
+        }
+    }
+
+    private void onTransactionsPacketReceived(String otherUnconfirmedTransactionSetStr) {
+        try {
+            ArrayList<Transaction> otherUnconfirmedTransactionSet = (ArrayList<Transaction>) Utils.deserialize(Utils.toByteArray(otherUnconfirmedTransactionSetStr));
+            for (Transaction t : otherUnconfirmedTransactionSet) {
+                if (!unconfirmedTransactionSet.contains(t) && isValidTransaction(t)) {
+                    unconfirmedTransactionSet.add(t);
+                }
+            }
+        } catch (Exception ex) {
+            System.out.println("Exception in Node.onTransactionsPacketRecevied");
         }
     }
 
@@ -231,6 +268,15 @@ public class Node implements Serializable {
             NetworkAdapter.sendConnectionsPacket(str, ip, keyPair);
         } catch (Exception ex) {
             System.out.println("Exception in Node.sendConnections");
+        }
+    }
+
+    private void sendTransactions(InetAddress ip) {
+        try {
+            String str = Utils.toString(Utils.serialize(unconfirmedTransactionSet));
+            NetworkAdapter.sendTransactionsPacket(str, ip, keyPair);
+        } catch (Exception ex) {
+            System.out.println("Exception in Node.sendTransactions");
         }
     }
 }

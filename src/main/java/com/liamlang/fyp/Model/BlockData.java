@@ -1,20 +1,24 @@
 package com.liamlang.fyp.Model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class BlockData implements Serializable {
     
-    public String data;
+    private ArrayList<Transaction> transactions = new ArrayList<>();
     
     public BlockData() {
-        this.data = "";
     }
     
-    public BlockData(String data) {
-        this.data = data;
+    public BlockData(ArrayList<Transaction> transactions) {
+        this.transactions = transactions;
+    }
+    
+    public ArrayList<Transaction> getTransactions() {
+        return transactions;
     }
     
     public String toString() {
-        return data;
+        return "Block containing " + Integer.toString(transactions.size()) + " transactions";
     }
 }

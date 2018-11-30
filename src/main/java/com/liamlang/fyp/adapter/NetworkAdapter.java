@@ -17,8 +17,8 @@ public class NetworkAdapter {
         return InetAddress.getLocalHost().getHostAddress();
     }
 
-    public static void sendSyncPacket(int height, int numConnections, InetAddress ip, KeyPair keyPair) throws Exception {
-        SignedMessage m = new SignedMessage("SYNC " + getMyIp() + " " + Integer.toString(height) + " " + Integer.toString(numConnections));
+    public static void sendSyncPacket(int height, int numConnections, String unconfirmedTransactionSetHash, InetAddress ip, KeyPair keyPair) throws Exception {
+        SignedMessage m = new SignedMessage("SYNC " + getMyIp() + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + unconfirmedTransactionSetHash);
         m.sign(keyPair);
         sendPacket(m, ip);
     }
@@ -31,6 +31,12 @@ public class NetworkAdapter {
 
     public static void sendConnectionsPacket(String connections, InetAddress ip, KeyPair keyPair) throws Exception {
         SignedMessage m = new SignedMessage("CONNECTIONS " + connections);
+        m.sign(keyPair);
+        sendPacket(m, ip);
+    }
+    
+    public static void sendTransactionsPacket(String transactionSet, InetAddress ip, KeyPair keyPair) throws Exception {
+        SignedMessage m = new SignedMessage("UNCONFIRMED_TRANSACTION_SET " + transactionSet);
         m.sign(keyPair);
         sendPacket(m, ip);
     }

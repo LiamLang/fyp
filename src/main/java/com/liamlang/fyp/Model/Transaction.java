@@ -14,9 +14,14 @@ public class Transaction implements Serializable, Comparable {
         this.data = data;
     }
 
-    public boolean equals(Transaction other) {
+    @Override
+    public boolean equals(Object o) {
         // TODO keep this updated
-        return this.data.equals(other.data);
+        if (!(o instanceof Transaction)) {
+            return false;
+        }
+        Transaction t = (Transaction) o;
+        return this.data.equals(t.data);
     }
 
     @Override

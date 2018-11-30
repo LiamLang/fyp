@@ -68,11 +68,7 @@ public class Blockchain implements Serializable {
         if (block.getTimestamp() < getTop().getTimestamp()) {
             return false;
         }
-        
-        if (block.getTimestamp() > System.currentTimeMillis()) {
-            return false;
-        }
-        
+               
         return true;
     }
     

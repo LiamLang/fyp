@@ -73,6 +73,7 @@ public class Node implements Serializable {
         if (t != null && isValidTransaction(t)) {
             unconfirmedTransactionSet.add(t);
         }
+        saveSelf();
     }
 
     public void startCreatingBlocks() {
@@ -124,6 +125,7 @@ public class Node implements Serializable {
             unconfirmedTransactionSet = new ArrayList<>();
             
             bc.addToTop(block);
+            saveSelf();
             
         } catch (IOException ex) {
             System.out.println("Exception in Node.createBlock");
@@ -273,6 +275,8 @@ public class Node implements Serializable {
                     connections.add(ip);
                 }
             }
+            saveSelf();
+            
         } catch (Exception ex) {
             System.out.println("Exception in Node.onConnectionsPacketRecevied");
         }
@@ -287,6 +291,8 @@ public class Node implements Serializable {
                     Collections.sort(unconfirmedTransactionSet);
                 }
             }
+            saveSelf();
+            
         } catch (Exception ex) {
             System.out.println("Exception in Node.onTransactionsPacketRecevied");
         }

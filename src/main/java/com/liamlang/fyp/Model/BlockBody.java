@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 public class BlockBody implements Serializable {
 
-    private final byte[] previousHash;
+    private final String previousHash;
     private final int height;
 
     private final BlockData data;
@@ -23,12 +23,12 @@ public class BlockBody implements Serializable {
             previousHash = previousBlock.getHash();
             height = previousBlock.getHeight() + 1;
         } else {
-            previousHash = new byte[]{};
+            previousHash = "";
             height = 1;
         }
     }
 
-    public byte[] getPreviousHash() {
+    public String getPreviousHash() {
         return previousHash;
     }
 

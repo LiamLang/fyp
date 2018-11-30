@@ -7,25 +7,25 @@ import java.io.Serializable;
 
 public class Block implements Serializable {
     
-    private final byte[] hash;  
+    private final String hash;  
     private final BlockBody body;
     
     public Block(Block previousBlock, BlockData data) throws IOException {
         
         body = new BlockBody(previousBlock, data);
         
-        hash = HashUtils.sha256(Utils.serialize(body));
+        hash = Utils.bytesToHex(HashUtils.sha256(Utils.serialize(body)));
     }
     
     public String toString() {
-        return Integer.toString(getHeight()) + " " + Utils.bytesToHex(getHash()) + " " + body.toString();
+        return Integer.toString(getHeight()) + " " + getHash() + " " + body.toString();
     }
     
-    public byte[] getHash() {
+    public String getHash() {
         return hash;
     }
     
-    public byte[] getPreviousHash() {
+    public String getPreviousHash() {
         return body.getPreviousHash();
     }
         

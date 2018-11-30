@@ -253,6 +253,7 @@ public class Node implements Serializable {
             if (height == bc.getHeight() + 1) {
                 Block block = (Block) Utils.deserialize(Utils.toByteArray(blockStr));
                 bc.addToTop(block);
+                // TODO the hashes don't match...
                 saveSelf();
             }
 

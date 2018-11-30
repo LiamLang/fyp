@@ -124,8 +124,6 @@ public class Node implements Serializable {
             
             bc.addToTop(block);
             
-            // TODO need to remove transactions in the block from my list of unconfirmed tx!!! not here.
-            
         } catch (IOException ex) {
             System.out.println("Exception in Node.createBlock");
         }
@@ -250,8 +248,14 @@ public class Node implements Serializable {
 
             if (height == bc.getHeight() + 1) {
                 Block block = (Block) Utils.deserialize(Utils.toByteArray(blockStr));
-                bc.addToTop(block);
-                // TODO the hashes don't match...
+                
+                if(bc.addToTop(block)) {
+                    
+                    for (Transaction t : block.getData().getTransactions()) {
+                        
+                        unconfirmedTransactionSet.remove(t);
+                    }
+                }
                 saveSelf();
             }
 

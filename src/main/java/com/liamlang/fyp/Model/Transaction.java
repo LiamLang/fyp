@@ -14,6 +14,11 @@ public class Transaction implements Serializable {
         this.data = data;
     }
     
+    public boolean equals(Transaction other) {
+        // TODO keep this updated
+        return this.data.equals(other.data);
+    }
+    
     public String toString() {
         return data;
     }

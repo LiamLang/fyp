@@ -79,6 +79,7 @@ public class Node implements Serializable {
                 res = res + "\n" + connection.toString();
             }
         }
+        res += "\nI have " + Integer.toString(unconfirmedTransactionSet.size()) + " unconfirmed transactions";
         return res;
     }
 

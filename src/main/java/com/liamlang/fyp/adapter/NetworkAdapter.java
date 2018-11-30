@@ -37,7 +37,7 @@ public class NetworkAdapter {
 
     public static void sendPacket(SignedMessage message, InetAddress ip) throws Exception {
         byte[] packet = Utils.serialize(message);
-        System.out.println("Sending " + Utils.toString(packet));
+        System.out.println("Sending " + message.getMessage());
         DatagramSocket datagramSocket = new DatagramSocket();
         DatagramPacket datagramPacket = new DatagramPacket(packet, packet.length, ip, PORT);
         datagramSocket.send(datagramPacket);

@@ -18,7 +18,7 @@ public class NetworkAdapter {
     }
 
     public static void sendSyncPacket(int height, int numConnections, String unconfirmedTransactionSetHash, InetAddress ip, KeyPair keyPair) throws Exception {
-        SignedMessage m = new SignedMessage("SYNC " + getMyIp() + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + unconfirmedTransactionSetHash);
+        SignedMessage m = new SignedMessage("SYNC " + getMyIp() + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash);
         m.sign(keyPair);
         sendPacket(m, ip);
     }

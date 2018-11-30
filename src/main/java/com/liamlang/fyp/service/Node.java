@@ -96,7 +96,7 @@ public class Node implements Serializable {
 
     private void syncWithConnection(InetAddress ip) {
         try {
-            NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), Utils.toString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))), ip, keyPair);
+            NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), Utils.bytesToHex(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))), ip, keyPair);
         } catch (Exception ex) {
             System.out.println("Exception in Node.pollConnection");
         }
@@ -202,7 +202,7 @@ public class Node implements Serializable {
             if (Integer.parseInt(numConnections) < connections.size()) {
                 sendConnections(InetAddress.getByName(ip));
             }
-            if (!unconfirmedTransactionSetHash.equals(Utils.toString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))))) {
+            if (!unconfirmedTransactionSetHash.equals(Utils.bytesToHex(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))))) {
                 sendTransactions(InetAddress.getByName(ip));
             }
         } catch (Exception ex) {

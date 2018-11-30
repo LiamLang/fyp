@@ -65,6 +65,12 @@ public class Node implements Serializable {
         saveSelf();
         sendConnections(ip);
     }
+    
+    public void broadcastTransaction(Transaction t) {
+        if (t != null && isValidTransaction(t)) {
+            unconfirmedTransactionSet.add(t);
+        }
+    }
 
     public String toString() {
         String res = "My blockchain:" + bc.toString() + "\nMy connections:";

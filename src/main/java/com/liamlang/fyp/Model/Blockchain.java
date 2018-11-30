@@ -43,7 +43,7 @@ public class Blockchain implements Serializable {
             return false;
         }
 
-        if (blocks.isEmpty() || block.getPreviousHash() == getTop().getHash()) {
+        if (isValidTop(block)) {
             blocks.add(block);
             System.out.println("Added block to my blockchain! " + block.toString());
             return true;
@@ -52,6 +52,27 @@ public class Blockchain implements Serializable {
         return false;
     }
 
+    private boolean isValidTop(Block block) {
+        
+        if (blocks.isEmpty()) {            
+            return true;
+        }
+        
+        if (block.getPreviousHash() != getTop().getHash()) {
+            return false;
+        }
+        
+        if (block.getTimestamp() < getTop().getTimestamp()) {
+            return false;
+        }
+        
+        if (block.getTimestamp() > System.currentTimeMillis()) {
+            return false;
+        }
+        
+        return true;
+    }
+    
     public String toString() {
         String res = "";
         if (!blocks.isEmpty()) {

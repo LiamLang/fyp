@@ -20,7 +20,6 @@ public class SignedMessage implements Serializable {
     public void sign(KeyPair keyPair) {
         this.signature = SignatureUtils.sign(Utils.toByteArray(message), keyPair.getPrivate());
         this.pub = keyPair.getPublic();
-        System.out.println("Signed a message with sig length = " + Integer.toString(signature.length));
     }
     
     public String getMessage() {
@@ -33,7 +32,6 @@ public class SignedMessage implements Serializable {
     
     public boolean verify() {
         if (SignatureUtils.verify(Utils.toByteArray(message), signature, pub)) {
-            System.out.println("Verified a message signature");
             return true;
         } else {
             System.out.println("Failed to verify a message signature!");

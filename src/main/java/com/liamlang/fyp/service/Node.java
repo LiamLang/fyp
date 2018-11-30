@@ -43,7 +43,7 @@ public class Node implements Serializable {
             }
         });
 
-        Utils.scheduleRepeatingTask(5000, new Runnable() {
+        Utils.scheduleRepeatingTask(10000, new Runnable() {
             @Override
             public void run() {
                 syncWithConnections();
@@ -75,7 +75,7 @@ public class Node implements Serializable {
     }
 
     public void startCreatingBlocks() {
-        Utils.scheduleRepeatingTask(20000, new Runnable() {
+        Utils.scheduleRepeatingTask(30000, new Runnable() {
             @Override
             public void run() {
                 createBlock();
@@ -178,8 +178,6 @@ public class Node implements Serializable {
             System.out.println("We do not trust the public key that has signed this message!");
             return;
         }
-
-        System.out.println("Verified that the message is signed by a trusted key");
 
         String messageStr = message.getMessage();
         if (messageStr.equals("")) {

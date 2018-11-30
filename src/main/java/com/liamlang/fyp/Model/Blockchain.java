@@ -54,6 +54,15 @@ public class Blockchain implements Serializable {
 
         return false;
     }
+    
+    public boolean isConfirmed(Transaction t) {
+        for (Block b : blocks) {
+            if (b.getData().getTransactions().contains(t)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private boolean isValidTop(Block block) {
         

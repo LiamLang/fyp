@@ -18,6 +18,7 @@ import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Node implements Serializable {
 
@@ -281,10 +282,9 @@ public class Node implements Serializable {
         try {
             ArrayList<Transaction> otherUnconfirmedTransactionSet = (ArrayList<Transaction>) Utils.deserialize(Utils.toByteArray(otherUnconfirmedTransactionSetStr));
             for (Transaction t : otherUnconfirmedTransactionSet) {
-                if (!unconfirmedTransactionSet.contains(t) && isValidTransaction(t)) {
+                if (!unconfirmedTransactionSet.contains(t) && isValidTransaction(t) && !bc.isConfirmed(t)) {
                     unconfirmedTransactionSet.add(t);
-
-                    // TODO need to sort unconfirmed tx's based on hash!!!!
+                    Collections.sort(unconfirmedTransactionSet);
                 }
             }
         } catch (Exception ex) {

@@ -1,6 +1,7 @@
 package com.liamlang.fyp.service;
 
 import com.liamlang.fyp.Model.Block;
+import com.liamlang.fyp.Model.BlockData;
 import com.liamlang.fyp.Model.Blockchain;
 import com.liamlang.fyp.Model.SignedMessage;
 import com.liamlang.fyp.Model.Transaction;
@@ -10,6 +11,7 @@ import com.liamlang.fyp.Utils.NetworkUtils;
 import com.liamlang.fyp.Utils.SignatureUtils;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.adapter.NetworkAdapter;
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -65,11 +67,20 @@ public class Node implements Serializable {
         saveSelf();
         sendConnections(ip);
     }
-    
+
     public void broadcastTransaction(Transaction t) {
         if (t != null && isValidTransaction(t)) {
             unconfirmedTransactionSet.add(t);
         }
+    }
+
+    public void startCreatingBlocks() {
+        Utils.scheduleRepeatingTask(20000, new Runnable() {
+            @Override
+            public void run() {
+                createBlock();
+            }
+        });
     }
 
     public String toString() {
@@ -101,6 +112,25 @@ public class Node implements Serializable {
         }
     }
 
+    private void createBlock() {
+        try {
+            if (bc.getHeight() == 0) {
+                return;
+            }
+
+            BlockData blockData = new BlockData(unconfirmedTransactionSet);
+            Block block = new Block(bc.getTop(), blockData);
+            unconfirmedTransactionSet = new ArrayList<>();
+            
+            bc.addToTop(block);
+            
+            // TODO need to remove transactions in the block from my list of unconfirmed tx!!! not here.
+            
+        } catch (IOException ex) {
+            System.out.println("Exception in Node.createBlock");
+        }
+    }
+
     private void syncWithConnection(InetAddress ip) {
         try {
             NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), Utils.bytesToHex(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))), ip, keyPair);
@@ -129,12 +159,11 @@ public class Node implements Serializable {
 
     private boolean isValidTransaction(Transaction t) {
         // Check whether an incoming unconfirmed transaction is valid, according to my blockchain
-        
+
         // TODO
-        
         return true;
     }
-    
+
     private void packetReceived(SignedMessage message) {
         if (message == null) {
             return;
@@ -251,6 +280,8 @@ public class Node implements Serializable {
             for (Transaction t : otherUnconfirmedTransactionSet) {
                 if (!unconfirmedTransactionSet.contains(t) && isValidTransaction(t)) {
                     unconfirmedTransactionSet.add(t);
+
+                    // TODO need to sort unconfirmed tx's based on hash!!!!
                 }
             }
         } catch (Exception ex) {

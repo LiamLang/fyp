@@ -7,7 +7,6 @@ import com.liamlang.fyp.Model.SignedMessage;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.FileUtils;
 import com.liamlang.fyp.Utils.HashUtils;
-import com.liamlang.fyp.Utils.NetworkUtils;
 import com.liamlang.fyp.Utils.SignatureUtils;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.adapter.NetworkAdapter;
@@ -18,11 +17,14 @@ import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Node implements Serializable {
 
+    private ReceivedPacketHandler receivedPacketHandler;
+    private PacketSender packetSender;
+    
     private Blockchain bc;
+    
     private ArrayList<InetAddress> connections = new ArrayList<>();
     private ArrayList<Transaction> unconfirmedTransactionSet = new ArrayList<>();
 
@@ -37,10 +39,14 @@ public class Node implements Serializable {
     }
 
     public void init() {
+        
+        receivedPacketHandler = new ReceivedPacketHandler(this);
+        packetSender = new PacketSender(this);
+        
         NetworkAdapter.runWhenPacketReceived(new NetworkAdapter.PacketReceivedListener() {
             @Override
             public void onPacketReceived(SignedMessage message) {
-                packetReceived(message);
+                receivedPacketHandler.onPacketReceived(message);
             }
         });
 
@@ -69,7 +75,7 @@ public class Node implements Serializable {
         }
         connections.add(ip);
         saveSelf();
-        sendConnections(ip);
+        packetSender.sendConnections(ip);
     }
 
     public void broadcastTransaction(Transaction t) {
@@ -99,7 +105,7 @@ public class Node implements Serializable {
         return res;
     }
 
-    private void saveSelf() {
+    public void saveSelf() {
         try {
             FileUtils.saveToFile(this, "node.txt");
         } catch (Exception ex) {
@@ -143,7 +149,7 @@ public class Node implements Serializable {
         }
     }
 
-    private boolean keyIsTrusted(PublicKey pub) {
+    public boolean keyIsTrusted(PublicKey pub) {
         if (trustedKeys.contains(pub)) {
             return true;
         } else if (blacklistedKeys.contains(pub)) {
@@ -161,172 +167,30 @@ public class Node implements Serializable {
         }
     }
 
-    private boolean isValidTransaction(Transaction t) {
+    public boolean isValidTransaction(Transaction t) {
         // Check whether an incoming unconfirmed transaction is valid, according to my blockchain
 
         // TODO
         return true;
     }
-
-    private void packetReceived(SignedMessage message) {
-        if (message == null) {
-            return;
-        }
-
-        if (!message.verify()) {
-            System.out.println("Failed to verify the signature of the received message!");
-            return;
-        }
-
-        if (!keyIsTrusted(message.getPublicKey())) {
-            System.out.println("We do not trust the public key that has signed this message!");
-            return;
-        }
-
-        String messageStr = message.getMessage();
-        if (messageStr.equals("")) {
-            return;
-        }
-        String[] parts = messageStr.split(" ");
-
-        if (parts[0].equals("SYNC") && parts.length == 5) {
-            onSyncPacketReceived(parts[1], parts[2], parts[3], parts[4]);
-        }
-
-        if (parts[0].equals("BLOCK") && parts.length >= 3) {
-
-            // Recombine parts of the serialized block which may be split up because there happen to be spaces present
-            String blockStr = "";
-            for (int i = 2; i < parts.length; i++) {
-                blockStr += parts[i] + " ";
-            }
-            blockStr = blockStr.substring(0, blockStr.length() - 1);
-
-            onBlockPacketReceived(parts[1], blockStr);
-        }
-
-        if (parts[0].equals("CONNECTIONS") && parts.length >= 2) {
-
-            // Recombine parts of the serialized connections object which may be split up because there happen to be spaces present
-            String connectionsStr = "";
-            for (int i = 1; i < parts.length; i++) {
-                connectionsStr += parts[i] + " ";
-            }
-            connectionsStr = connectionsStr.substring(0, connectionsStr.length() - 1);
-
-            onConnectionsPacketReceived(connectionsStr);
-        }
-
-        if (parts[0].equals("UNCONFIRMED_TRANSACTION_SET") && parts.length >= 2) {
-
-            // Recombine parts of the serialized unconfirmed transactions set object which may be split up because there happen to be spaces present
-            String transactionsStr = "";
-            for (int i = 1; i < parts.length; i++) {
-                transactionsStr += parts[i] + " ";
-            }
-            transactionsStr = transactionsStr.substring(0, transactionsStr.length() - 1);
-
-            onTransactionsPacketReceived(transactionsStr);
-        }
+    
+    public PacketSender getPacketSender() {
+        return packetSender;
     }
-
-    private void onSyncPacketReceived(String ip, String heightStr, String numConnections, String unconfirmedTransactionSetHash) {
-        try {
-            addConnection(NetworkUtils.toIp(ip));
-            int height = Integer.parseInt(heightStr);
-            if (height < bc.getHeight()) {
-                sendBlocks(InetAddress.getByName(ip), height, bc.getHeight());
-            }
-            if (Integer.parseInt(numConnections) < connections.size()) {
-                sendConnections(InetAddress.getByName(ip));
-            }
-            if (!unconfirmedTransactionSetHash.equals(Utils.toHexString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))))) {
-                sendTransactions(InetAddress.getByName(ip));
-            }
-        } catch (Exception ex) {
-            System.out.println("Exception in Node.onSyncPacketReceived");
-        }
+    
+    public Blockchain getBlockchain() {
+        return bc;
     }
-
-    private void onBlockPacketReceived(String heightStr, String blockStr) {
-        try {
-            int height = Integer.parseInt(heightStr);
-
-            if (height == bc.getHeight() + 1) {
-                Block block = (Block) Utils.deserialize(Utils.toByteArray(blockStr));
-                
-                if(bc.addToTop(block)) {
-                    
-                    for (Transaction t : block.getData().getTransactions()) {
-                        
-                        unconfirmedTransactionSet.remove(t);
-                    }
-                }
-                saveSelf();
-            }
-
-        } catch (Exception ex) {
-            System.out.println("Exception in Node.onBlockPacketReceived");
-        }
+        
+    public ArrayList<InetAddress> getConnections() {
+        return connections;
     }
-
-    private void onConnectionsPacketReceived(String otherConnectionsStr) {
-        try {
-            ArrayList<InetAddress> otherConnections = (ArrayList<InetAddress>) Utils.deserialize(Utils.toByteArray(otherConnectionsStr));
-            for (InetAddress ip : otherConnections) {
-                if (!connections.contains(ip) && !ip.getHostAddress().equals(NetworkAdapter.getMyIp())) {
-                    connections.add(ip);
-                }
-            }
-            saveSelf();
-            
-        } catch (Exception ex) {
-            System.out.println("Exception in Node.onConnectionsPacketRecevied");
-        }
+    
+    public ArrayList<Transaction> getUnconfirmedTransactionSet() {
+        return unconfirmedTransactionSet;
     }
-
-    private void onTransactionsPacketReceived(String otherUnconfirmedTransactionSetStr) {
-        try {
-            ArrayList<Transaction> otherUnconfirmedTransactionSet = (ArrayList<Transaction>) Utils.deserialize(Utils.toByteArray(otherUnconfirmedTransactionSetStr));
-            for (Transaction t : otherUnconfirmedTransactionSet) {
-                if (!unconfirmedTransactionSet.contains(t) && isValidTransaction(t) && !bc.isConfirmed(t)) {
-                    unconfirmedTransactionSet.add(t);
-                    Collections.sort(unconfirmedTransactionSet);
-                }
-            }
-            saveSelf();
-            
-        } catch (Exception ex) {
-            System.out.println("Exception in Node.onTransactionsPacketRecevied");
-        }
-    }
-
-    private void sendBlocks(InetAddress ip, int theirHeight, int myHeight) {
-        for (int i = theirHeight + 1; i <= myHeight; i++) {
-            try {
-                String block = Utils.toString(Utils.serialize(bc.getAtHeight(i)));
-                NetworkAdapter.sendBlockPacket(i, block, ip, keyPair);
-            } catch (Exception ex) {
-                System.out.println("Exception in Node.sendBlocks");
-            }
-        }
-    }
-
-    private void sendConnections(InetAddress ip) {
-        try {
-            String str = Utils.toString(Utils.serialize(connections));
-            NetworkAdapter.sendConnectionsPacket(str, ip, keyPair);
-        } catch (Exception ex) {
-            System.out.println("Exception in Node.sendConnections");
-        }
-    }
-
-    private void sendTransactions(InetAddress ip) {
-        try {
-            String str = Utils.toString(Utils.serialize(unconfirmedTransactionSet));
-            NetworkAdapter.sendTransactionsPacket(str, ip, keyPair);
-        } catch (Exception ex) {
-            System.out.println("Exception in Node.sendTransactions");
-        }
+    
+    public KeyPair getKeyPair() {
+        return keyPair;
     }
 }

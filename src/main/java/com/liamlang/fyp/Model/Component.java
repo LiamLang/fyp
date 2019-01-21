@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.security.PublicKey;
 import java.util.ArrayList;
 
-public class Component implements Serializable {
+public class Component implements Serializable, Comparable {
     
     private final String hash;
     private final ComponentBody body;
@@ -28,8 +28,21 @@ public class Component implements Serializable {
         return other.hash.equals(this.hash);
     }
     
+    @Override
+    public int compareTo(Object o) {
+        if (!(o instanceof Component)) {
+            return 0;
+        }
+        Component other = (Component) o;
+        return hash.compareTo(other.getHash());
+    }
+    
     public String toString() {
         return getInfo().toString() + ", made up of " + Integer.toString(getSubcomponents().size()) + " subcomponents, owned by " + getOwner();
+    }
+    
+    public String getHash() {
+        return hash;
     }
     
     public ComponentInfo getInfo() {

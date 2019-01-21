@@ -16,7 +16,7 @@ public class Component implements Serializable {
         ComponentBody body = new ComponentBody(info, subcomponents, owner, ownerPubKey);
         this.body = body;
         
-        hash = Utils.bytesToHex(HashUtils.sha256(Utils.serialize(body)));
+        hash = Utils.toHexString(HashUtils.sha256(Utils.serialize(body)));
     }
     
     @Override

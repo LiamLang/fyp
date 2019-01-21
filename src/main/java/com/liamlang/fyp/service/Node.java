@@ -56,6 +56,9 @@ public class Node implements Serializable {
         } catch (UnknownHostException ex) {
             System.out.println("Exception in Node.init");
         }
+        
+        
+        System.out.println("Hash of my public key: " + Utils.toHexString(HashUtils.sha256(keyPair.getPublic().getEncoded())));
     }
 
     public void addConnection(InetAddress ip) {
@@ -134,7 +137,7 @@ public class Node implements Serializable {
 
     private void syncWithConnection(InetAddress ip) {
         try {
-            NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), Utils.bytesToHex(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))), ip, keyPair);
+            NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), Utils.toHexString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))), ip, keyPair);
         } catch (Exception ex) {
             System.out.println("Exception in Node.pollConnection");
         }
@@ -147,7 +150,7 @@ public class Node implements Serializable {
             return false;
         } else {
 
-            boolean result = Utils.showYesNoPopup("Do you want to trust this key?\n" + pub.toString());
+            boolean result = Utils.showYesNoPopup("Do you want to trust this key?\n" + Utils.toHexString(HashUtils.sha256(pub.getEncoded())));
             if (result) {
                 trustedKeys.add(pub);
             } else {
@@ -237,7 +240,7 @@ public class Node implements Serializable {
             if (Integer.parseInt(numConnections) < connections.size()) {
                 sendConnections(InetAddress.getByName(ip));
             }
-            if (!unconfirmedTransactionSetHash.equals(Utils.bytesToHex(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))))) {
+            if (!unconfirmedTransactionSetHash.equals(Utils.toHexString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))))) {
                 sendTransactions(InetAddress.getByName(ip));
             }
         } catch (Exception ex) {

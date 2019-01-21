@@ -14,7 +14,7 @@ public class Block implements Serializable {
         
         body = new BlockBody(previousBlock, data);
         
-        hash = Utils.bytesToHex(HashUtils.sha256(Utils.serialize(body)));
+        hash = Utils.toHexString(HashUtils.sha256(Utils.serialize(body)));
     }
     
     public String toString() {

@@ -12,7 +12,7 @@ public class Blockchain implements Serializable {
     public Blockchain(boolean createFirstBlock) throws IOException {
         if (createFirstBlock) {
             ArrayList<Transaction> transactions = new ArrayList<>();
-            transactions.add(new Transaction(new ArrayList<>()));
+            transactions.add(new Transaction(new ArrayList<>(), new ArrayList<>()));
             Block firstBlock = new Block(null, new BlockData(transactions));
             addToTop(firstBlock);
         }

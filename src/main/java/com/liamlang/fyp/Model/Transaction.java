@@ -9,19 +9,16 @@ import java.util.Collections;
 public class Transaction implements Serializable, Comparable {
 
     private final ArrayList<Component> componentsCreated;
-    
-    // TODO add signatures for transfer of ownership - 
-    // either separate to list of components, or as part of each component
-    
-    // TODO keep the equals and compareTo methods updated
+    private final ArrayList<OwnershipChangeSignature> signatures;
     
     private final long timestamp;
 
-    public Transaction(ArrayList<Component> componentsCreated) {
+    public Transaction(ArrayList<Component> componentsCreated, ArrayList<OwnershipChangeSignature> signatures) {
         
         Collections.sort(componentsCreated);
         
         this.componentsCreated = componentsCreated;
+        this.signatures = signatures;
         
         this.timestamp = System.currentTimeMillis();
     }
@@ -32,7 +29,7 @@ public class Transaction implements Serializable, Comparable {
             return false;
         }
         Transaction other = (Transaction) o;
-        return this.componentsCreated.equals(other.componentsCreated) && this.timestamp == other.timestamp;
+        return this.componentsCreated.equals(other.componentsCreated) && this.signatures.equals(other.signatures) && this.timestamp == other.timestamp;
     }
 
     @Override

@@ -17,6 +17,10 @@ public class Block implements Serializable {
         hash = Utils.toHexString(HashUtils.sha256(Utils.serialize(body)));
     }
     
+    public boolean verifyHash() {
+        return hash.equals(Utils.toHexString(HashUtils.sha256(Utils.serialize(body))));
+    }
+    
     public String toString() {
         return Integer.toString(getHeight()) + " " + getHash() + " " + body.toString();
     }

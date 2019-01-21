@@ -19,6 +19,10 @@ public class Component implements Serializable, Comparable {
         hash = Utils.toHexString(HashUtils.sha256(Utils.serialize(body)));
     }
     
+    public boolean verifyHash() {
+        return hash.equals(Utils.toHexString(HashUtils.sha256(Utils.serialize(body))));
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Component)) {

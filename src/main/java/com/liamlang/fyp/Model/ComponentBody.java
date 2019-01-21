@@ -10,14 +10,17 @@ public class ComponentBody implements Serializable {
     
     private final ArrayList<Component> subcomponents;
     
+    private final long quantity;
+    
     private final String owner;
     private final PublicKey ownerPubKey;
     
     private final long timestamp;
     
-    public ComponentBody(ComponentInfo info, ArrayList<Component> subcomponents, String owner, PublicKey ownerPubKey) {
+    public ComponentBody(ComponentInfo info, ArrayList<Component> subcomponents, long quantity, String owner, PublicKey ownerPubKey) {
         this.info = info;
         this.subcomponents = subcomponents;
+        this.quantity = quantity;
         this.owner = owner;
         this.ownerPubKey = ownerPubKey;
         this.timestamp = System.currentTimeMillis();
@@ -29,6 +32,10 @@ public class ComponentBody implements Serializable {
     
     public ArrayList<Component> getSubcomponents() {
         return subcomponents;
+    }
+    
+    public long getQuantity() {
+        return quantity;
     }
     
     public String getOwner() {

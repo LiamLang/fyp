@@ -11,9 +11,9 @@ public class Component implements Serializable, Comparable {
     private final String hash;
     private final ComponentBody body;
     
-    public Component(ComponentInfo info, ArrayList<Component> subcomponents, String owner, PublicKey ownerPubKey) {
+    public Component(ComponentInfo info, ArrayList<Component> subcomponents, long quantity, String owner, PublicKey ownerPubKey) {
         
-        ComponentBody body = new ComponentBody(info, subcomponents, owner, ownerPubKey);
+        ComponentBody body = new ComponentBody(info, subcomponents, quantity, owner, ownerPubKey);
         this.body = body;
         
         hash = Utils.toHexString(HashUtils.sha256(Utils.serialize(body)));
@@ -55,6 +55,10 @@ public class Component implements Serializable, Comparable {
     
     public ArrayList<Component> getSubcomponents() {
         return body.getSubcomponents();
+    }
+    
+    public long getQuantity() {
+        return body.getQuantity();
     }
     
     public String getOwner() {

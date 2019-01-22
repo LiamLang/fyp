@@ -22,6 +22,7 @@ public class Node implements Serializable {
     private ReceivedPacketHandler receivedPacketHandler;
     private PacketSender packetSender;
     private TransactionBuilder transactionBuilder;
+    private TransactionVerifier transactionVerifier;
     
     private Blockchain bc;
     
@@ -46,6 +47,7 @@ public class Node implements Serializable {
         receivedPacketHandler = new ReceivedPacketHandler(this);
         packetSender = new PacketSender(this);
         transactionBuilder = new TransactionBuilder(this);
+        transactionVerifier = new TransactionVerifier(this);
         
         NetworkAdapter.runWhenPacketReceived(new NetworkAdapter.PacketReceivedListener() {
             @Override

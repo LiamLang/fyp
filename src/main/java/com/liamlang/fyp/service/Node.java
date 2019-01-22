@@ -7,7 +7,6 @@ import com.liamlang.fyp.Model.SignedMessage;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.FileUtils;
 import com.liamlang.fyp.Utils.HashUtils;
-import com.liamlang.fyp.Utils.SignatureUtils;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.adapter.NetworkAdapter;
 import java.io.IOException;
@@ -22,26 +21,31 @@ public class Node implements Serializable {
 
     private ReceivedPacketHandler receivedPacketHandler;
     private PacketSender packetSender;
+    private TransactionBuilder transactionBuilder;
     
     private Blockchain bc;
     
     private ArrayList<InetAddress> connections = new ArrayList<>();
     private ArrayList<Transaction> unconfirmedTransactionSet = new ArrayList<>();
 
+    private String ownerName;
+    
     private KeyPair keyPair;
 
     private ArrayList<PublicKey> trustedKeys = new ArrayList<>();
     private ArrayList<PublicKey> blacklistedKeys = new ArrayList<>();
 
-    public Node(Blockchain bc) {
+    public Node(Blockchain bc, String ownerName, KeyPair keyPair) {
         this.bc = bc;
-        this.keyPair = SignatureUtils.generateKeyPair();
+        this.ownerName = ownerName;
+        this.keyPair = keyPair;
     }
 
     public void init() {
         
         receivedPacketHandler = new ReceivedPacketHandler(this);
         packetSender = new PacketSender(this);
+        transactionBuilder = new TransactionBuilder(this);
         
         NetworkAdapter.runWhenPacketReceived(new NetworkAdapter.PacketReceivedListener() {
             @Override
@@ -192,5 +196,13 @@ public class Node implements Serializable {
     
     public KeyPair getKeyPair() {
         return keyPair;
+    }
+    
+    public String getOwnerName() {
+        return ownerName;
+    }
+    
+    public void setOwneName(String ownerName) {
+        this.ownerName = ownerName;
     }
 }

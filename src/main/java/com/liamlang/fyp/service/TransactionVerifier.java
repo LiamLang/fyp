@@ -56,41 +56,38 @@ public class TransactionVerifier {
 
             for (Component newComponent : transaction.getComponentsCreated()) {
                 
-                boolean matchFound = false;
+                boolean inputAndSignatureValid = false;
                 
                 for (Component oldComponent : oldComponents) {
                     
                     if (oldComponent.equalsExceptForOwnership(newComponent)) {
-                        matchFound = true;
+                     
+                        // Input component matched. Now check for a valid signature
+                        
+                        for (OwnershipChangeSignature signature : transaction.getOwnershipChangeSignatures()) {
+                            
+                            if (signature.verify(oldComponent, newComponent)) {
+                                
+                                inputAndSignatureValid = true;
+                            }
+                        }
                     }
                 }
                 
-                if (!matchFound) {
+                if (!inputAndSignatureValid) {
                     return false;
                 }
             }
-            
-            // There must be a signature with the old hash of each component
-            
-            for (Component newComponent : transaction.getComponentsCreated()) {
-                
-                boolean signatureVerified = false;
-                
-                for (OwnershipChangeSignature signature : transaction.getOwnershipChangeSignatures()) {
-                    
-                
-                }
+                        
+            // Remove old components from node's unspent component list
+            for (Component oldComponent : oldComponents) {
+                node.getUnspentComponents().remove(oldComponent);
             }
             
-            // The pub key of the new owner must match
-            
-            // The signature must verify
-            
-            // Fail if not
-            
-            // If all pass, remove each old component from the node's unspent component list
-            
-            // Add each newly created component to the node's unspent component list
+            // Add newly created components to the node's unspent component list
+            for (Component newComponent : transaction.getComponentsCreated()) {
+                node.getUnspentComponents().add(newComponent);
+            }
         }
         
         // else if transaction is assembly or disassembly

@@ -40,4 +40,16 @@ public class Transaction implements Serializable, Comparable {
         
         return Utils.toString(HashUtils.sha256(Utils.serialize(this.componentsCreated))).compareTo(Utils.toString(HashUtils.sha256(Utils.serialize(other.componentsCreated))));
     }
+    
+    public ArrayList<String> getInputHashes() {
+        return inputHashes;
+    }
+    
+    public ArrayList<Component> getComponentsCreated() {
+        return componentsCreated;
+    }
+    
+    public ArrayList<OwnershipChangeSignature> getOwnershipChangeSignatures() {
+        return signatures;
+    }
 }

@@ -23,11 +23,19 @@ public class OwnershipChangeSignature implements Serializable {
         this.signature = SignatureUtils.sign(message, signingKey);
     }
     
-    public byte[] getMessage() {
+    private byte[] getMessage() {
         return Utils.toByteArray(oldComponentHash + Utils.toHexString(HashUtils.sha256(newOwnerPubKey.getEncoded())));
     }
     
     public boolean verify(Component oldComponent) {
         return oldComponent.verifyHash() && SignatureUtils.verify(getMessage(), signature, oldComponent.getOwnerPubKey());
+    }
+    
+    public String getOldComponentHash() {
+        return oldComponentHash;
+    }
+    
+    public PublicKey newOwnerPubKey() {
+        return newOwnerPubKey;
     }
 }

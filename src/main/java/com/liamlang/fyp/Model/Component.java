@@ -32,6 +32,11 @@ public class Component implements Serializable, Comparable {
         return other.hash.equals(this.hash);
     }
     
+    public boolean equalsExceptForOwnership(Component other) {
+        
+        return getInfo().equals(other.getInfo()) && getSubcomponents().equals(other.getSubcomponents()) && getQuantity() == other.getQuantity();
+    }
+    
     @Override
     public int compareTo(Object o) {
         if (!(o instanceof Component)) {

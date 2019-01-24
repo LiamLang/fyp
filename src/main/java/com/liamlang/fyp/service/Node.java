@@ -3,6 +3,7 @@ package com.liamlang.fyp.service;
 import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.BlockData;
 import com.liamlang.fyp.Model.Blockchain;
+import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.SignedMessage;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.FileUtils;
@@ -27,7 +28,10 @@ public class Node implements Serializable {
     private Blockchain bc;
     
     private ArrayList<InetAddress> connections = new ArrayList<>();
+    
     private ArrayList<Transaction> unconfirmedTransactionSet = new ArrayList<>();
+    
+    private ArrayList<Component> unspentComponents = new ArrayList<>();
 
     private String ownerName;
     
@@ -206,5 +210,9 @@ public class Node implements Serializable {
     
     public void setOwneName(String ownerName) {
         this.ownerName = ownerName;
+    }
+    
+    public ArrayList<Component> getUnspentComponents() {
+        return unspentComponents;
     }
 }

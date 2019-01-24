@@ -23,20 +23,26 @@ public class TransactionBuilder {
         ArrayList<Component> components = new ArrayList<>();
         components.add(component);
         
-        return new Transaction(components, new ArrayList<>());
+        return new Transaction(new ArrayList<>(), components, new ArrayList<>());
     }
     
     public Transaction addComponetsToOther(Component parent, ArrayList<Component> childrenToAdd) throws Exception {
+        
+        ArrayList<String> inputHashes = new ArrayList<>();
         
         ArrayList<Component> subcomponents = parent.getSubcomponents();
         
         ArrayList<Component> newComponents = new ArrayList<>();
 
+        inputHashes.add(parent.getHash());
+        
         for (Component child : childrenToAdd) {
             
-            if (child.getQuantity() < 1) {
+            if (child.getQuantity() == 0) {
                 throw new Exception();
             }
+            
+            inputHashes.add(child.getHash());
             
             subcomponents.add(child);
             
@@ -49,14 +55,18 @@ public class TransactionBuilder {
                 
         newComponents.add(newParent);
         
-        return new Transaction(newComponents, new ArrayList<>());
+        return new Transaction(inputHashes, newComponents, new ArrayList<>());
     }
         
     public Transaction removeComponentsFromOther(Component parent, ArrayList<Component> childrenToRemove) throws Exception {
         
+        ArrayList<String> inputHashes = new ArrayList<>();
+        
         ArrayList<Component> subcomponents = parent.getSubcomponents();
         
         ArrayList<Component> newComponents = new ArrayList<>();
+        
+        inputHashes.add(parent.getHash());
         
         for (Component child : childrenToRemove) {
             
@@ -67,13 +77,15 @@ public class TransactionBuilder {
             Component newChild = new Component(child.getInfo(), child.getSubcomponents(), child.getQuantity() + 1, child.getOwner(), child.getOwnerPubKey());
             
             newComponents.add(newChild);
+            
+            inputHashes.add(child.getHash());
         }
         
         Component newParent = new Component(parent.getInfo(), subcomponents, parent.getQuantity(), parent.getOwner(), parent.getOwnerPubKey());
         
         newComponents.add(newParent);
         
-        return new Transaction(newComponents, new ArrayList<>());
+        return new Transaction(inputHashes, newComponents, new ArrayList<>());
     }
     
     public Transaction changeOwner(Component component, String newOwner, PublicKey newOwnerPubKey, PrivateKey oldOwnerPrivKey) {
@@ -88,6 +100,9 @@ public class TransactionBuilder {
         ArrayList<Component> components = new ArrayList<>();
         components.add(newComponent);
         
-        return new Transaction(components, signatures);
+        ArrayList<String> inputHashes = new ArrayList<>();
+        inputHashes.add(component.getHash());
+        
+        return new Transaction(inputHashes, components, signatures);
     }
 }

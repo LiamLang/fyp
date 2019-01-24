@@ -4,19 +4,18 @@ import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.Utils;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class Transaction implements Serializable, Comparable {
 
+    private final ArrayList<String> inputHashes;
     private final ArrayList<Component> componentsCreated;
     private final ArrayList<OwnershipChangeSignature> signatures;
     
     private final long timestamp;
 
-    public Transaction(ArrayList<Component> componentsCreated, ArrayList<OwnershipChangeSignature> signatures) {
-        
-        Collections.sort(componentsCreated);
-        
+    public Transaction(ArrayList<String> inputHashes, ArrayList<Component> componentsCreated, ArrayList<OwnershipChangeSignature> signatures) {
+                
+        this.inputHashes = inputHashes;
         this.componentsCreated = componentsCreated;
         this.signatures = signatures;
         
@@ -29,7 +28,7 @@ public class Transaction implements Serializable, Comparable {
             return false;
         }
         Transaction other = (Transaction) o;
-        return this.componentsCreated.equals(other.componentsCreated) && this.signatures.equals(other.signatures) && this.timestamp == other.timestamp;
+        return this.inputHashes.equals(other.inputHashes) && this.componentsCreated.equals(other.componentsCreated) && this.signatures.equals(other.signatures) && this.timestamp == other.timestamp;
     }
 
     @Override

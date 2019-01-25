@@ -37,6 +37,16 @@ public class Component implements Serializable, Comparable {
         return getInfo().equals(other.getInfo()) && getSubcomponents().equals(other.getSubcomponents()) && getQuantity() == other.getQuantity();
     }
     
+    public boolean equalsExceptForQuantity(Component other) {
+        
+        return getInfo().equals(other.getInfo()) && getSubcomponents().equals(other.getSubcomponents()) && getOwner().equals(other.getOwner()) && getOwnerPubKey().equals(other.getOwnerPubKey());
+    }
+    
+    public boolean equalsExceptForSubcomponents(Component other) {
+        
+        return getInfo().equals(other.getInfo()) && getQuantity() == other.getQuantity() && getOwner().equals(other.getOwner()) && getOwnerPubKey().equals(other.getOwnerPubKey());
+    }
+    
     @Override
     public int compareTo(Object o) {
         if (!(o instanceof Component)) {

@@ -4,6 +4,7 @@ import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.ComponentInfo;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.NetworkUtils;
+import com.liamlang.fyp.gui.NewComponentTransactionWindow;
 import com.liamlang.fyp.gui.ViewComponentWindow;
 import com.liamlang.fyp.service.Node;
 import com.liamlang.fyp.service.NodeManager;
@@ -34,9 +35,11 @@ public class Demo {
             
             Component parent = new Component(new ComponentInfo("This is the parent component"), children, 1, "ACME", node.getKeyPair().getPublic());
             
-            ViewComponentWindow win = new ViewComponentWindow(parent);
+            //ViewComponentWindow win = new ViewComponentWindow(parent);
+            //win.show();
             
-            win.show();
+            NewComponentTransactionWindow nctw = new NewComponentTransactionWindow(node);
+            nctw.show();
             
         } catch (Exception e) {
             System.out.println("Exception caught in Demo");

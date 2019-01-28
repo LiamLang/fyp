@@ -8,6 +8,7 @@ import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -27,6 +28,17 @@ public class Utils {
 
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         scheduler.schedule(repeatingTask, delayMillis, TimeUnit.MILLISECONDS);
+    }
+
+    public static String toHumanReadableTime(long timestamp) {
+
+        SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+        return sdf.format(timestamp);
+    }
+
+    public static void showOkPopup(String text) {
+        JOptionPane.showMessageDialog(null, text);
     }
 
     public static boolean showYesNoPopup(String text) {

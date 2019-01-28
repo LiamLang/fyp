@@ -52,4 +52,8 @@ public class Transaction implements Serializable, Comparable {
     public ArrayList<OwnershipChangeSignature> getOwnershipChangeSignatures() {
         return signatures;
     }
+    
+    public long getTimestamp() {
+        return timestamp;
+    }
 }

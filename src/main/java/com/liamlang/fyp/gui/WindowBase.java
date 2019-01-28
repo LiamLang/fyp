@@ -9,17 +9,17 @@ import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
 public class WindowBase {
-    
+
     private final String title;
-    
+
     private JFrame frame;
-    
+
     public WindowBase(String title) {
         this.title = title;
     }
-    
+
     public JPanel getPanel() {
-        
+
         frame = new JFrame(title);
         JFrame.setDefaultLookAndFeelDecorated(true);
 
@@ -27,22 +27,29 @@ public class WindowBase {
         BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(boxLayout);
         panel.setBorder(new EmptyBorder(new Insets(20, 20, 20, 20)));
-        
+
         frame.add(panel);
-        
+
         return panel;
     }
-    
-    public void show() {
-        
+
+    public void show(int width) {
+
         frame.pack();
         frame.setVisible(true);
         frame.setLocation(300, 300);
+
+        frame.setSize(width, frame.getHeight());
 
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         } catch (Exception e) {
         }
         SwingUtilities.updateComponentTreeUI(frame);
+    }
+    
+    public void close() {
+        frame.setVisible(false);
+        frame.dispose();
     }
 }

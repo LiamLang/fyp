@@ -4,11 +4,12 @@ import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.ComponentInfo;
 import com.liamlang.fyp.Model.OwnershipChangeSignature;
 import com.liamlang.fyp.Model.Transaction;
+import java.io.Serializable;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 
-public class TransactionBuilder {
+public class TransactionBuilder implements Serializable {
 
     Node node;
     

@@ -178,14 +178,15 @@ public class Node implements Serializable {
     }
 
     public boolean isValidTransaction(Transaction t) {
-        // Check whether an incoming unconfirmed transaction is valid, according to my blockchain
-
-        // TODO
-        return true;
+        return transactionVerifier.verify(t);
     }
     
     public PacketSender getPacketSender() {
         return packetSender;
+    }
+    
+    public TransactionBuilder getTransactionBuilder() {
+        return transactionBuilder;
     }
     
     public Blockchain getBlockchain() {

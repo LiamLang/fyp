@@ -36,7 +36,7 @@ public class OwnershipChangeSignature implements Serializable {
         return oldComponentHash;
     }
     
-    public PublicKey newOwnerPubKey() {
+    public PublicKey getNewOwnerPubKey() {
         return newOwnerPubKey;
     }
 }

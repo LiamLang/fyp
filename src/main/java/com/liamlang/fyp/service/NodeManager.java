@@ -8,14 +8,14 @@ public class NodeManager {
     
     public static Node startNodeWithEmptyBlockchain() throws Exception {
         Blockchain bc = new Blockchain(false);
-        Node node = new Node(bc, "Unnamed entity", SignatureUtils.generateKeyPair());
+        Node node = new Node(bc, "Liam Lang", SignatureUtils.generateKeyPair());
         node.init();
         return node;
     }
     
     public static Node startNodeWithFirstBlock() throws Exception {
         Blockchain bc = new Blockchain(true);
-        Node node = new Node(bc, "Unnamed entity", SignatureUtils.generateKeyPair());
+        Node node = new Node(bc, "Liam Lang", SignatureUtils.generateKeyPair());
         node.init();
         return node;
     }

@@ -3,9 +3,10 @@ package com.liamlang.fyp.service;
 import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.OwnershipChangeSignature;
 import com.liamlang.fyp.Model.Transaction;
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class TransactionVerifier {
+public class TransactionVerifier implements Serializable {
 
     private Node node;
 

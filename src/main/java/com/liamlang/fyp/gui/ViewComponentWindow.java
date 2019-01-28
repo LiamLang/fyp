@@ -65,6 +65,10 @@ public class ViewComponentWindow {
                 
         panel.add(new JLabel("Owner's Public Key Hash: " + Utils.toHexString(HashUtils.sha256(component.getOwnerPubKey().getEncoded()))));
 
-        window.show();
+        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        panel.add(new JLabel("Timestamp: " + Utils.toHumanReadableTime(component.getTimestamp())));
+        
+        window.show(600);
     }
 }

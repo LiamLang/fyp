@@ -4,10 +4,10 @@ import java.io.Serializable;
 
 public class ComponentInfo implements Serializable {
     
-    public String info;
+    public String html;
     
-    public ComponentInfo(String info) {
-        this.info = info;
+    public ComponentInfo(String html) {
+        this.html = html;
     }
     
     @Override
@@ -18,10 +18,10 @@ public class ComponentInfo implements Serializable {
         }
         
         ComponentInfo other = (ComponentInfo) o;
-        return this.info.equals(other.info);
+        return this.html.equals(other.html);
     }
     
     public String toString() {
-        return info;
+        return html;
     }
 }

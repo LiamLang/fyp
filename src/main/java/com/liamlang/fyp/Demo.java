@@ -9,6 +9,7 @@ import com.liamlang.fyp.gui.ViewBlockWindow;
 import com.liamlang.fyp.gui.ViewComponentWindow;
 import com.liamlang.fyp.service.Node;
 import com.liamlang.fyp.service.NodeManager;
+import com.liamlang.fyp.service.ViewBlockchainWindow;
 import java.util.ArrayList;
 
 public class Demo {
@@ -42,10 +43,14 @@ public class Demo {
             //NewComponentTransactionWindow nctw = new NewComponentTransactionWindow(node);
             //nctw.show();
             
-            //node.startCreatingBlocks();
+            node.startCreatingBlocks();
+            
+            ViewBlockchainWindow vbcw = new ViewBlockchainWindow(node.getBlockchain());
+            vbcw.show();
             
         } catch (Exception e) {
             System.out.println("Exception caught in Demo");
+            e.printStackTrace();
         }
     }
 }

@@ -47,7 +47,15 @@ public class WindowBase {
         }
         SwingUtilities.updateComponentTreeUI(frame);
     }
-    
+
+    public void refresh() {
+
+        SwingUtilities.updateComponentTreeUI(frame);
+        //frame.invalidate();
+        //frame.validate();
+        //frame.repaint();
+    }
+
     public void close() {
         frame.setVisible(false);
         frame.dispose();

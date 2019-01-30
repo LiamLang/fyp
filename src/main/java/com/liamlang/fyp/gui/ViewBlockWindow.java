@@ -54,7 +54,7 @@ public class ViewBlockWindow {
         
         for (Transaction transaction : block.getData().getTransactions()) {
             
-            JButton button = new JButton(Long.toString(transaction.getTimestamp()));
+            JButton button = new JButton(Utils.toHumanReadableTime(transaction.getTimestamp()));
 
             button.addActionListener(new ActionListener() {
 

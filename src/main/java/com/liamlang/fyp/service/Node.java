@@ -24,17 +24,17 @@ public class Node implements Serializable {
     private PacketSender packetSender;
     private TransactionBuilder transactionBuilder;
     private TransactionVerifier transactionVerifier;
-    
+
     private Blockchain bc;
-    
+
     private ArrayList<InetAddress> connections = new ArrayList<>();
-    
+
     private ArrayList<Transaction> unconfirmedTransactionSet = new ArrayList<>();
-    
+
     private ArrayList<Component> unspentComponents = new ArrayList<>();
 
     private String ownerName;
-    
+
     private KeyPair keyPair;
 
     private ArrayList<PublicKey> trustedKeys = new ArrayList<>();
@@ -47,12 +47,12 @@ public class Node implements Serializable {
     }
 
     public void init() {
-        
+
         receivedPacketHandler = new ReceivedPacketHandler(this);
         packetSender = new PacketSender(this);
         transactionBuilder = new TransactionBuilder(this);
         transactionVerifier = new TransactionVerifier(this);
-        
+
         NetworkAdapter.runWhenPacketReceived(new NetworkAdapter.PacketReceivedListener() {
             @Override
             public void onPacketReceived(SignedMessage message) {
@@ -72,8 +72,7 @@ public class Node implements Serializable {
         } catch (UnknownHostException ex) {
             System.out.println("Exception in Node.init");
         }
-        
-        
+
         System.out.println("Hash of my public key: " + Utils.toHexString(HashUtils.sha256(keyPair.getPublic().getEncoded())));
     }
 
@@ -133,7 +132,7 @@ public class Node implements Serializable {
         }
     }
 
-    private void createBlock() {
+    public void createBlock() {
         try {
             if (bc.getHeight() == 0) {
                 return;
@@ -142,10 +141,10 @@ public class Node implements Serializable {
             BlockData blockData = new BlockData(unconfirmedTransactionSet);
             Block block = new Block(bc.getTop(), blockData);
             unconfirmedTransactionSet = new ArrayList<>();
-            
+
             bc.addToTop(block);
             saveSelf();
-            
+
         } catch (IOException ex) {
             System.out.println("Exception in Node.createBlock");
         }
@@ -180,39 +179,39 @@ public class Node implements Serializable {
     public boolean isValidTransaction(Transaction t) {
         return transactionVerifier.verify(t);
     }
-    
+
     public PacketSender getPacketSender() {
         return packetSender;
     }
-    
+
     public TransactionBuilder getTransactionBuilder() {
         return transactionBuilder;
     }
-    
+
     public Blockchain getBlockchain() {
         return bc;
     }
-        
+
     public ArrayList<InetAddress> getConnections() {
         return connections;
     }
-    
+
     public ArrayList<Transaction> getUnconfirmedTransactionSet() {
         return unconfirmedTransactionSet;
     }
-    
+
     public KeyPair getKeyPair() {
         return keyPair;
     }
-    
+
     public String getOwnerName() {
         return ownerName;
     }
-    
+
     public void setOwneName(String ownerName) {
         this.ownerName = ownerName;
     }
-    
+
     public ArrayList<Component> getUnspentComponents() {
         return unspentComponents;
     }

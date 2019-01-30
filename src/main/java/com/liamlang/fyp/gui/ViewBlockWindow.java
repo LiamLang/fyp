@@ -1,13 +1,17 @@
 package com.liamlang.fyp.gui;
 
 import com.liamlang.fyp.Model.Block;
+import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.Utils;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -44,7 +48,26 @@ public class ViewBlockWindow {
 
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        // transactions TODO
+        panel.add(new JLabel("Transactions: " + Integer.toString(block.getData().getTransactions().size())));
+        
+        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        
+        for (Transaction transaction : block.getData().getTransactions()) {
+            
+            JButton button = new JButton(Long.toString(transaction.getTimestamp()));
+
+            button.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    ViewTransactionWindow win = new ViewTransactionWindow(transaction);
+                    win.show();
+                }
+            });
+
+            panel.add(button);
+        }
         
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 

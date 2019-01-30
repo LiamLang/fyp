@@ -6,7 +6,11 @@ import com.liamlang.fyp.Utils.Utils;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,6 +28,14 @@ public class ViewComponentWindow {
         WindowBase window = new WindowBase("View Component");
         JPanel panel = window.getPanel();
 
+        try {
+            panel.add(new JLabel(new ImageIcon(ImageIO.read(new File("src/main/resources/component.png")))));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+
         panel.add(new JLabel("Hash: " + component.getHash()));
 
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
@@ -37,7 +49,7 @@ public class ViewComponentWindow {
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         panel.add(new JLabel("Subcomponents: " + Integer.toString(component.getSubcomponents().size())));
-        
+
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
 
         for (Component subcomponent : component.getSubcomponents()) {
@@ -62,13 +74,13 @@ public class ViewComponentWindow {
         panel.add(new JLabel("Owner: " + component.getOwner()));
 
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
-                
+
         panel.add(new JLabel("Owner's Public Key Hash: " + Utils.toHexString(HashUtils.sha256(component.getOwnerPubKey().getEncoded()))));
 
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         panel.add(new JLabel("Timestamp: " + Utils.toHumanReadableTime(component.getTimestamp())));
-        
+
         window.show(600);
     }
 }

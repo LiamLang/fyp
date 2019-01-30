@@ -7,7 +7,11 @@ import com.liamlang.fyp.Utils.Utils;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -24,6 +28,14 @@ public class ViewTransactionWindow {
 
         WindowBase window = new WindowBase("View Transaction");
         JPanel panel = window.getPanel();
+
+        try {
+            panel.add(new JLabel(new ImageIcon(ImageIO.read(new File("src/main/resources/transaction.png")))));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         panel.add(new JLabel("Input Components: " + Integer.toString(transaction.getInputHashes().size())));
 
@@ -62,10 +74,10 @@ public class ViewTransactionWindow {
         panel.add(new JLabel("Ownership Change Signatures: " + Integer.toString(transaction.getOwnershipChangeSignatures().size())));
 
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
-        
+
         for (OwnershipChangeSignature signature : transaction.getOwnershipChangeSignatures()) {
-            
-            panel.add(new JLabel("<html>Input component hash: " + signature.getOldComponentHash() 
+
+            panel.add(new JLabel("<html>Input component hash: " + signature.getOldComponentHash()
                     + "<br/>New owner's public key hash: " + Utils.toHexString(signature.getNewOwnerPubKey().getEncoded()) + "</html>"));
         }
 

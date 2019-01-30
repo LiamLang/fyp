@@ -5,6 +5,7 @@ import com.liamlang.fyp.Model.ComponentInfo;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.NetworkUtils;
 import com.liamlang.fyp.gui.NewComponentTransactionWindow;
+import com.liamlang.fyp.gui.ViewBlockWindow;
 import com.liamlang.fyp.gui.ViewComponentWindow;
 import com.liamlang.fyp.service.Node;
 import com.liamlang.fyp.service.NodeManager;
@@ -38,8 +39,10 @@ public class Demo {
             //ViewComponentWindow win = new ViewComponentWindow(parent);
             //win.show();
             
-            NewComponentTransactionWindow nctw = new NewComponentTransactionWindow(node);
-            nctw.show();
+            //NewComponentTransactionWindow nctw = new NewComponentTransactionWindow(node);
+            //nctw.show();
+            
+            //node.startCreatingBlocks();
             
         } catch (Exception e) {
             System.out.println("Exception caught in Demo");

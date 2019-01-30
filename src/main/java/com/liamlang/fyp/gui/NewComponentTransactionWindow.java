@@ -1,6 +1,5 @@
 package com.liamlang.fyp.gui;
 
-import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.ComponentInfo;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.Utils;
@@ -8,8 +7,11 @@ import com.liamlang.fyp.service.Node;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import javax.swing.Box;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -27,6 +29,14 @@ public class NewComponentTransactionWindow {
 
         WindowBase window = new WindowBase("Create Component (Transaction)");
         JPanel panel = window.getPanel();
+
+        try {
+            panel.add(new JLabel(new ImageIcon(ImageIO.read(new File("src/main/resources/new_component.png")))));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+
+        panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         panel.add(new JLabel("Information (html): "));
 
@@ -59,28 +69,28 @@ public class NewComponentTransactionWindow {
 
                 String info = infoTextField.getText();
                 String quantityString = quantityTextField.getText();
-                
+
                 try {
                     long quantity = Long.parseLong(quantityString);
-                    
+
                     if (quantity < 1) {
                         throw new Exception();
                     }
-                    
+
                     if (info.equals("")) {
                         throw new Exception();
                     }
-                    
+
                     ComponentInfo componentInfo = new ComponentInfo(info);
-                                        
+
                     Transaction transaction = node.getTransactionBuilder().buildNewComponentTransaction(componentInfo, quantity);
-                    
+
                     node.broadcastTransaction(transaction);
-                    
+
                     Utils.showOkPopup("Created component with hash " + transaction.getComponentsCreated().get(0).getHash());
-                    
+
                     window.close();
-                    
+
                 } catch (Exception ex) {
                     Utils.showOkPopup("Error!");
                 }

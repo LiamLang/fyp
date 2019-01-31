@@ -1,5 +1,6 @@
 package com.liamlang.fyp;
 
+import com.liamlang.fyp.gui.MyDetailsWindow;
 import com.liamlang.fyp.gui.NewComponentTransactionWindow;
 import com.liamlang.fyp.service.Node;
 import com.liamlang.fyp.service.NodeManager;
@@ -23,13 +24,16 @@ public class Demo {
             Component parent = new Component(new ComponentInfo("This is the parent component"), children, 1, "ACME", node.getKeyPair().getPublic());
             */
                         
-            NewComponentTransactionWindow nctw = new NewComponentTransactionWindow(node);
-            nctw.show();
+            //NewComponentTransactionWindow nctw = new NewComponentTransactionWindow(node);
+            //nctw.show();
             
-            node.startCreatingBlocks();
+            //node.startCreatingBlocks();
             
-            ViewBlockchainWindow vbcw = new ViewBlockchainWindow(node.getBlockchain());
-            vbcw.show();
+            //ViewBlockchainWindow vbcw = new ViewBlockchainWindow(node.getBlockchain());
+            //vbcw.show();
+            
+            MyDetailsWindow mdw = new MyDetailsWindow(node);
+            mdw.show();
             
         } catch (Exception e) {
             System.out.println("Exception caught in Demo");

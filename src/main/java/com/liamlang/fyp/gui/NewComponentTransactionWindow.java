@@ -4,17 +4,9 @@ import com.liamlang.fyp.Model.ComponentInfo;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.service.Node;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class NewComponentTransactionWindow {
@@ -28,37 +20,33 @@ public class NewComponentTransactionWindow {
     public void show() {
 
         WindowBase window = new WindowBase("Create Component (Transaction)");
-        JPanel panel = window.getPanel();
+        window.init();
 
-        try {
-            panel.add(new JLabel(new ImageIcon(ImageIO.read(new File("src/main/resources/new_component.png")))));
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
+        window.addImage("src/main/resources/new_component.png");
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addVerticalSpace(20);
 
-        panel.add(new JLabel("Information (html): "));
+        window.addLabel("Information (html): ");
 
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        window.addVerticalSpace(10);
 
         JTextField infoTextField = new JTextField();
-        panel.add(infoTextField);
+        window.add(infoTextField);
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addVerticalSpace(20);
 
-        panel.add(new JLabel("Quantity:"));
+        window.addLabel("Quantity:");
 
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        window.addVerticalSpace(10);
 
         JTextField quantityTextField = new JTextField("1");
-        panel.add(quantityTextField);
+        window.add(quantityTextField);
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addVerticalSpace(20);
 
-        panel.add(new JLabel("Owner: " + node.getOwnerName() + " (me)"));
+        window.addLabel("Owner: " + node.getOwnerName() + " (me)");
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addVerticalSpace(20);
 
         JButton button = new JButton("Broadcast");
 
@@ -97,7 +85,7 @@ public class NewComponentTransactionWindow {
             }
         });
 
-        panel.add(button);
+        window.add(button);
 
         window.show(600);
     }

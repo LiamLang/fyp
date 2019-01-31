@@ -3,17 +3,9 @@ package com.liamlang.fyp.gui;
 import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.Utils;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 public class ViewBlockWindow {
 
@@ -26,34 +18,30 @@ public class ViewBlockWindow {
     public void show() {
 
         WindowBase window = new WindowBase("View Block");
-        JPanel panel = window.getPanel();
-
-        try {
-            panel.add(new JLabel(new ImageIcon(ImageIO.read(new File("src/main/resources/block.png")))));
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
-
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        WindowBase.addSelectableTextField(panel, "Hash: " + block.getHash());
+        window.init();
         
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addImage("src/main/resources/block.png");
 
-        panel.add(new JLabel("Previous hash: " + block.getPreviousHash()));
+        window.addVerticalSpace(20);
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addSelectableTextField("Hash: " + block.getHash());
 
-        panel.add(new JLabel("Height: " + Integer.toString(block.getHeight())));
+        window.addVerticalSpace(20);
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addSelectableTextField("Previous hash: " + block.getPreviousHash());
 
-        panel.add(new JLabel("Transactions: " + Integer.toString(block.getData().getTransactions().size())));
-        
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
-        
+        window.addVerticalSpace(20);
+
+        window.addLabel("Height: " + Integer.toString(block.getHeight()));
+
+        window.addVerticalSpace(20);
+
+        window.addLabel("Transactions: " + Integer.toString(block.getData().getTransactions().size()));
+
+        window.addVerticalSpace(10);
+
         for (Transaction transaction : block.getData().getTransactions()) {
-            
+
             JButton button = new JButton(Utils.toHumanReadableTime(transaction.getTimestamp()));
 
             button.addActionListener(new ActionListener() {
@@ -66,12 +54,12 @@ public class ViewBlockWindow {
                 }
             });
 
-            panel.add(button);
+            window.add(button);
         }
-        
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        panel.add(new JLabel("Timestamp: " + Utils.toHumanReadableTime(block.getTimestamp())));
+        window.addVerticalSpace(20);
+
+        window.addLabel("Timestamp: " + Utils.toHumanReadableTime(block.getTimestamp()));
 
         window.show(600);
     }

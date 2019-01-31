@@ -4,17 +4,10 @@ import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.OwnershipChangeSignature;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.Utils;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 public class ViewTransactionWindow {
 
@@ -27,30 +20,26 @@ public class ViewTransactionWindow {
     public void show() {
 
         WindowBase window = new WindowBase("View Transaction");
-        JPanel panel = window.getPanel();
+        window.init();
+        
+        window.addImage("src/main/resources/transaction.png");
 
-        try {
-            panel.add(new JLabel(new ImageIcon(ImageIO.read(new File("src/main/resources/transaction.png")))));
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
+        window.addVerticalSpace(20);
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addLabel("Input Components: " + Integer.toString(transaction.getInputHashes().size()));
 
-        panel.add(new JLabel("Input Components: " + Integer.toString(transaction.getInputHashes().size())));
-
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        window.addVerticalSpace(10);
 
         for (String inputHash : transaction.getInputHashes()) {
 
-            WindowBase.addSelectableTextField(panel, inputHash);
+            window.addSelectableTextField(inputHash);
         }
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addVerticalSpace(20);
 
-        panel.add(new JLabel("Output Components: " + Integer.toString(transaction.getComponentsCreated().size())));
+        window.addLabel("Output Components: " + Integer.toString(transaction.getComponentsCreated().size()));
 
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        window.addVerticalSpace(10);
 
         for (Component outputComponent : transaction.getComponentsCreated()) {
 
@@ -66,24 +55,24 @@ public class ViewTransactionWindow {
                 }
             });
 
-            panel.add(button);
+            window.add(button);
         }
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addVerticalSpace(20);
 
-        panel.add(new JLabel("Ownership Change Signatures: " + Integer.toString(transaction.getOwnershipChangeSignatures().size())));
+        window.addLabel("Ownership Change Signatures: " + Integer.toString(transaction.getOwnershipChangeSignatures().size()));
 
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        window.addVerticalSpace(10);
 
         for (OwnershipChangeSignature signature : transaction.getOwnershipChangeSignatures()) {
 
-            panel.add(new JLabel("<html>Input component hash: " + signature.getOldComponentHash()
+            window.add(new JLabel("<html>Input component hash: " + signature.getOldComponentHash()
                     + "<br/>New owner's public key hash: " + Utils.toHexString(signature.getNewOwnerPubKey().getEncoded()) + "</html>"));
         }
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addVerticalSpace(20);
 
-        panel.add(new JLabel("Timestamp: " + Utils.toHumanReadableTime(transaction.getTimestamp())));
+        window.addLabel("Timestamp: " + Utils.toHumanReadableTime(transaction.getTimestamp()));
 
         window.show(700);
     }

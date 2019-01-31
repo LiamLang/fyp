@@ -1,21 +1,11 @@
-package com.liamlang.fyp.service;
+package com.liamlang.fyp.gui;
 
 import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Blockchain;
 import com.liamlang.fyp.Utils.Utils;
-import com.liamlang.fyp.gui.ViewBlockWindow;
-import com.liamlang.fyp.gui.WindowBase;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import javax.imageio.ImageIO;
-import javax.swing.Box;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 public class ViewBlockchainWindow {
 
@@ -30,8 +20,9 @@ public class ViewBlockchainWindow {
     public void show() {
 
         window = new WindowBase("View Blockchain");
+        window.init();
 
-        updatePanel();
+        updateWindow();
 
         window.show(600);
 
@@ -39,42 +30,36 @@ public class ViewBlockchainWindow {
             @Override
             public void run() {
 
-                updatePanel();
+                updateWindow();
 
                 window.refresh();
             }
         });
     }
 
-    public void updatePanel() {
+    public void updateWindow() {
 
-        JPanel panel = window.getPanel();
+        window.removeAll();
 
-        panel.removeAll();
+        window.addImage("src/main/resources/blockchain.png");
 
-        try {
-            panel.add(new JLabel(new ImageIcon(ImageIO.read(new File("src/main/resources/blockchain.png")))));
-        } catch (IOException ex) {
-            System.out.println(ex.getMessage());
-        }
+        window.addVerticalSpace(20);
+        
+        window.addLabel("Height: " + blockchain.getHeight());
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addVerticalSpace(20);
 
-        panel.add(new JLabel("Height: " + blockchain.getHeight()));
+        window.addLabel("Hash of Latest Block: " + blockchain.getTop().getHash());
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addVerticalSpace(20);
 
-        panel.add(new JLabel("Hash of Latest Block:" + blockchain.getTop().getHash()));
+        window.addLabel("Timestamp of Latest Block: " + Utils.toHumanReadableTime(blockchain.getTop().getTimestamp()));
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        window.addVerticalSpace(20);
 
-        panel.add(new JLabel("Timestamp of Latest Block: " + Utils.toHumanReadableTime(blockchain.getTop().getTimestamp())));
+        window.addLabel("Last 20 blocks:");
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
-
-        panel.add(new JLabel("Last 20 blocks:"));
-
-        panel.add(Box.createRigidArea(new Dimension(0, 10)));
+        window.addVerticalSpace(10);
 
         if (blockchain.getHeight() != 0) {
 
@@ -98,7 +83,7 @@ public class ViewBlockchainWindow {
                     }
                 });
 
-                panel.add(button);
+                window.add(button);
             }
         }
     }

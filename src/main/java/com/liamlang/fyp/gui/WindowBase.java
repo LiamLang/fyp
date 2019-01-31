@@ -14,16 +14,22 @@ public class WindowBase {
 
     private JFrame frame;
 
+    private JPanel panel;
+
     public WindowBase(String title) {
         this.title = title;
     }
 
     public JPanel getPanel() {
 
+        if (panel != null) {
+            return panel;
+        }
+
         frame = new JFrame(title);
         JFrame.setDefaultLookAndFeelDecorated(true);
 
-        JPanel panel = new JPanel();
+        panel = new JPanel();
         BoxLayout boxLayout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(boxLayout);
         panel.setBorder(new EmptyBorder(new Insets(20, 20, 20, 20)));
@@ -45,18 +51,18 @@ public class WindowBase {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
         } catch (Exception e) {
         }
+
         SwingUtilities.updateComponentTreeUI(frame);
     }
 
     public void refresh() {
 
+        frame.pack();
         SwingUtilities.updateComponentTreeUI(frame);
-        //frame.invalidate();
-        //frame.validate();
-        //frame.repaint();
     }
 
     public void close() {
+
         frame.setVisible(false);
         frame.dispose();
     }

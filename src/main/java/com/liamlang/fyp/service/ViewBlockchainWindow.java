@@ -29,23 +29,28 @@ public class ViewBlockchainWindow {
 
     public void show() {
 
-        refresh();
+        window = new WindowBase("View Blockchain");
+
+        updatePanel();
+
+        window.show(600);
 
         Utils.scheduleRepeatingTask(1000, new Runnable() {
             @Override
             public void run() {
 
-                refresh();
+                updatePanel();
+
                 window.refresh();
             }
         });
     }
 
-    private void refresh() {
-
-        window = new WindowBase("View Blockchain");
+    public void updatePanel() {
 
         JPanel panel = window.getPanel();
+
+        panel.removeAll();
 
         try {
             panel.add(new JLabel(new ImageIcon(ImageIO.read(new File("src/main/resources/blockchain.png")))));
@@ -96,7 +101,5 @@ public class ViewBlockchainWindow {
                 panel.add(button);
             }
         }
-
-        window.show(600);
     }
 }

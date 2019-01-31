@@ -43,7 +43,7 @@ public class ViewTransactionWindow {
 
         for (String inputHash : transaction.getInputHashes()) {
 
-            panel.add(new JLabel(inputHash));
+            WindowBase.addSelectableTextField(panel, inputHash);
         }
 
         panel.add(Box.createRigidArea(new Dimension(0, 20)));

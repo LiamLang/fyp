@@ -4,6 +4,7 @@ import java.awt.Insets;
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -65,5 +66,12 @@ public class WindowBase {
 
         frame.setVisible(false);
         frame.dispose();
+    }
+
+    public static void addSelectableTextField(JPanel panel, String text) {
+
+        JTextField textField = new JTextField(text);
+        textField.setEditable(false);
+        panel.add(textField);
     }
 }

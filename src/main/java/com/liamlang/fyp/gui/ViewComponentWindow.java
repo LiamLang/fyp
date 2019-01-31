@@ -36,7 +36,7 @@ public class ViewComponentWindow {
 
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        panel.add(new JLabel("Hash: " + component.getHash()));
+        WindowBase.addSelectableTextField(panel, "Hash: " + component.getHash());
 
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
@@ -75,7 +75,7 @@ public class ViewComponentWindow {
 
         panel.add(Box.createRigidArea(new Dimension(0, 10)));
 
-        panel.add(new JLabel("Owner's Public Key Hash: " + Utils.toHexString(HashUtils.sha256(component.getOwnerPubKey().getEncoded()))));
+        WindowBase.addSelectableTextField(panel, "Owner's Public Key Hash: " + Utils.toHexString(HashUtils.sha256(component.getOwnerPubKey().getEncoded())));
 
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 

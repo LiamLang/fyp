@@ -36,8 +36,8 @@ public class ViewBlockWindow {
 
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        panel.add(new JLabel("Hash: " + block.getHash()));
-
+        WindowBase.addSelectableTextField(panel, "Hash: " + block.getHash());
+        
         panel.add(Box.createRigidArea(new Dimension(0, 20)));
 
         panel.add(new JLabel("Previous hash: " + block.getPreviousHash()));

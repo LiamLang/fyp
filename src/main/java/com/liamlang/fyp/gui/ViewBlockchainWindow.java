@@ -3,6 +3,7 @@ package com.liamlang.fyp.gui;
 import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Blockchain;
 import com.liamlang.fyp.Utils.Utils;
+import com.liamlang.fyp.service.Node;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -12,11 +13,13 @@ public class ViewBlockchainWindow {
     private WindowBase window;
 
     private final Blockchain blockchain;
+    private final Node node;
 
     private String lastBlockHash;
 
-    public ViewBlockchainWindow(Blockchain blockchain) {
+    public ViewBlockchainWindow(Blockchain blockchain, Node node) {
         this.blockchain = blockchain;
+        this.node = node;
         lastBlockHash = blockchain.getTop().getHash();
     }
 
@@ -86,7 +89,7 @@ public class ViewBlockchainWindow {
                     @Override
                     public void actionPerformed(ActionEvent e) {
 
-                        ViewBlockWindow win = new ViewBlockWindow(block);
+                        ViewBlockWindow win = new ViewBlockWindow(block, node);
                         win.show();
                     }
                 });

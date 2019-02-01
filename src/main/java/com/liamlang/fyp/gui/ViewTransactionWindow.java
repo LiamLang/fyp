@@ -5,6 +5,7 @@ import com.liamlang.fyp.Model.OwnershipChangeSignature;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.Utils;
+import com.liamlang.fyp.service.Node;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -13,9 +14,11 @@ import javax.swing.JLabel;
 public class ViewTransactionWindow {
 
     private final Transaction transaction;
+    private final Node node;
 
-    public ViewTransactionWindow(Transaction transaction) {
+    public ViewTransactionWindow(Transaction transaction, Node node) {
         this.transaction = transaction;
+        this.node = node;
     }
 
     public void show() {
@@ -51,7 +54,7 @@ public class ViewTransactionWindow {
                 @Override
                 public void actionPerformed(ActionEvent e) {
 
-                    ViewComponentWindow win = new ViewComponentWindow(outputComponent);
+                    ViewComponentWindow win = new ViewComponentWindow(outputComponent, node);
                     win.show();
                 }
             });

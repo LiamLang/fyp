@@ -32,17 +32,17 @@ public class Demo {
             
             node.startCreatingBlocks();
             
-            ViewBlockchainWindow vbcw = new ViewBlockchainWindow(node.getBlockchain());
+            ViewBlockchainWindow vbcw = new ViewBlockchainWindow(node.getBlockchain(), node);
             vbcw.show();
             
-            MyDetailsWindow mdw = new MyDetailsWindow(node);
-            mdw.show();
+            //MyDetailsWindow mdw = new MyDetailsWindow(node);
+            //mdw.show();
             
-            ConnectionsWindow cw = new ConnectionsWindow(node);
-            cw.show();
+            //ConnectionsWindow cw = new ConnectionsWindow(node);
+            //cw.show();
             
-            ChangeOwnershipTransactionWindow cotw = new ChangeOwnershipTransactionWindow(node);
-            cotw.show();
+            //ChangeOwnershipTransactionWindow cotw = new ChangeOwnershipTransactionWindow(node);
+            //cotw.show();
             
         } catch (Exception e) {
             System.out.println("Exception caught in Demo");

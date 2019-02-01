@@ -3,6 +3,7 @@ package com.liamlang.fyp.gui;
 import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.Utils;
+import com.liamlang.fyp.service.Node;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -10,9 +11,11 @@ import javax.swing.JButton;
 public class ViewBlockWindow {
 
     private final Block block;
+    private final Node node;
 
-    public ViewBlockWindow(Block block) {
+    public ViewBlockWindow(Block block, Node node) {
         this.block = block;
+        this.node = node;
     }
 
     public void show() {
@@ -49,7 +52,7 @@ public class ViewBlockWindow {
                 @Override
                 public void actionPerformed(ActionEvent e) {
 
-                    ViewTransactionWindow win = new ViewTransactionWindow(transaction);
+                    ViewTransactionWindow win = new ViewTransactionWindow(transaction, node);
                     win.show();
                 }
             });

@@ -15,8 +15,17 @@ public class ChangeOwnershipTransactionWindow {
 
     private final Node node;
 
+    private JTextField hashTextField;
+
     public ChangeOwnershipTransactionWindow(Node node) {
         this.node = node;
+    }
+
+    public void setComponentHash(String componentHash) {
+
+        if (hashTextField != null) {
+            hashTextField.setText(componentHash);
+        }
     }
 
     public void show() {
@@ -32,7 +41,7 @@ public class ChangeOwnershipTransactionWindow {
 
         window.addVerticalSpace(10);
 
-        JTextField hashTextField = new JTextField();
+        hashTextField = new JTextField();
         window.add(hashTextField);
 
         window.addVerticalSpace(20);
@@ -43,6 +52,22 @@ public class ChangeOwnershipTransactionWindow {
 
         JTextField pubkeyTextField = new JTextField();
         window.add(pubkeyTextField);
+
+        window.addVerticalSpace(10);
+
+        JButton showListButton = new JButton("(View List)");
+
+        showListButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                ConnectionsWindow cw = new ConnectionsWindow(node);
+                cw.show();
+            }
+        });
+
+        window.add(showListButton);
 
         window.addVerticalSpace(20);
 
@@ -80,14 +105,14 @@ public class ChangeOwnershipTransactionWindow {
                     if (Utils.toHexString(HashUtils.sha256(signee.getPubkey().getEncoded())).equals(pubkey)) {
 
                         try {
-                            
+
                             Transaction transaction = node.getTransactionBuilder().changeOwner(component, signee.getName(), signee.getPubkey());
                             node.broadcastTransaction(transaction);
-                            
+
                             Utils.showOkPopup("Changed ownership!\n\nNew hash: " + transaction.getComponentsCreated().get(0).getHash());
-                            
+
                             window.close();
-                            
+
                         } catch (Exception ex) {
                             Utils.showOkPopup("Error creating transaction!");
                         }

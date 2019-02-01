@@ -17,7 +17,7 @@ public class ViewComponentWindow {
 
     public void show() {
 
-        WindowBase window = new WindowBase("View Component");
+        WindowBase window = new WindowBase("View Component", 600);
         window.init();
         
         window.addImage("src/main/resources/component.png");
@@ -69,6 +69,6 @@ public class ViewComponentWindow {
 
         window.addLabel("Timestamp: " + Utils.toHumanReadableTime(component.getTimestamp()));
 
-        window.show(600);
+        window.show();
     }
 }

@@ -14,7 +14,7 @@ public class MyDetailsWindow {
 
     public void show() {
 
-        WindowBase window = new WindowBase("My Details");
+        WindowBase window = new WindowBase("My Details", 700);
         window.init();
 
         window.addImage("src/main/resources/person.png");
@@ -35,6 +35,6 @@ public class MyDetailsWindow {
         
         window.addSelectableTextField("My Private Key: " + Utils.toHexString(node.getKeyPair().getPrivate().getEncoded()));
 
-        window.show(700);                
+        window.show();                
     }
 }

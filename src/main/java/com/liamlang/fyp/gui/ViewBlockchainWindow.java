@@ -12,27 +12,34 @@ public class ViewBlockchainWindow {
     private WindowBase window;
 
     private final Blockchain blockchain;
+    
+    private String lastBlockHash;
 
     public ViewBlockchainWindow(Blockchain blockchain) {
         this.blockchain = blockchain;
+        lastBlockHash = blockchain.getTop().getHash();
     }
 
     public void show() {
 
-        window = new WindowBase("View Blockchain");
+        window = new WindowBase("View Blockchain", 600);
         window.init();
 
         updateWindow();
 
-        window.show(600);
+        window.show();
 
         Utils.scheduleRepeatingTask(1000, new Runnable() {
             @Override
             public void run() {
 
-                updateWindow();
-
-                window.refresh();
+                if (!lastBlockHash.equals(blockchain.getTop().getHash())) {
+                    
+                    lastBlockHash = blockchain.getTop().getHash();
+                    
+                    updateWindow();
+                    window.refresh();
+                }
             }
         });
     }

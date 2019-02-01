@@ -19,7 +19,7 @@ public class ViewTransactionWindow {
 
     public void show() {
 
-        WindowBase window = new WindowBase("View Transaction");
+        WindowBase window = new WindowBase("View Transaction", 700);
         window.init();
         
         window.addImage("src/main/resources/transaction.png");
@@ -74,6 +74,6 @@ public class ViewTransactionWindow {
 
         window.addLabel("Timestamp: " + Utils.toHumanReadableTime(transaction.getTimestamp()));
 
-        window.show(700);
+        window.show();
     }
 }

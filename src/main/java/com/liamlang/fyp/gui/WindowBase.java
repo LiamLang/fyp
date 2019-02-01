@@ -20,13 +20,15 @@ import javax.swing.border.EmptyBorder;
 public class WindowBase {
 
     private final String title;
+    private final int width;
 
     private JFrame frame;
 
     private JPanel panel;
 
-    public WindowBase(String title) {
+    public WindowBase(String title, int width) {
         this.title = title;
+        this.width = width;
     }
 
     public void init() {
@@ -46,13 +48,14 @@ public class WindowBase {
         frame.add(panel);
     }
 
-    public void show(int width) {
+    public void show() {
 
         frame.pack();
         frame.setVisible(true);
         frame.setLocation(300, 300);
 
         frame.setSize(width, frame.getHeight());
+        frame.setMinimumSize(frame.getSize());
 
         try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");

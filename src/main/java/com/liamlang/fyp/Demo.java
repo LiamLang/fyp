@@ -1,5 +1,7 @@
 package com.liamlang.fyp;
 
+import com.liamlang.fyp.Utils.NetworkUtils;
+import com.liamlang.fyp.gui.ConnectionsWindow;
 import com.liamlang.fyp.gui.MyDetailsWindow;
 import com.liamlang.fyp.gui.NewComponentTransactionWindow;
 import com.liamlang.fyp.service.Node;
@@ -32,8 +34,11 @@ public class Demo {
             //ViewBlockchainWindow vbcw = new ViewBlockchainWindow(node.getBlockchain());
             //vbcw.show();
             
-            MyDetailsWindow mdw = new MyDetailsWindow(node);
-            mdw.show();
+            //MyDetailsWindow mdw = new MyDetailsWindow(node);
+            //mdw.show();
+            
+            //ConnectionsWindow cw = new ConnectionsWindow(node);
+            //cw.show();
             
         } catch (Exception e) {
             System.out.println("Exception caught in Demo");

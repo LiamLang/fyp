@@ -17,7 +17,7 @@ public class ViewBlockWindow {
 
     public void show() {
 
-        WindowBase window = new WindowBase("View Block");
+        WindowBase window = new WindowBase("View Block", 600);
         window.init();
         
         window.addImage("src/main/resources/block.png");
@@ -61,6 +61,6 @@ public class ViewBlockWindow {
 
         window.addLabel("Timestamp: " + Utils.toHumanReadableTime(block.getTimestamp()));
 
-        window.show(600);
+        window.show();
     }
 }

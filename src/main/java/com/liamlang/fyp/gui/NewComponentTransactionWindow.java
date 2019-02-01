@@ -19,7 +19,7 @@ public class NewComponentTransactionWindow {
 
     public void show() {
 
-        WindowBase window = new WindowBase("Create Component (Transaction)");
+        WindowBase window = new WindowBase("Create Component (Transaction)", 600);
         window.init();
 
         window.addImage("src/main/resources/new_component.png");
@@ -87,6 +87,6 @@ public class NewComponentTransactionWindow {
 
         window.add(button);
 
-        window.show(600);
+        window.show();
     }
 }

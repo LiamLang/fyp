@@ -13,7 +13,6 @@ import com.liamlang.fyp.adapter.NetworkAdapter;
 import java.io.IOException;
 import java.io.Serializable;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -67,13 +66,18 @@ public class Node implements Serializable {
             }
         });
 
-        try {
-            System.out.println("Started node with IP " + NetworkAdapter.getMyIp());
-        } catch (UnknownHostException ex) {
-            System.out.println("Exception in Node.init");
-        }
+        System.out.println("Started node with IP " + getMyIp());
 
         System.out.println("Hash of my public key: " + Utils.toHexString(HashUtils.sha256(keyPair.getPublic().getEncoded())));
+    }
+
+    public String getMyIp() {
+        try {
+            return NetworkAdapter.getMyIp();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return "Error getting my IP!";
+        }
     }
 
     public void addConnection(InetAddress ip) {
@@ -214,5 +218,13 @@ public class Node implements Serializable {
 
     public ArrayList<Component> getUnspentComponents() {
         return unspentComponents;
+    }
+    
+    public ArrayList<PublicKey> getTrustedKeys() {
+        return trustedKeys;
+    }
+    
+    public ArrayList<PublicKey> getBlacklistedKeys() {
+        return blacklistedKeys;
     }
 }

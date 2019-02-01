@@ -75,7 +75,7 @@ public class NewComponentTransactionWindow {
 
                     node.broadcastTransaction(transaction);
 
-                    Utils.showOkPopup("Created component with hash " + transaction.getComponentsCreated().get(0).getHash());
+                    Utils.showOkPopup("Created component!\n\nHash: " + transaction.getComponentsCreated().get(0).getHash());
 
                     window.close();
 

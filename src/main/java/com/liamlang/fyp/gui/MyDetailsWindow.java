@@ -14,7 +14,7 @@ public class MyDetailsWindow {
 
     public void show() {
 
-        WindowBase window = new WindowBase("My Details", 700);
+        WindowBase window = new WindowBase("My Details", 600);
         window.init();
 
         window.addImage("src/main/resources/person.png");

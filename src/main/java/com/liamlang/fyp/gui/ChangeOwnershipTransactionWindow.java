@@ -84,6 +84,10 @@ public class ChangeOwnershipTransactionWindow {
                             Transaction transaction = node.getTransactionBuilder().changeOwner(component, signee.getName(), signee.getPubkey());
                             node.broadcastTransaction(transaction);
                             
+                            Utils.showOkPopup("Changed ownership!\n\nNew hash: " + transaction.getComponentsCreated().get(0).getHash());
+                            
+                            window.close();
+                            
                         } catch (Exception ex) {
                             Utils.showOkPopup("Error creating transaction!");
                         }

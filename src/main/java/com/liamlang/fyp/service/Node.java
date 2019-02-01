@@ -100,10 +100,13 @@ public class Node implements Serializable {
     }
 
     public void startCreatingBlocks() {
-        Utils.scheduleRepeatingTask(10000, new Runnable() {
+        Utils.scheduleRepeatingTask(5000, new Runnable() {
             @Override
             public void run() {
-                createBlock();
+
+                if (unconfirmedTransactionSet.size() > 0) {
+                    createBlock();
+                }
             }
         });
     }
@@ -164,7 +167,7 @@ public class Node implements Serializable {
     }
 
     public boolean keyIsTrusted(PublicKey pub, String signee) {
-        
+
         for (TrustedSignee trustedSignee : trustedSignees) {
             if (trustedSignee.getPubkey().equals(pub) && trustedSignee.getName().equals(signee)) {
                 return true;

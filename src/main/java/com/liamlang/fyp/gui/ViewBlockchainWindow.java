@@ -12,7 +12,7 @@ public class ViewBlockchainWindow {
     private WindowBase window;
 
     private final Blockchain blockchain;
-    
+
     private String lastBlockHash;
 
     public ViewBlockchainWindow(Blockchain blockchain) {
@@ -34,9 +34,9 @@ public class ViewBlockchainWindow {
             public void run() {
 
                 if (!lastBlockHash.equals(blockchain.getTop().getHash())) {
-                    
+
                     lastBlockHash = blockchain.getTop().getHash();
-                    
+
                     updateWindow();
                     window.refresh();
                 }
@@ -51,7 +51,7 @@ public class ViewBlockchainWindow {
         window.addImage("src/main/resources/blockchain.png");
 
         window.addVerticalSpace(20);
-        
+
         window.addLabel("Height: " + blockchain.getHeight());
 
         window.addVerticalSpace(20);
@@ -78,7 +78,8 @@ public class ViewBlockchainWindow {
 
                 Block block = blockchain.getAtHeight(i);
 
-                JButton button = new JButton("Block " + Integer.toString(block.getHeight()) + " - " + block.getHash());
+                JButton button = new JButton("Block " + Integer.toString(block.getHeight()) + " - "
+                        + Integer.toString(block.getData().getTransactions().size()) + " transactions - " + block.getHash());
 
                 button.addActionListener(new ActionListener() {
 

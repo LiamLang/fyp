@@ -3,6 +3,7 @@ package com.liamlang.fyp.gui;
 import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.OwnershipChangeSignature;
 import com.liamlang.fyp.Model.Transaction;
+import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.Utils;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,7 +22,7 @@ public class ViewTransactionWindow {
 
         WindowBase window = new WindowBase("View Transaction", 700);
         window.init();
-        
+
         window.addImage("src/main/resources/transaction.png");
 
         window.addVerticalSpace(20);
@@ -67,7 +68,7 @@ public class ViewTransactionWindow {
         for (OwnershipChangeSignature signature : transaction.getOwnershipChangeSignatures()) {
 
             window.add(new JLabel("<html>Input component hash: " + signature.getOldComponentHash()
-                    + "<br/>New owner's public key hash: " + Utils.toHexString(signature.getNewOwnerPubKey().getEncoded()) + "</html>"));
+                    + "<br/>New owner's public key hash: " + Utils.toHexString(HashUtils.sha256(signature.getNewOwnerPubKey().getEncoded())) + "</html>"));
         }
 
         window.addVerticalSpace(20);

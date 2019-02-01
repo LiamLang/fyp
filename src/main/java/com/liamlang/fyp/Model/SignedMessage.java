@@ -9,7 +9,8 @@ import java.security.PublicKey;
 
 public class SignedMessage implements Serializable {
     
-    private String message;
+    private final String message;
+    private String signee;
     private byte[] signature;
     private PublicKey pub;
     
@@ -17,9 +18,10 @@ public class SignedMessage implements Serializable {
         this.message = message;
     }
     
-    public void sign(KeyPair keyPair) {
+    public void sign(KeyPair keyPair, String signee) {
         this.signature = SignatureUtils.sign(Utils.toByteArray(message), keyPair.getPrivate());
         this.pub = keyPair.getPublic();
+        this.signee = signee;
     }
     
     public String getMessage() {
@@ -28,6 +30,10 @@ public class SignedMessage implements Serializable {
     
     public PublicKey getPublicKey() {
         return pub;
+    }
+    
+    public String getSignee() {
+        return signee;
     }
     
     public boolean verify() {

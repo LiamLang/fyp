@@ -17,27 +17,27 @@ public class NetworkAdapter {
         return InetAddress.getLocalHost().getHostAddress();
     }
 
-    public static void sendSyncPacket(int height, int numConnections, String unconfirmedTransactionSetHash, InetAddress ip, KeyPair keyPair) throws Exception {
+    public static void sendSyncPacket(int height, int numConnections, String unconfirmedTransactionSetHash, InetAddress ip, KeyPair keyPair, String name) throws Exception {
         SignedMessage m = new SignedMessage("SYNC " + getMyIp() + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash);
-        m.sign(keyPair);
+        m.sign(keyPair, name);
         sendPacket(m, ip);
     }
 
-    public static void sendBlockPacket(int height, String block, InetAddress ip, KeyPair keyPair) throws Exception {
+    public static void sendBlockPacket(int height, String block, InetAddress ip, KeyPair keyPair, String name) throws Exception {
         SignedMessage m = new SignedMessage("BLOCK " + Integer.toString(height) + " " + block);
-        m.sign(keyPair);
+        m.sign(keyPair, name);
         sendPacket(m, ip);
     }
 
-    public static void sendConnectionsPacket(String connections, InetAddress ip, KeyPair keyPair) throws Exception {
+    public static void sendConnectionsPacket(String connections, InetAddress ip, KeyPair keyPair, String name) throws Exception {
         SignedMessage m = new SignedMessage("CONNECTIONS " + connections);
-        m.sign(keyPair);
+        m.sign(keyPair, name);
         sendPacket(m, ip);
     }
     
-    public static void sendTransactionsPacket(String transactionSet, InetAddress ip, KeyPair keyPair) throws Exception {
+    public static void sendTransactionsPacket(String transactionSet, InetAddress ip, KeyPair keyPair, String name) throws Exception {
         SignedMessage m = new SignedMessage("UNCONFIRMED_TRANSACTION_SET " + transactionSet);
-        m.sign(keyPair);
+        m.sign(keyPair, name);
         sendPacket(m, ip);
     }
 

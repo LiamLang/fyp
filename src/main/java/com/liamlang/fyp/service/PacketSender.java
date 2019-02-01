@@ -17,7 +17,7 @@ public class PacketSender implements Serializable {
         for (int i = theirHeight + 1; i <= myHeight; i++) {
             try {
                 String block = Utils.toString(Utils.serialize(node.getBlockchain().getAtHeight(i)));
-                NetworkAdapter.sendBlockPacket(i, block, ip, node.getKeyPair());
+                NetworkAdapter.sendBlockPacket(i, block, ip, node.getKeyPair(), node.getOwnerName());
             } catch (Exception ex) {
                 System.out.println("Exception in Node.sendBlocks");
             }
@@ -27,7 +27,7 @@ public class PacketSender implements Serializable {
     public void sendConnections(InetAddress ip) {
         try {
             String str = Utils.toString(Utils.serialize(node.getConnections()));
-            NetworkAdapter.sendConnectionsPacket(str, ip, node.getKeyPair());
+            NetworkAdapter.sendConnectionsPacket(str, ip, node.getKeyPair(), node.getOwnerName());
         } catch (Exception ex) {
             System.out.println("Exception in Node.sendConnections");
         }
@@ -36,7 +36,7 @@ public class PacketSender implements Serializable {
     public void sendTransactions(InetAddress ip) {
         try {
             String str = Utils.toString(Utils.serialize(node.getUnconfirmedTransactionSet()));
-            NetworkAdapter.sendTransactionsPacket(str, ip, node.getKeyPair());
+            NetworkAdapter.sendTransactionsPacket(str, ip, node.getKeyPair(), node.getOwnerName());
         } catch (Exception ex) {
             System.out.println("Exception in Node.sendTransactions");
         }

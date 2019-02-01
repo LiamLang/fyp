@@ -1,5 +1,6 @@
 package com.liamlang.fyp.gui;
 
+import com.liamlang.fyp.Model.TrustedSignee;
 import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.NetworkUtils;
 import com.liamlang.fyp.Utils.Utils;
@@ -24,7 +25,7 @@ public class ConnectionsWindow {
     public ConnectionsWindow(Node node) {
         this.node = node;
         this.numConnections = node.getConnections().size();
-        this.numTrustedKeys = node.getTrustedKeys().size();
+        this.numTrustedKeys = node.getTrustedSignees().size();
         this.numBlacklistedKeys = node.getBlacklistedKeys().size();
     }
 
@@ -41,11 +42,11 @@ public class ConnectionsWindow {
             @Override
             public void run() {
 
-                if (numConnections != node.getConnections().size() || numTrustedKeys != node.getTrustedKeys().size()
+                if (numConnections != node.getConnections().size() || numTrustedKeys != node.getTrustedSignees().size()
                         || numBlacklistedKeys != node.getBlacklistedKeys().size()) {
 
                     numConnections = node.getConnections().size();
-                    numTrustedKeys = node.getTrustedKeys().size();
+                    numTrustedKeys = node.getTrustedSignees().size();
                     numBlacklistedKeys = node.getBlacklistedKeys().size();
 
                     updateWindow();
@@ -120,13 +121,15 @@ public class ConnectionsWindow {
 
         window.addVerticalSpace(20);
 
-        window.addLabel("Trusted Keys: " + Integer.toString(node.getTrustedKeys().size()));
+        window.addLabel("Trusted Keys: " + Integer.toString(node.getTrustedSignees().size()));
 
         window.addVerticalSpace(10);
 
-        for (PublicKey key : node.getTrustedKeys()) {
+        for (TrustedSignee signee : node.getTrustedSignees()) {
 
-            window.addSelectableTextField(Utils.toHexString(HashUtils.sha256(key.getEncoded())));
+            window.addSelectableTextField(signee.getName());
+
+            window.addSelectableTextField(Utils.toHexString(HashUtils.sha256(signee.getPubkey().getEncoded())));
 
             window.addVerticalSpace(10);
         }

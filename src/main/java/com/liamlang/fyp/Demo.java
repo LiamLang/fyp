@@ -1,6 +1,7 @@
 package com.liamlang.fyp;
 
 import com.liamlang.fyp.Utils.NetworkUtils;
+import com.liamlang.fyp.gui.ChangeOwnershipTransactionWindow;
 import com.liamlang.fyp.gui.ConnectionsWindow;
 import com.liamlang.fyp.gui.MyDetailsWindow;
 import com.liamlang.fyp.gui.NewComponentTransactionWindow;
@@ -26,19 +27,22 @@ public class Demo {
             Component parent = new Component(new ComponentInfo("This is the parent component"), children, 1, "ACME", node.getKeyPair().getPublic());
             */
                         
-            //NewComponentTransactionWindow nctw = new NewComponentTransactionWindow(node);
-            //nctw.show();
+            NewComponentTransactionWindow nctw = new NewComponentTransactionWindow(node);
+            nctw.show();
             
-            //node.startCreatingBlocks();
+            node.startCreatingBlocks();
             
-            //ViewBlockchainWindow vbcw = new ViewBlockchainWindow(node.getBlockchain());
-            //vbcw.show();
+            ViewBlockchainWindow vbcw = new ViewBlockchainWindow(node.getBlockchain());
+            vbcw.show();
             
-            //MyDetailsWindow mdw = new MyDetailsWindow(node);
-            //mdw.show();
+            MyDetailsWindow mdw = new MyDetailsWindow(node);
+            mdw.show();
             
-            //ConnectionsWindow cw = new ConnectionsWindow(node);
-            //cw.show();
+            ConnectionsWindow cw = new ConnectionsWindow(node);
+            cw.show();
+            
+            ChangeOwnershipTransactionWindow cotw = new ChangeOwnershipTransactionWindow(node);
+            cotw.show();
             
         } catch (Exception e) {
             System.out.println("Exception caught in Demo");

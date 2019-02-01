@@ -6,6 +6,7 @@ import com.liamlang.fyp.Model.Blockchain;
 import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.SignedMessage;
 import com.liamlang.fyp.Model.Transaction;
+import com.liamlang.fyp.Model.TrustedSignee;
 import com.liamlang.fyp.Utils.FileUtils;
 import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.Utils;
@@ -36,7 +37,7 @@ public class Node implements Serializable {
 
     private KeyPair keyPair;
 
-    private ArrayList<PublicKey> trustedKeys = new ArrayList<>();
+    private ArrayList<TrustedSignee> trustedSignees = new ArrayList<>();
     private ArrayList<PublicKey> blacklistedKeys = new ArrayList<>();
 
     public Node(Blockchain bc, String ownerName, KeyPair keyPair) {
@@ -156,28 +157,44 @@ public class Node implements Serializable {
 
     private void syncWithConnection(InetAddress ip) {
         try {
-            NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), Utils.toHexString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))), ip, keyPair);
+            NetworkAdapter.sendSyncPacket(bc.getHeight(), connections.size(), Utils.toHexString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))), ip, keyPair, ownerName);
         } catch (Exception ex) {
             System.out.println("Exception in Node.pollConnection");
         }
     }
 
-    public boolean keyIsTrusted(PublicKey pub) {
-        if (trustedKeys.contains(pub)) {
-            return true;
-        } else if (blacklistedKeys.contains(pub)) {
+    public boolean keyIsTrusted(PublicKey pub, String signee) {
+        
+        for (TrustedSignee trustedSignee : trustedSignees) {
+            if (trustedSignee.getPubkey().equals(pub) && trustedSignee.getName().equals(signee)) {
+                return true;
+            }
+        }
+        if (blacklistedKeys.contains(pub)) {
             return false;
         } else {
 
-            boolean result = Utils.showYesNoPopup("Do you want to trust this key?\n" + Utils.toHexString(HashUtils.sha256(pub.getEncoded())));
+            boolean result = Utils.showYesNoPopup("Do you want to trust this key?\n\nSignee: " + signee
+                    + "\nKey hash: " + Utils.toHexString(HashUtils.sha256(pub.getEncoded())));
             if (result) {
-                trustedKeys.add(pub);
+                trustedSignees.add(new TrustedSignee(pub, signee));
             } else {
                 blacklistedKeys.add(pub);
             }
             saveSelf();
             return result;
         }
+    }
+
+    public Component getUnspentComponent(String hash) {
+
+        for (Component component : unspentComponents) {
+            if (component.getHash().equals(hash)) {
+                return component;
+            }
+        }
+
+        return null;
     }
 
     public boolean isValidTransaction(Transaction t) {
@@ -219,11 +236,11 @@ public class Node implements Serializable {
     public ArrayList<Component> getUnspentComponents() {
         return unspentComponents;
     }
-    
-    public ArrayList<PublicKey> getTrustedKeys() {
-        return trustedKeys;
+
+    public ArrayList<TrustedSignee> getTrustedSignees() {
+        return trustedSignees;
     }
-    
+
     public ArrayList<PublicKey> getBlacklistedKeys() {
         return blacklistedKeys;
     }

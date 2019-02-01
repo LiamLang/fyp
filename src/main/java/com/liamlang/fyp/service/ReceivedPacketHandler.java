@@ -30,7 +30,7 @@ public class ReceivedPacketHandler implements Serializable {
             return;
         }
 
-        if (!node.keyIsTrusted(message.getPublicKey())) {
+        if (!node.keyIsTrusted(message.getPublicKey(), message.getSignee())) {
             System.out.println("We do not trust the public key that has signed this message!");
             return;
         }

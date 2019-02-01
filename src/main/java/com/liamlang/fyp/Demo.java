@@ -30,6 +30,12 @@ public class Demo {
             NewComponentTransactionWindow nctw = new NewComponentTransactionWindow(node);
             nctw.show();
             
+            NewComponentTransactionWindow nctw2 = new NewComponentTransactionWindow(node);
+            nctw2.show();
+            
+            NewComponentTransactionWindow nctw3 = new NewComponentTransactionWindow(node);
+            nctw3.show();
+            
             node.startCreatingBlocks();
             
             ViewBlockchainWindow vbcw = new ViewBlockchainWindow(node.getBlockchain(), node);

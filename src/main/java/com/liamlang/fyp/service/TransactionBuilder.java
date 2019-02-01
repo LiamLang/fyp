@@ -5,7 +5,6 @@ import com.liamlang.fyp.Model.ComponentInfo;
 import com.liamlang.fyp.Model.OwnershipChangeSignature;
 import com.liamlang.fyp.Model.Transaction;
 import java.io.Serializable;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 
@@ -31,7 +30,7 @@ public class TransactionBuilder implements Serializable {
         
         ArrayList<String> inputHashes = new ArrayList<>();
         
-        ArrayList<Component> subcomponents = parent.getSubcomponents();
+        ArrayList<Component> subcomponents = (ArrayList<Component>) parent.getSubcomponents().clone();
         
         ArrayList<Component> newComponents = new ArrayList<>();
 
@@ -63,7 +62,7 @@ public class TransactionBuilder implements Serializable {
         
         ArrayList<String> inputHashes = new ArrayList<>();
         
-        ArrayList<Component> subcomponents = parent.getSubcomponents();
+        ArrayList<Component> subcomponents = (ArrayList<Component>) parent.getSubcomponents().clone();
         
         ArrayList<Component> newComponents = new ArrayList<>();
         

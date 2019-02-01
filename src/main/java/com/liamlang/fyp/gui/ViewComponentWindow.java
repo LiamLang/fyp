@@ -93,6 +93,23 @@ public class ViewComponentWindow {
         });
 
         window.add(addAsSubcomponentButtom);
+        
+        window.addVerticalSpace(10);
+
+        JButton removeSubcomponentButton = new JButton("Remove a subcomponent...");
+
+        removeSubcomponentButton.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                DisassembleComponentsTransactionWindow dctw = new DisassembleComponentsTransactionWindow(node);
+                dctw.show();
+                dctw.setParent(component.getHash());
+            }
+        });
+
+        window.add(removeSubcomponentButton);
 
         window.addVerticalSpace(20);
 

@@ -47,6 +47,22 @@ public class TransactionVerifier implements Serializable {
                 }
             }
         }
+        
+        // If one component is being disassembled from another, the 'old component' is not unspent,
+        // but is a subcomponent of the old parent component
+        for (String inputHash : transaction.getInputHashes()) {
+            
+            for (Component oldComponent : oldComponents) {
+                
+                for (Component subcomponent : oldComponent.getSubcomponents()) {
+                    
+                    if (subcomponent.getHash().equals(inputHash)) {
+                        
+                        oldComponents.add(subcomponent);
+                    }
+                }
+            }
+        }
 
         if (!transaction.getOwnershipChangeSignatures().isEmpty()) {
 

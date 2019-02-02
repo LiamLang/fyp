@@ -1,6 +1,7 @@
 package com.liamlang.fyp.gui;
 
 import com.liamlang.fyp.Model.Component;
+import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.service.Node;
@@ -10,24 +11,81 @@ import javax.swing.JButton;
 
 public class ViewComponentWindow {
 
+    private WindowBase window;
+
     private final Component component;
     private final Node node;
+
+    private boolean isUnspent;
+    private Transaction confirmingTx;
 
     public ViewComponentWindow(Component component, Node node) {
         this.component = component;
         this.node = node;
+        this.isUnspent = node.isUnspent(component);
+        this.confirmingTx = node.getBlockchain().getTransactionConfirmingComponent(component);
     }
 
     public void show() {
 
-        WindowBase window = new WindowBase("View Component", 600);
+        window = new WindowBase("View Component", 600);
         window.init();
+
+        updateWindow();
+
+        window.show();
+
+        Utils.scheduleRepeatingTask(1000, new Runnable() {
+            @Override
+            public void run() {
+
+                if (isUnspent != node.isUnspent(component) || confirmingTx != node.getBlockchain().getTransactionConfirmingComponent(component)) {
+
+                    isUnspent = node.isUnspent(component);
+                    confirmingTx = node.getBlockchain().getTransactionConfirmingComponent(component);
+
+                    updateWindow();
+                    window.refresh();
+                }
+            }
+        });
+    }
+
+    public void updateWindow() {
+
+        window.removeAll();
 
         window.addImage("src/main/resources/component.png");
 
         window.addVerticalSpace(20);
 
         window.addSelectableTextField("Hash: " + component.getHash());
+
+        window.addVerticalSpace(20);
+
+        if (confirmingTx != null) {
+
+            window.addLabel(isUnspent ? "Unspent" : "SPENT");
+
+            JButton viewConfirmingTxButton = new JButton("Confirmed at " + Utils.toHumanReadableTime(confirmingTx.getTimestamp()));
+
+            viewConfirmingTxButton.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    ViewTransactionWindow vtw = new ViewTransactionWindow(confirmingTx, node);
+                    vtw.show();
+                }
+            });
+
+            window.add(viewConfirmingTxButton);
+
+        } else {
+
+            window.addLabel("UNCONFIRMED");
+
+        }
 
         window.addVerticalSpace(20);
 
@@ -136,7 +194,5 @@ public class ViewComponentWindow {
         window.addVerticalSpace(20);
 
         window.addLabel("Timestamp: " + Utils.toHumanReadableTime(component.getTimestamp()));
-
-        window.show();
     }
 }

@@ -73,6 +73,24 @@ public class Blockchain implements Serializable {
         
         return null;
     }
+    
+    public Transaction getTransactionConfirmingComponent(Component component) {
+        
+        // Inefficient
+        for (Block block : blocks) {
+            for (Transaction transaction : block.getData().getTransactions()) {
+                for (Component componentCreated : transaction.getComponentsCreated()) {
+                    
+                    if (componentCreated.getHash().equals(component.getHash()) && component.verifyHash()) {
+                        
+                        return transaction;
+                    }
+                }
+            }
+        }
+        
+        return null;
+    }
 
     private boolean isValidTop(Block block) {
         

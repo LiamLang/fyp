@@ -121,6 +121,19 @@ public class Node implements Serializable {
         return isCreatingBlocks;
     }
 
+    public boolean isUnspent(Component component) {
+        
+        for (Component unspentComponent : unspentComponents) {
+            
+            if (unspentComponent.getHash().equals(component.getHash()) && component.verifyHash()) {
+                
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
     public String toString() {
         String res = "My blockchain:" + bc.toString() + "\nMy connections:";
         if (!connections.isEmpty()) {

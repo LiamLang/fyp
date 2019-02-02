@@ -50,6 +50,8 @@ public class TransactionVerifier implements Serializable {
         
         // If one component is being disassembled from another, the 'old component' is not unspent,
         // but is a subcomponent of the old parent component
+        ArrayList<Component> oldComponents2 = new ArrayList<>();
+        
         for (String inputHash : transaction.getInputHashes()) {
             
             for (Component oldComponent : oldComponents) {
@@ -58,10 +60,15 @@ public class TransactionVerifier implements Serializable {
                     
                     if (subcomponent.getHash().equals(inputHash)) {
                         
-                        oldComponents.add(subcomponent);
+                        // Can't add to ArrayList oldComponents at same time as iterating over it
+                        oldComponents2.add(subcomponent);
                     }
                 }
             }
+        }
+        
+        for (Component oldComponent : oldComponents2) {
+            oldComponents.add(oldComponent);
         }
 
         if (!transaction.getOwnershipChangeSignatures().isEmpty()) {

@@ -75,20 +75,14 @@ public class ConnectionsWindow {
         for (InetAddress connection : node.getConnections()) {
 
             window.addSelectableTextField(connection.toString());
-
-            window.addVerticalSpace(10);
         }
 
         window.addVerticalSpace(10);
 
         window.addLabel("Connect to new Node:");
 
-        window.addVerticalSpace(10);
-
         JTextField ipAddressField = new JTextField();
         window.add(ipAddressField);
-
-        window.addVerticalSpace(10);
 
         JButton addButton = new JButton("Connect");
         addButton.addActionListener(new ActionListener() {
@@ -134,8 +128,6 @@ public class ConnectionsWindow {
             window.addVerticalSpace(10);
         }
 
-        window.addVerticalSpace(20);
-
         window.addLabel("Blacklisted Keys: " + Integer.toString(node.getBlacklistedKeys().size()));
 
         window.addVerticalSpace(10);
@@ -143,8 +135,6 @@ public class ConnectionsWindow {
         for (PublicKey key : node.getBlacklistedKeys()) {
 
             window.addSelectableTextField(Utils.toHexString(HashUtils.sha256(key.getEncoded())));
-
-            window.addVerticalSpace(10);
         }
 
     }

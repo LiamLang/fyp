@@ -39,8 +39,6 @@ public class ChangeOwnershipTransactionWindow {
 
         window.addLabel("Component Hash: ");
 
-        window.addVerticalSpace(10);
-
         hashTextField = new JTextField();
         window.add(hashTextField);
 
@@ -48,12 +46,9 @@ public class ChangeOwnershipTransactionWindow {
 
         window.addLabel("New Owner's Pubkey Hash: ");
 
-        window.addVerticalSpace(10);
-
         JTextField pubkeyTextField = new JTextField();
         window.add(pubkeyTextField);
 
-        window.addVerticalSpace(10);
 
         JButton showListButton = new JButton("(View List)");
 
@@ -110,6 +105,9 @@ public class ChangeOwnershipTransactionWindow {
                             node.broadcastTransaction(transaction);
 
                             Utils.showOkPopup("Changed ownership!\n\nNew hash: " + transaction.getComponentsCreated().get(0).getHash());
+
+                            ViewComponentWindow vcw = new ViewComponentWindow(transaction.getComponentsCreated().get(0), node);
+                            vcw.show();
 
                             window.close();
 

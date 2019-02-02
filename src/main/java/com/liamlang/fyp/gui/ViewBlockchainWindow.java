@@ -97,5 +97,26 @@ public class ViewBlockchainWindow {
                 window.add(button);
             }
         }
+
+        if (!node.isCreatingBlocks()) {
+
+            window.addVerticalSpace(20);
+
+            JButton createBlocksButton = new JButton("Start Creating Blocks");
+
+            createBlocksButton.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    node.startCreatingBlocks();
+                    
+                    updateWindow();
+                    window.refresh();
+                }
+            });
+            
+            window.add(createBlocksButton);
+        }
     }
 }

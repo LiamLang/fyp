@@ -62,6 +62,17 @@ public class Blockchain implements Serializable {
         }
         return false;
     }
+    
+    public Block getBlockWithHash(String hash) {
+        
+        for (Block block : blocks) {
+            if (block.getHash().equals(hash)) {
+                return block;
+            }
+        }
+        
+        return null;
+    }
 
     private boolean isValidTop(Block block) {
         

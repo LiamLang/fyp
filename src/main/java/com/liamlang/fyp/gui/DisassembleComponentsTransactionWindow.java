@@ -46,16 +46,12 @@ public class DisassembleComponentsTransactionWindow {
 
         window.addLabel("Parent Component Hash: ");
 
-        window.addVerticalSpace(10);
-
         parentTextField = new JTextField();
         window.add(parentTextField);
 
         window.addVerticalSpace(20);
 
         window.addLabel("Child Component Hash: ");
-
-        window.addVerticalSpace(10);
 
         childTextField = new JTextField();
         window.add(childTextField);
@@ -108,7 +104,10 @@ public class DisassembleComponentsTransactionWindow {
                     Transaction transaction = node.getTransactionBuilder().removeComponentsFromOther(parent, children);
                     node.broadcastTransaction(transaction);
 
-                    Utils.showOkPopup("Disassembled successfully!\n\nNew parent component hash: " + transaction.getComponentsCreated().get(0).getHash());
+                    Utils.showOkPopup("Disassembled successfully!\n\nNew parent component hash: " + transaction.getComponentsCreated().get(1).getHash());
+
+                    ViewComponentWindow vcw = new ViewComponentWindow(transaction.getComponentsCreated().get(1), node);
+                    vcw.show();
 
                     window.close();
 
@@ -119,7 +118,7 @@ public class DisassembleComponentsTransactionWindow {
 
             }
         });
-        
+
         window.add(button);
 
         window.show();

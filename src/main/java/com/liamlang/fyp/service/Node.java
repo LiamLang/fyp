@@ -39,11 +39,14 @@ public class Node implements Serializable {
 
     private ArrayList<TrustedSignee> trustedSignees = new ArrayList<>();
     private ArrayList<PublicKey> blacklistedKeys = new ArrayList<>();
+    
+    private boolean isCreatingBlocks;
 
     public Node(Blockchain bc, String ownerName, KeyPair keyPair) {
         this.bc = bc;
         this.ownerName = ownerName;
         this.keyPair = keyPair;
+        this.isCreatingBlocks = false;
     }
 
     public void init() {
@@ -100,6 +103,9 @@ public class Node implements Serializable {
     }
 
     public void startCreatingBlocks() {
+        
+        isCreatingBlocks = true;
+        
         Utils.scheduleRepeatingTask(5000, new Runnable() {
             @Override
             public void run() {
@@ -109,6 +115,10 @@ public class Node implements Serializable {
                 }
             }
         });
+    }
+    
+    public boolean isCreatingBlocks() {
+        return isCreatingBlocks;
     }
 
     public String toString() {

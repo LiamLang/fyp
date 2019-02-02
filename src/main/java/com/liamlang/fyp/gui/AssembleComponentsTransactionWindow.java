@@ -46,16 +46,12 @@ public class AssembleComponentsTransactionWindow {
 
         window.addLabel("Parent Component Hash: ");
 
-        window.addVerticalSpace(10);
-
         parentTextField = new JTextField();
         window.add(parentTextField);
 
         window.addVerticalSpace(20);
 
         window.addLabel("Child Component Hash: ");
-
-        window.addVerticalSpace(10);
 
         childTextField = new JTextField();
         window.add(childTextField);
@@ -97,13 +93,16 @@ public class AssembleComponentsTransactionWindow {
 
                     Transaction transaction = node.getTransactionBuilder().addComponetsToOther(parent, children);
                     node.broadcastTransaction(transaction);
-                    
-                    Utils.showOkPopup("Assembled successfully!\n\nNew parent component hash: " + transaction.getComponentsCreated().get(0).getHash());
-                    
+
+                    Utils.showOkPopup("Assembled successfully!\n\nNew parent component hash: " + transaction.getComponentsCreated().get(1).getHash());
+
+                    ViewComponentWindow vcw = new ViewComponentWindow(transaction.getComponentsCreated().get(1), node);
+                    vcw.show();
+
                     window.close();
-                    
+
                 } catch (Exception ex) {
-                    
+
                     Utils.showOkPopup("Error creating transaction!");
                 }
             }

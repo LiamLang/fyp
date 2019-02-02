@@ -31,7 +31,7 @@ public class ViewComponentWindow {
 
         window.addVerticalSpace(20);
 
-        window.addLabel("<html>Information:<br/><br/>" + component.getInfo().toString() + "</html>");
+        window.addLabel("<html>Information:<br/>" + component.getInfo().toString() + "</html>");
 
         window.addVerticalSpace(20);
 
@@ -60,7 +60,7 @@ public class ViewComponentWindow {
             window.add(button);
         }
 
-        window.addVerticalSpace(20);
+        window.addVerticalSpace(10);
 
         JButton addSubcomponentsButton = new JButton("Add subcomponents...");
 
@@ -77,8 +77,6 @@ public class ViewComponentWindow {
 
         window.add(addSubcomponentsButton);
 
-        window.addVerticalSpace(10);
-
         JButton addAsSubcomponentButtom = new JButton("Add as subcomponent to another...");
 
         addAsSubcomponentButtom.addActionListener(new ActionListener() {
@@ -93,8 +91,6 @@ public class ViewComponentWindow {
         });
 
         window.add(addAsSubcomponentButtom);
-        
-        window.addVerticalSpace(10);
 
         JButton removeSubcomponentButton = new JButton("Remove a subcomponent...");
 
@@ -114,8 +110,6 @@ public class ViewComponentWindow {
         window.addVerticalSpace(20);
 
         window.addLabel("Owner: " + component.getOwner());
-
-        window.addVerticalSpace(10);
 
         window.addSelectableTextField("Owner's Public Key Hash: " + Utils.toHexString(HashUtils.sha256(component.getOwnerPubKey().getEncoded())));
 

@@ -37,13 +37,15 @@ public class ViewBlockchainWindow {
         Utils.scheduleRepeatingTask(1000, new Runnable() {
             @Override
             public void run() {
-                
-                if (blockchain.getHeight() > 0 && !lastBlockHash.equals(blockchain.getTop().getHash())) {
 
-                    lastBlockHash = blockchain.getTop().getHash();
+                if (blockchain.getHeight() > 0) {
+                    if (!lastBlockHash.equals(blockchain.getTop().getHash())) {
 
-                    updateWindow();
-                    window.refresh();
+                        lastBlockHash = blockchain.getTop().getHash();
+
+                        updateWindow();
+                        window.refresh();
+                    }
                 }
             }
         });
@@ -62,7 +64,7 @@ public class ViewBlockchainWindow {
         window.addVerticalSpace(20);
 
         if (blockchain.getHeight() > 0) {
-            
+
             window.addLabel("Hash of Latest Block: " + blockchain.getTop().getHash());
 
             window.addVerticalSpace(20);

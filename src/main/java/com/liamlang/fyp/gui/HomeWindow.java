@@ -40,10 +40,18 @@ public class HomeWindow {
             @Override
             public void run() {
 
-                if ((node.getBlockchain().getHeight() > 0 && !lastBlockHash.equals(node.getBlockchain().getTop().getHash()))
-                        || numConnections != node.getConnections().size()) {
+                if (node.getBlockchain().getHeight() > 0) {
+                    if (!lastBlockHash.equals(node.getBlockchain().getTop().getHash())) {
 
-                    lastBlockHash = node.getBlockchain().getTop().getHash();
+                        lastBlockHash = node.getBlockchain().getTop().getHash();
+
+                        updateWindow();
+                        window.refresh();
+                    }
+                }
+
+                if (numConnections != node.getConnections().size()) {
+
                     numConnections = node.getConnections().size();
 
                     updateWindow();

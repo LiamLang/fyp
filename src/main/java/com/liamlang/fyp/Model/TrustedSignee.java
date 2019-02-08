@@ -1,8 +1,9 @@
 package com.liamlang.fyp.Model;
 
+import java.io.Serializable;
 import java.security.PublicKey;
 
-public class TrustedSignee {
+public class TrustedSignee implements Serializable {
 
     private final String name;
     private final PublicKey key;

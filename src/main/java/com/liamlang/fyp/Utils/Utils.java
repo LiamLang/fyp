@@ -79,6 +79,7 @@ public class Utils {
             return bytes;
         } catch (IOException ex) {
             System.out.println("Exception serializing object");
+            ex.printStackTrace();
             return new byte[]{};
         }
     }
@@ -93,6 +94,7 @@ public class Utils {
             return obj;
         } catch (Exception ex) {
             System.out.println("Exception deserializing object");
+            ex.printStackTrace();
             return null;
         }
     }

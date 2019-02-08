@@ -37,8 +37,8 @@ public class ViewBlockchainWindow {
         Utils.scheduleRepeatingTask(1000, new Runnable() {
             @Override
             public void run() {
-
-                if (!lastBlockHash.equals(blockchain.getTop().getHash())) {
+                
+                if (blockchain.getHeight() > 0 && !lastBlockHash.equals(blockchain.getTop().getHash())) {
 
                     lastBlockHash = blockchain.getTop().getHash();
 

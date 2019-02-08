@@ -2,7 +2,6 @@ package com.liamlang.fyp.gui;
 
 import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Component;
-import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.service.Node;
 import java.awt.event.ActionEvent;
@@ -41,7 +40,8 @@ public class HomeWindow {
             @Override
             public void run() {
 
-                if (!lastBlockHash.equals(node.getBlockchain().getTop().getHash()) || numConnections != node.getConnections().size()) {
+                if ((node.getBlockchain().getHeight() > 0 && !lastBlockHash.equals(node.getBlockchain().getTop().getHash()))
+                        || numConnections != node.getConnections().size()) {
 
                     lastBlockHash = node.getBlockchain().getTop().getHash();
                     numConnections = node.getConnections().size();

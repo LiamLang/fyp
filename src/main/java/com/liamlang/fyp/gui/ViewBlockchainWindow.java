@@ -20,7 +20,9 @@ public class ViewBlockchainWindow {
     public ViewBlockchainWindow(Blockchain blockchain, Node node) {
         this.blockchain = blockchain;
         this.node = node;
-        lastBlockHash = blockchain.getTop().getHash();
+        if (blockchain.getHeight() > 0) {
+            lastBlockHash = blockchain.getTop().getHash();
+        }
     }
 
     public void show() {
@@ -59,13 +61,16 @@ public class ViewBlockchainWindow {
 
         window.addVerticalSpace(20);
 
-        window.addLabel("Hash of Latest Block: " + blockchain.getTop().getHash());
+        if (blockchain.getHeight() > 0) {
+            
+            window.addLabel("Hash of Latest Block: " + blockchain.getTop().getHash());
 
-        window.addVerticalSpace(20);
+            window.addVerticalSpace(20);
 
-        window.addLabel("Timestamp of Latest Block: " + Utils.toHumanReadableTime(blockchain.getTop().getTimestamp()));
+            window.addLabel("Timestamp of Latest Block: " + Utils.toHumanReadableTime(blockchain.getTop().getTimestamp()));
 
-        window.addVerticalSpace(20);
+            window.addVerticalSpace(20);
+        }
 
         window.addLabel("Last 20 blocks:");
 
@@ -110,12 +115,12 @@ public class ViewBlockchainWindow {
                 public void actionPerformed(ActionEvent e) {
 
                     node.startCreatingBlocks();
-                    
+
                     updateWindow();
                     window.refresh();
                 }
             });
-            
+
             window.add(createBlocksButton);
         }
     }

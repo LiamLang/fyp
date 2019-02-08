@@ -21,7 +21,9 @@ public class HomeWindow {
 
     public HomeWindow(Node node) {
         this.node = node;
-        lastBlockHash = node.getBlockchain().getTop().getHash();
+        if (node.getBlockchain().getHeight() > 0) {
+            lastBlockHash = node.getBlockchain().getTop().getHash();
+        }
         this.numConnections = node.getConnections().size();
 
     }
@@ -93,7 +95,11 @@ public class HomeWindow {
 
         window.addLabel("Blocks in Chain: " + Integer.toString(node.getBlockchain().getHeight()));
 
-        window.addLabel("Last Block Hash: " + node.getBlockchain().getTop().getHash());
+        if (node.getBlockchain().getHeight() > 0) {
+            window.addLabel("Last Block Hash: " + node.getBlockchain().getTop().getHash());
+        } else {
+            window.addLabel("No Blocks in Blockchain.");
+        }
 
         JButton viewBlockchainButton = new JButton("View Blockchain");
 
@@ -209,7 +215,7 @@ public class HomeWindow {
         window.add(findComponentInfoButton);
 
         window.addVerticalSpace(20);
-        
+
         window.addLabel("Find Block by Hash:");
 
         JTextField blockHashTextField = new JTextField();
@@ -229,12 +235,12 @@ public class HomeWindow {
                 }
 
                 Block block = node.getBlockchain().getBlockWithHash(hash);
-                
+
                 if (block == null) {
                     Utils.showOkPopup("No results found!");
                     return;
                 }
-                
+
                 ViewBlockWindow win = new ViewBlockWindow(block, node);
                 win.show();
             }

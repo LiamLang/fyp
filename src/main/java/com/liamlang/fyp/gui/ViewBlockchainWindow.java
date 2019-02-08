@@ -22,6 +22,8 @@ public class ViewBlockchainWindow {
         this.node = node;
         if (blockchain.getHeight() > 0) {
             lastBlockHash = blockchain.getTop().getHash();
+        } else {
+            lastBlockHash = "";
         }
     }
 

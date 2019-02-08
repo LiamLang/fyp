@@ -21,8 +21,14 @@ public class Utils {
         Runnable repeatingTask = new Runnable() {
             @Override
             public void run() {
-                task.run();
-                scheduleRepeatingTask(delayMillis, task);
+                try {
+                    task.run();
+                    scheduleRepeatingTask(delayMillis, task);
+                } catch (Exception ex) {
+                    System.out.println("Error in repeating task, stopping!");
+                    System.out.println(ex.getMessage());
+                    ex.printStackTrace();
+                }
             }
         };
 

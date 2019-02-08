@@ -22,6 +22,8 @@ public class HomeWindow {
         this.node = node;
         if (node.getBlockchain().getHeight() > 0) {
             lastBlockHash = node.getBlockchain().getTop().getHash();
+        } else {
+            lastBlockHash = "";
         }
         this.numConnections = node.getConnections().size();
 

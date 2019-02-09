@@ -73,6 +73,8 @@ public class HomeWindow {
 
         window.addLabel("Connections: " + numConnections);
 
+        window.addVerticalSpace(5);
+
         JButton viewConnectionsButton = new JButton("View Connections");
 
         viewConnectionsButton.addActionListener(new ActionListener() {
@@ -86,6 +88,8 @@ public class HomeWindow {
         });
 
         window.add(viewConnectionsButton);
+
+        window.addVerticalSpace(5);
 
         JButton viewDetailsButton = new JButton("View My Details");
 
@@ -105,11 +109,15 @@ public class HomeWindow {
 
         window.addLabel("Blocks in Chain: " + Integer.toString(node.getBlockchain().getHeight()));
 
+        window.addVerticalSpace(5);
+
         if (node.getBlockchain().getHeight() > 0) {
             window.addLabel("Last Block Hash: " + node.getBlockchain().getTop().getHash());
         } else {
             window.addLabel("No Blocks in Blockchain.");
         }
+
+        window.addVerticalSpace(5);
 
         JButton viewBlockchainButton = new JButton("View Blockchain");
 
@@ -145,8 +153,12 @@ public class HomeWindow {
 
         window.addLabel("Find Component by Hash:");
 
+        window.addVerticalSpace(5);
+
         JTextField componentHashTextField = new JTextField();
         window.add(componentHashTextField);
+
+        window.addVerticalSpace(5);
 
         JButton findComponentHashButton = new JButton("Find");
 
@@ -186,8 +198,12 @@ public class HomeWindow {
 
         window.addLabel("Find Component by Information:");
 
+        window.addVerticalSpace(5);
+
         JTextField componentInfoTextField = new JTextField();
         window.add(componentInfoTextField);
+
+        window.addVerticalSpace(5);
 
         JButton findComponentInfoButton = new JButton("Find");
 
@@ -228,8 +244,12 @@ public class HomeWindow {
 
         window.addLabel("Find Block by Hash:");
 
+        window.addVerticalSpace(5);
+
         JTextField blockHashTextField = new JTextField();
         window.add(blockHashTextField);
+
+        window.addVerticalSpace(5);
 
         JButton findBlockButton = new JButton("Find");
 

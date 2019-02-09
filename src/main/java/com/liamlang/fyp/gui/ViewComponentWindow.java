@@ -67,6 +67,8 @@ public class ViewComponentWindow {
 
             window.addLabel(isUnspent ? "Unspent" : "SPENT");
 
+            window.addVerticalSpace(5);
+
             JButton viewConfirmingTxButton = new JButton("Confirmed at " + Utils.toHumanReadableTime(confirmingTx.getTimestamp()));
 
             viewConfirmingTxButton.addActionListener(new ActionListener() {
@@ -91,7 +93,7 @@ public class ViewComponentWindow {
 
         window.addLabel("<html>Information:<br/>" + component.getInfo().toString() + "</html>");
 
-        window.addVerticalSpace(20);
+        window.addVerticalSpace(10);
 
         window.addLabel("Quantity: " + Long.toString(component.getQuantity()));
 
@@ -135,6 +137,8 @@ public class ViewComponentWindow {
 
         window.add(addSubcomponentsButton);
 
+        window.addVerticalSpace(5);
+
         JButton addAsSubcomponentButtom = new JButton("Add as subcomponent to another...");
 
         addAsSubcomponentButtom.addActionListener(new ActionListener() {
@@ -149,6 +153,8 @@ public class ViewComponentWindow {
         });
 
         window.add(addAsSubcomponentButtom);
+
+        window.addVerticalSpace(5);
 
         JButton removeSubcomponentButton = new JButton("Remove a subcomponent...");
 
@@ -168,6 +174,8 @@ public class ViewComponentWindow {
         window.addVerticalSpace(20);
 
         window.addLabel("Owner: " + component.getOwner());
+
+        window.addVerticalSpace(5);
 
         window.addSelectableTextField("Owner's Public Key Hash: " + Utils.toHexString(HashUtils.sha256(component.getOwnerPubKey().getEncoded())));
 

@@ -28,12 +28,16 @@ public class NewComponentTransactionWindow {
 
         window.addLabel("Information (html): ");
 
+        window.addVerticalSpace(5);
+
         JTextField infoTextField = new JTextField();
         window.add(infoTextField);
 
         window.addVerticalSpace(20);
 
         window.addLabel("Quantity:");
+
+        window.addVerticalSpace(5);
 
         JTextField quantityTextField = new JTextField("1");
         window.add(quantityTextField);
@@ -72,7 +76,7 @@ public class NewComponentTransactionWindow {
                     node.broadcastTransaction(transaction);
 
                     Utils.showOkPopup("Created component!\n\nHash: " + transaction.getComponentsCreated().get(0).getHash());
-                    
+
                     ViewComponentWindow vcw = new ViewComponentWindow(transaction.getComponentsCreated().get(0), node);
                     vcw.show();
 

@@ -75,14 +75,21 @@ public class ConnectionsWindow {
         for (InetAddress connection : node.getConnections()) {
 
             window.addSelectableTextField(connection.toString());
+
+            window.addVerticalSpace(5);
+
         }
 
         window.addVerticalSpace(10);
 
         window.addLabel("Connect to new Node:");
 
+        window.addVerticalSpace(5);
+
         JTextField ipAddressField = new JTextField();
         window.add(ipAddressField);
+
+        window.addVerticalSpace(5);
 
         JButton addButton = new JButton("Connect");
         addButton.addActionListener(new ActionListener() {

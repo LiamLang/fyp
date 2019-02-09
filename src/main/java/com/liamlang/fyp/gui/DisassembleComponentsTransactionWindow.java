@@ -46,12 +46,16 @@ public class DisassembleComponentsTransactionWindow {
 
         window.addLabel("Parent Component Hash: ");
 
+        window.addVerticalSpace(5);
+
         parentTextField = new JTextField();
         window.add(parentTextField);
 
         window.addVerticalSpace(20);
 
         window.addLabel("Child Component Hash: ");
+
+        window.addVerticalSpace(5);
 
         childTextField = new JTextField();
         window.add(childTextField);

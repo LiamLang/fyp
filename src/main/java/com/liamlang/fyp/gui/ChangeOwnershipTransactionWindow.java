@@ -39,6 +39,8 @@ public class ChangeOwnershipTransactionWindow {
 
         window.addLabel("Component Hash: ");
 
+        window.addVerticalSpace(5);
+
         hashTextField = new JTextField();
         window.add(hashTextField);
 
@@ -46,9 +48,12 @@ public class ChangeOwnershipTransactionWindow {
 
         window.addLabel("New Owner's Pubkey Hash: ");
 
+        window.addVerticalSpace(5);
+
         JTextField pubkeyTextField = new JTextField();
         window.add(pubkeyTextField);
 
+        window.addVerticalSpace(5);
 
         JButton showListButton = new JButton("(View List)");
 

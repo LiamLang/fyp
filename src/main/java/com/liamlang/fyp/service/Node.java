@@ -42,11 +42,14 @@ public class Node implements Serializable {
     
     private boolean isCreatingBlocks;
 
-    public Node(Blockchain bc, String ownerName, KeyPair keyPair) {
+    private String saveFileName;
+    
+    public Node(Blockchain bc, String ownerName, KeyPair keyPair, String saveFileName) {
         this.bc = bc;
         this.ownerName = ownerName;
         this.keyPair = keyPair;
         this.isCreatingBlocks = false;
+        this.saveFileName = saveFileName;
     }
 
     public void init() {
@@ -147,7 +150,7 @@ public class Node implements Serializable {
 
     public void saveSelf() {
         try {
-            FileUtils.saveToFile(this, "node.txt");
+            FileUtils.saveToFile(this, saveFileName);
         } catch (Exception ex) {
             System.out.println("Exception saving node state");
         }

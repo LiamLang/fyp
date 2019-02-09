@@ -6,16 +6,16 @@ import com.liamlang.fyp.Utils.SignatureUtils;
 
 public class NodeManager {
     
-    public static Node startNodeWithEmptyBlockchain() throws Exception {
+    public static Node startNodeWithEmptyBlockchain(String ownerName, String saveFileName) throws Exception {
         Blockchain bc = new Blockchain(false);
-        Node node = new Node(bc, "Liam Lang", SignatureUtils.generateKeyPair());
+        Node node = new Node(bc, ownerName, SignatureUtils.generateKeyPair(), saveFileName);
         node.init();
         return node;
     }
     
-    public static Node startNodeWithFirstBlock() throws Exception {
+    public static Node startNodeWithFirstBlock(String ownerName, String saveFileName) throws Exception {
         Blockchain bc = new Blockchain(true);
-        Node node = new Node(bc, "Liam Lang", SignatureUtils.generateKeyPair());
+        Node node = new Node(bc, ownerName, SignatureUtils.generateKeyPair(), saveFileName);
         node.init();
         return node;
     }

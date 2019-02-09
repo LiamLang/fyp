@@ -103,7 +103,7 @@ public class WindowBase {
             return;
         }
 
-        panel.add(Box.createRigidArea(new Dimension(0, 20)));
+        panel.add(Box.createRigidArea(new Dimension(0, px)));
     }
 
     public void addLabel(String text) {

@@ -9,7 +9,8 @@ import java.security.Signature;
 
 public class SignatureUtils {
 
-    public static KeyPair generateKeyPair() {
+    public static KeyPair generateDsaKeyPair() {
+
         try {
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("DSA", "SUN");
             SecureRandom random = SecureRandom.getInstance("SHA1PRNG", "SUN");
@@ -17,7 +18,9 @@ public class SignatureUtils {
             return keyGen.generateKeyPair();
 
         } catch (Exception ex) {
-            System.out.println("Exception generating KeyPair! SignatureUtils.generateKeyPair");
+            System.out.println("Exception generating KeyPair! SignatureUtils.generateDsaKeyPair");
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
             return null;
         }
     }
@@ -40,9 +43,9 @@ public class SignatureUtils {
             Signature sig = Signature.getInstance("SHA1withDSA", "SUN");
             sig.initVerify(pub);
             sig.update(message, 0, message.length);
-            
+
             return sig.verify(signature);
-            
+
         } catch (Exception ex) {
             System.out.println("Exception verifying signature! SignatureUtils.verify");
             return false;

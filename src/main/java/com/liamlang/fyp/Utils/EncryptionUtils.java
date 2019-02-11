@@ -1,5 +1,6 @@
 package com.liamlang.fyp.Utils;
 
+import com.liamlang.fyp.Model.EncryptedMessage;
 import java.security.AlgorithmParameters;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -12,8 +13,6 @@ import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 public class EncryptionUtils {
 
-    private static AlgorithmParameters spec = null; // TODO!
-    
     public static KeyPair generateEcKeyPair() {
 
         try {
@@ -32,17 +31,17 @@ public class EncryptionUtils {
         }
     }
 
-    public static byte[] encrypt(byte[] plaintext, PublicKey pubKey) {
+    public static EncryptedMessage encrypt(byte[] cleartext, PublicKey pubKey) {
 
         try {
             Security.addProvider(new BouncyCastleProvider());
             Cipher ecies = Cipher.getInstance("ECIESwithAES-CBC");
             ecies.init(Cipher.ENCRYPT_MODE, pubKey);
-            
-            // TODO remove!
-            spec = ecies.getParameters();
 
-            return ecies.doFinal(plaintext);
+            byte[] ciphertext = ecies.doFinal(cleartext);
+            AlgorithmParameters params = ecies.getParameters();
+
+            return new EncryptedMessage(ciphertext, params);
 
         } catch (Exception ex) {
 
@@ -50,16 +49,16 @@ public class EncryptionUtils {
             System.out.println(ex.getMessage());
             ex.printStackTrace();
 
-            return new byte[]{};
+            return null;
         }
     }
 
-    public static byte[] decrypt(byte[] ciphertext, PrivateKey privKey) {
+    public static byte[] decrypt(byte[] ciphertext, AlgorithmParameters params, PrivateKey privKey) {
 
         try {
             Security.addProvider(new BouncyCastleProvider());
             Cipher ecies = Cipher.getInstance("ECIESwithAES-CBC");
-            ecies.init(Cipher.DECRYPT_MODE, privKey, spec);
+            ecies.init(Cipher.DECRYPT_MODE, privKey, params);
 
             return ecies.doFinal(ciphertext);
 

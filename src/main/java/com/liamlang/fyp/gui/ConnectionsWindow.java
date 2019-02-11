@@ -122,7 +122,7 @@ public class ConnectionsWindow {
 
         window.addVerticalSpace(20);
 
-        window.addLabel("Trusted Keys: " + Integer.toString(node.getTrustedSignees().size()));
+        window.addLabel("Trusted Signing Keys: " + Integer.toString(node.getTrustedSignees().size()));
 
         window.addVerticalSpace(10);
 
@@ -135,7 +135,7 @@ public class ConnectionsWindow {
             window.addVerticalSpace(10);
         }
 
-        window.addLabel("Blacklisted Keys: " + Integer.toString(node.getBlacklistedKeys().size()));
+        window.addLabel("Blacklisted Signing Keys: " + Integer.toString(node.getBlacklistedKeys().size()));
 
         window.addVerticalSpace(10);
 

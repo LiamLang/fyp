@@ -18,7 +18,7 @@ public class TransactionBuilder implements Serializable {
 
     public Transaction buildNewComponentTransaction(ComponentInfo info, long quantity) {
 
-        Component component = new Component(info, new ArrayList<>(), quantity, node.getOwnerName(), node.getKeyPair().getPublic());
+        Component component = new Component(info, new ArrayList<>(), quantity, node.getOwnerName(), node.getDsaKeyPair().getPublic());
 
         ArrayList<Component> components = new ArrayList<>();
         components.add(component);
@@ -90,12 +90,12 @@ public class TransactionBuilder implements Serializable {
 
     public Transaction changeOwner(Component component, String newOwner, PublicKey newOwnerPubKey) throws Exception {
 
-        if (!component.getOwnerPubKey().equals(node.getKeyPair().getPublic())) {
+        if (!component.getOwnerPubKey().equals(node.getDsaKeyPair().getPublic())) {
             System.out.println("Attempting to change ownership of component I don't own!");
             throw new Exception();
         }
 
-        OwnershipChangeSignature signature = new OwnershipChangeSignature(component.getHash(), newOwnerPubKey, node.getKeyPair().getPrivate());
+        OwnershipChangeSignature signature = new OwnershipChangeSignature(component.getHash(), newOwnerPubKey, node.getDsaKeyPair().getPrivate());
 
         ArrayList<OwnershipChangeSignature> signatures = new ArrayList<>();
         signatures.add(signature);

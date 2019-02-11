@@ -1,6 +1,7 @@
 package com.liamlang.fyp.service;
 
 import com.liamlang.fyp.Model.Block;
+import com.liamlang.fyp.Model.EncryptedMessage;
 import com.liamlang.fyp.Model.SignedMessage;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.HashUtils;
@@ -15,12 +16,26 @@ import java.util.Collections;
 public class ReceivedPacketHandler implements Serializable {
 
     private Node node;
-    
+
     public ReceivedPacketHandler(Node node) {
         this.node = node;
     }
-    
-    public void onPacketReceived(SignedMessage message) {
+
+    public void onPacketReceived(EncryptedMessage encryptedMessage) {
+
+        if (encryptedMessage == null) {
+            return;
+        }
+
+        SignedMessage message = null;
+
+        try {
+            message = (SignedMessage) Utils.deserialize(encryptedMessage.decrypt(node.getEcKeyPair().getPrivate()));
+        } catch (Exception ex) {
+            System.out.println("Failed to decrypt a message!");
+            return;
+        }
+
         if (message == null) {
             return;
         }
@@ -106,11 +121,11 @@ public class ReceivedPacketHandler implements Serializable {
 
             if (height == node.getBlockchain().getHeight() + 1) {
                 Block block = (Block) Utils.deserialize(Utils.toByteArray(blockStr));
-                
-                if(node.getBlockchain().addToTop(block)) {
-                    
+
+                if (node.getBlockchain().addToTop(block)) {
+
                     for (Transaction t : block.getData().getTransactions()) {
-                        
+
                         node.getUnconfirmedTransactionSet().remove(t);
                     }
                 }
@@ -131,7 +146,7 @@ public class ReceivedPacketHandler implements Serializable {
                 }
             }
             node.saveSelf();
-            
+
         } catch (Exception ex) {
             System.out.println("Exception in Node.onConnectionsPacketRecevied");
         }
@@ -147,7 +162,7 @@ public class ReceivedPacketHandler implements Serializable {
                 }
             }
             node.saveSelf();
-            
+
         } catch (Exception ex) {
             System.out.println("Exception in Node.onTransactionsPacketRecevied");
         }

@@ -14,27 +14,35 @@ public class MyDetailsWindow {
 
     public void show() {
 
-        WindowBase window = new WindowBase("My Details", 600);
+        WindowBase window = new WindowBase("My Details", 700);
         window.init();
 
         window.addImage("src/main/resources/person.png");
-        
-        window.addVerticalSpace(20);
-        
-        window.addSelectableTextField("My Name: " + node.getOwnerName());
-        
-        window.addVerticalSpace(20);
-        
-        window.addSelectableTextField("Hash of my Public Key: " + Utils.toHexString(HashUtils.sha256(node.getKeyPair().getPublic().getEncoded())));
-        
-        window.addVerticalSpace(20);
-        
-        window.addSelectableTextField("My Public Key: " + Utils.toHexString(node.getKeyPair().getPublic().getEncoded()));
-        
-        window.addVerticalSpace(20);
-        
-        window.addSelectableTextField("My Private Key: " + Utils.toHexString(node.getKeyPair().getPrivate().getEncoded()));
 
-        window.show();                
+        window.addVerticalSpace(20);
+
+        window.addSelectableTextField("My Name: " + node.getOwnerName());
+
+        window.addVerticalSpace(20);
+
+        window.addSelectableTextField("Hash of my Public Signing Key: " + Utils.toHexString(HashUtils.sha256(node.getDsaKeyPair().getPublic().getEncoded())));
+
+        window.addVerticalSpace(20);
+
+        window.addSelectableTextField("My Public Signing Key: " + Utils.toHexString(node.getDsaKeyPair().getPublic().getEncoded()));
+
+        window.addVerticalSpace(20);
+
+        window.addSelectableTextField("My Private Signing Key: " + Utils.toHexString(node.getDsaKeyPair().getPrivate().getEncoded()));
+
+        window.addVerticalSpace(20);
+
+        window.addSelectableTextField("My Public Encryption Key: " + Utils.toHexString(node.getEcKeyPair().getPublic().getEncoded()));
+
+        window.addVerticalSpace(20);
+
+        window.addSelectableTextField("My Private Encryption Key: " + Utils.toHexString(node.getEcKeyPair().getPrivate().getEncoded()));
+
+        window.show();
     }
 }

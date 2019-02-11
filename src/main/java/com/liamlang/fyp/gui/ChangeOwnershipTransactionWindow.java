@@ -89,7 +89,7 @@ public class ChangeOwnershipTransactionWindow {
                     return;
                 }
 
-                if (!component.getOwnerPubKey().equals(node.getKeyPair().getPublic())) {
+                if (!component.getOwnerPubKey().equals(node.getDsaKeyPair().getPublic())) {
                     Utils.showOkPopup("I don't own this component!");
                     return;
                 }

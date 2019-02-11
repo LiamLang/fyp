@@ -179,7 +179,7 @@ public class ViewComponentWindow {
 
         window.addSelectableTextField("Owner's Public Key Hash: " + Utils.toHexString(HashUtils.sha256(component.getOwnerPubKey().getEncoded())));
 
-        if (component.getOwnerPubKey().equals(node.getKeyPair().getPublic())) {
+        if (component.getOwnerPubKey().equals(node.getDsaKeyPair().getPublic())) {
 
             window.addVerticalSpace(10);
 

@@ -6,6 +6,7 @@ import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.adapter.NetworkAdapter;
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.security.PublicKey;
 import java.util.ArrayList;
 
 public class PacketSender implements Serializable {
@@ -16,9 +17,10 @@ public class PacketSender implements Serializable {
         this.node = node;
     }
 
-    public void sendSync(int bcHeight, int numConnections, ArrayList<Transaction> unconfirmedTransactionSet, InetAddress ip) {
+    public void sendSync(InetAddress ip, int bcHeight, int numConnections, ArrayList<Transaction> unconfirmedTransactionSet, PublicKey myEcPubKey) {
         try {
-            NetworkAdapter.sendSyncPacket(bcHeight, numConnections, Utils.toHexString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))), ip, node.getDsaKeyPair(), node.getOwnerName());
+            NetworkAdapter.sendSyncPacket(bcHeight, numConnections, Utils.toHexString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))),
+                    Utils.toString(Utils.serialize(node.getEcKeyPair().getPublic())), ip, node.getDsaKeyPair(), node.getOwnerName());
         } catch (Exception ex) {
             System.out.println("Exception in PacketSender.sendSync");
         }

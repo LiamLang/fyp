@@ -21,22 +21,39 @@ public class ReceivedPacketHandler implements Serializable {
         this.node = node;
     }
 
-    public void onPacketReceived(EncryptedMessage encryptedMessage) {
+    public void onPacketReceived(byte[] bytes) {
 
-        if (encryptedMessage == null) {
+        if (bytes == null || bytes.length == 0) {
             return;
         }
 
         SignedMessage message = null;
 
-        try {
-            message = (SignedMessage) Utils.deserialize(encryptedMessage.decrypt(node.getEcKeyPair().getPrivate()));
-        } catch (Exception ex) {
-            System.out.println("Failed to decrypt a message!");
+        Object object = Utils.deserialize(bytes);
+
+        if (object == null) {
             return;
         }
 
+        if (object instanceof SignedMessage) {
+
+            message = (SignedMessage) object;
+
+        } else if (object instanceof EncryptedMessage) {
+
+            EncryptedMessage encryptedMessage = (EncryptedMessage) object;
+
+            try {
+                message = (SignedMessage) Utils.deserialize(encryptedMessage.decrypt(node.getEcKeyPair().getPrivate()));
+
+            } catch (Exception ex) {
+                System.out.println("Error decrypting message!");
+                return;
+            }
+        }
+
         if (message == null) {
+            System.out.println("Failed to understand received message!");
             return;
         }
 
@@ -56,8 +73,17 @@ public class ReceivedPacketHandler implements Serializable {
         }
         String[] parts = messageStr.split(" ");
 
-        if (parts[0].equals("SYNC") && parts.length == 5) {
-            onSyncPacketReceived(parts[1], parts[2], parts[3], parts[4]);
+        if (parts[0].equals("SYNC") && parts.length >= 6) {
+
+            // Recombine parts of the serialized ec public key which may be split up because there happen to be spaces present
+            String keyStr = "";
+            for (int i = 5; i < parts.length; i++) {
+                keyStr += parts[i] + " ";
+            }
+            keyStr = keyStr.substring(0, keyStr.length() - 1);
+
+            onSyncPacketReceived(parts[1], parts[2], parts[3], parts[4], keyStr);
+
         }
 
         if (parts[0].equals("BLOCK") && parts.length >= 3) {
@@ -97,9 +123,13 @@ public class ReceivedPacketHandler implements Serializable {
         }
     }
 
-    private void onSyncPacketReceived(String ip, String heightStr, String numConnections, String unconfirmedTransactionSetHash) {
+    private void onSyncPacketReceived(String ip, String heightStr, String numConnections, String unconfirmedTransactionSetHash, String ecPubKeyString) {
         try {
+            
             node.addConnection(NetworkUtils.toIp(ip));
+            
+            TODO do something with the received key
+            
             int height = Integer.parseInt(heightStr);
             if (height < node.getBlockchain().getHeight()) {
                 node.getPacketSender().sendBlocks(InetAddress.getByName(ip), height, node.getBlockchain().getHeight());

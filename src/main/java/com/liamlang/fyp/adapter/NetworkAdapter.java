@@ -4,6 +4,7 @@ import com.liamlang.fyp.Model.EncryptedMessage;
 import com.liamlang.fyp.Model.SignedMessage;
 import com.liamlang.fyp.Utils.EncryptionUtils;
 import com.liamlang.fyp.Utils.Utils;
+import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -21,47 +22,50 @@ public class NetworkAdapter {
         return InetAddress.getLocalHost().getHostAddress();
     }
 
-    public static void sendSyncPacket(int height, int numConnections, String unconfirmedTransactionSetHash, InetAddress ip, KeyPair keyPair, String name) throws Exception {
+    public static void sendSyncPacket(int height, int numConnections, String unconfirmedTransactionSetHash, String myEcPubKey, InetAddress ip, KeyPair myDsaKeyPair, String myName) throws Exception {
 
-        SignedMessage m = new SignedMessage("SYNC " + getMyIp() + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash);
-        m.sign(keyPair, name);
+        SignedMessage m = new SignedMessage("SYNC " + getMyIp() + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash + " " + myEcPubKey);
+        m.sign(myDsaKeyPair, myName);
 
         sendPacket(m, ip);
     }
 
-    public static void sendBlockPacket(int height, String block, InetAddress ip, KeyPair keyPair, String name) throws Exception {
+    public static void sendBlockPacket(int height, String block, InetAddress ip, KeyPair myDsaKeyPair, String myName, PublicKey peerEcPubKey) throws Exception {
 
         SignedMessage m = new SignedMessage("BLOCK " + Integer.toString(height) + " " + block);
-        m.sign(keyPair, name);
+        m.sign(myDsaKeyPair, myName);
 
-        sendPacket(m, ip);
+        encryptAndSendPacket(m, ip, peerEcPubKey);
     }
 
-    public static void sendConnectionsPacket(String connections, InetAddress ip, KeyPair keyPair, String name) throws Exception {
+    public static void sendConnectionsPacket(String connections, InetAddress ip, KeyPair myDsaKeyPair, String myName, PublicKey peerEcPubKey) throws Exception {
 
         SignedMessage m = new SignedMessage("CONNECTIONS " + connections);
-        m.sign(keyPair, name);
+        m.sign(myDsaKeyPair, myName);
 
-        sendPacket(m, ip);
+        encryptAndSendPacket(m, ip, peerEcPubKey);
     }
 
-    public static void sendTransactionsPacket(String transactionSet, InetAddress ip, KeyPair keyPair, String name) throws Exception {
+    public static void sendTransactionsPacket(String transactionSet, InetAddress ip, KeyPair myDsaKeyPair, String myName, PublicKey peerEcPubKey) throws Exception {
 
         SignedMessage m = new SignedMessage("UNCONFIRMED_TRANSACTION_SET " + transactionSet);
-        m.sign(keyPair, name);
+        m.sign(myDsaKeyPair, myName);
 
-        sendPacket(m, ip);
+        encryptAndSendPacket(m, ip, peerEcPubKey);
     }
 
-    public static void sendPacket(SignedMessage message, InetAddress ip, PublicKey peerEcKey) throws Exception {
-
-        System.out.println("Sending " + message.getMessage());
+    public static void encryptAndSendPacket(SignedMessage message, InetAddress ip, PublicKey peerEcKey) throws Exception {
 
         byte[] cleartext = Utils.serialize(message);
 
         EncryptedMessage encryptedMessage = EncryptionUtils.encrypt(cleartext, peerEcKey);
 
-        byte[] packet = Utils.serialize(encryptedMessage);
+        sendPacket(encryptedMessage, ip);
+    }
+
+    public static void sendPacket(Serializable message, InetAddress ip) throws Exception {
+
+        byte[] packet = Utils.serialize(message);
 
         DatagramSocket datagramSocket = new DatagramSocket();
 
@@ -72,7 +76,7 @@ public class NetworkAdapter {
         datagramSocket.close();
     }
 
-    public static EncryptedMessage receivePacket() throws Exception {
+    public static byte[] receivePacket() throws Exception {
 
         DatagramSocket datagramSocket = new DatagramSocket(PORT);
 
@@ -84,14 +88,12 @@ public class NetworkAdapter {
 
         datagramSocket.close();
 
-        byte[] bytes = datagramPacket.getData();
-
-        return (EncryptedMessage) Utils.deserialize(bytes);
+        return datagramPacket.getData();
     }
 
     public interface PacketReceivedListener {
 
-        void onPacketReceived(EncryptedMessage message);
+        void onPacketReceived(byte[] bytes);
     }
 
     public static void runWhenPacketReceived(PacketReceivedListener listener) {
@@ -103,9 +105,9 @@ public class NetworkAdapter {
 
                 try {
 
-                    EncryptedMessage encryptedMessage = receivePacket();
+                    byte[] bytes = receivePacket();
 
-                    listener.onPacketReceived(encryptedMessage);
+                    listener.onPacketReceived(bytes);
 
                 } catch (Exception ex) {
                     System.out.println("Exception in NetworkAdapter.runWhenPacketReceived");

@@ -22,32 +22,32 @@ import java.security.PublicKey;
 import java.util.ArrayList;
 
 public class Node implements Serializable {
-    
+
     private ReceivedPacketHandler receivedPacketHandler;
     private PacketSender packetSender;
     private TransactionBuilder transactionBuilder;
     private TransactionVerifier transactionVerifier;
-    
+
     private Blockchain bc;
-    
+
     private ArrayList<InetAddress> connections = new ArrayList<>();
-    
+
     private ArrayList<Transaction> unconfirmedTransactionSet = new ArrayList<>();
-    
+
     private ArrayList<Component> unspentComponents = new ArrayList<>();
-    
+
     private String ownerName;
-    
+
     private KeyPair dsaKeyPair;
     private KeyPair ecKeyPair;
-    
+
     private ArrayList<TrustedSignee> trustedSignees = new ArrayList<>();
     private ArrayList<PublicKey> blacklistedKeys = new ArrayList<>();
-    
+
     private boolean isCreatingBlocks;
-    
+
     private String saveFileName;
-    
+
     public Node(Blockchain bc, String ownerName, String saveFileName) {
         this.bc = bc;
         this.ownerName = ownerName;
@@ -56,33 +56,33 @@ public class Node implements Serializable {
         this.isCreatingBlocks = false;
         this.saveFileName = saveFileName;
     }
-    
+
     public void init() {
-        
+
         receivedPacketHandler = new ReceivedPacketHandler(this);
         packetSender = new PacketSender(this);
         transactionBuilder = new TransactionBuilder(this);
         transactionVerifier = new TransactionVerifier(this);
-        
+
         NetworkAdapter.runWhenPacketReceived(new NetworkAdapter.PacketReceivedListener() {
-            
+
             @Override
-            public void onPacketReceived(EncryptedMessage message) {
-                
-                receivedPacketHandler.onPacketReceived(message);
+            public void onPacketReceived(byte[] bytes) {
+
+                receivedPacketHandler.onPacketReceived(bytes);
             }
         });
-        
+
         Utils.scheduleRepeatingTask(2000, new Runnable() {
             @Override
             public void run() {
                 syncWithConnections();
             }
         });
-        
+
         System.out.println("Started node with IP " + getMyIp());
     }
-    
+
     public String getMyIp() {
         try {
             return NetworkAdapter.getMyIp();
@@ -91,7 +91,7 @@ public class Node implements Serializable {
             return "Error getting my IP!";
         }
     }
-    
+
     public void addConnection(InetAddress ip) {
         for (InetAddress connection : connections) {
             if (connection.equals(ip)) {
@@ -102,46 +102,46 @@ public class Node implements Serializable {
         saveSelf();
         packetSender.sendConnections(ip);
     }
-    
+
     public void broadcastTransaction(Transaction t) {
         if (t != null && isValidTransaction(t)) {
             unconfirmedTransactionSet.add(t);
         }
         saveSelf();
     }
-    
+
     public void startCreatingBlocks() {
-        
+
         isCreatingBlocks = true;
-        
+
         Utils.scheduleRepeatingTask(5000, new Runnable() {
             @Override
             public void run() {
-                
+
                 if (unconfirmedTransactionSet.size() > 0) {
                     createBlock();
                 }
             }
         });
     }
-    
+
     public boolean isCreatingBlocks() {
         return isCreatingBlocks;
     }
-    
+
     public boolean isUnspent(Component component) {
-        
+
         for (Component unspentComponent : unspentComponents) {
-            
+
             if (unspentComponent.getHash().equals(component.getHash()) && component.verifyHash()) {
-                
+
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     public String toString() {
         String res = "My blockchain:" + bc.toString() + "\nMy connections:";
         if (!connections.isEmpty()) {
@@ -152,7 +152,7 @@ public class Node implements Serializable {
         res += "\nI have " + Integer.toString(unconfirmedTransactionSet.size()) + " unconfirmed transactions";
         return res;
     }
-    
+
     public void saveSelf() {
         try {
             FileUtils.saveToFile(this, saveFileName);
@@ -160,7 +160,7 @@ public class Node implements Serializable {
             System.out.println("Exception saving node state");
         }
     }
-    
+
     private void syncWithConnections() {
         if (!connections.isEmpty()) {
             for (InetAddress ip : connections) {
@@ -170,31 +170,31 @@ public class Node implements Serializable {
             System.out.println("No connections");
         }
     }
-    
+
     public void createBlock() {
         try {
             if (bc.getHeight() == 0) {
                 return;
             }
-            
+
             BlockData blockData = new BlockData(unconfirmedTransactionSet);
             Block block = new Block(bc.getTop(), blockData);
             unconfirmedTransactionSet = new ArrayList<>();
-            
+
             bc.addToTop(block);
             saveSelf();
-            
+
         } catch (IOException ex) {
             System.out.println("Exception in Node.createBlock");
         }
     }
-    
+
     private void syncWithConnection(InetAddress ip) {
-        packetSender.sendSync(bc.getHeight(), connections.size(), unconfirmedTransactionSet, ip);
+        packetSender.sendSync(ip, bc.getHeight(), connections.size(), unconfirmedTransactionSet, ecKeyPair.getPublic());
     }
-    
+
     public boolean keyIsTrusted(PublicKey pub, String signee) {
-        
+
         for (TrustedSignee trustedSignee : trustedSignees) {
             if (trustedSignee.getPubkey().equals(pub) && trustedSignee.getName().equals(signee)) {
                 return true;
@@ -203,7 +203,7 @@ public class Node implements Serializable {
         if (blacklistedKeys.contains(pub)) {
             return false;
         } else {
-            
+
             boolean result = Utils.showYesNoPopup("Do you want to trust this key?\n\nSignee: " + signee
                     + "\nKey hash: " + Utils.toHexString(HashUtils.sha256(pub.getEncoded())));
             if (result) {
@@ -215,66 +215,66 @@ public class Node implements Serializable {
             return result;
         }
     }
-    
+
     public Component getUnspentComponent(String hash) {
-        
+
         for (Component component : unspentComponents) {
             if (component.getHash().equals(hash)) {
                 return component;
             }
         }
-        
+
         return null;
     }
-    
+
     public boolean isValidTransaction(Transaction t) {
         return transactionVerifier.verify(t);
     }
-    
+
     public PacketSender getPacketSender() {
         return packetSender;
     }
-    
+
     public TransactionBuilder getTransactionBuilder() {
         return transactionBuilder;
     }
-    
+
     public Blockchain getBlockchain() {
         return bc;
     }
-    
+
     public ArrayList<InetAddress> getConnections() {
         return connections;
     }
-    
+
     public ArrayList<Transaction> getUnconfirmedTransactionSet() {
         return unconfirmedTransactionSet;
     }
-    
+
     public KeyPair getDsaKeyPair() {
         return dsaKeyPair;
     }
-    
+
     public KeyPair getEcKeyPair() {
         return ecKeyPair;
     }
-    
+
     public String getOwnerName() {
         return ownerName;
     }
-    
+
     public void setOwneName(String ownerName) {
         this.ownerName = ownerName;
     }
-    
+
     public ArrayList<Component> getUnspentComponents() {
         return unspentComponents;
     }
-    
+
     public ArrayList<TrustedSignee> getTrustedSignees() {
         return trustedSignees;
     }
-    
+
     public ArrayList<PublicKey> getBlacklistedKeys() {
         return blacklistedKeys;
     }

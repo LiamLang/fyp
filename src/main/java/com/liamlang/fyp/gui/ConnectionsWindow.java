@@ -43,7 +43,7 @@ public class ConnectionsWindow {
             @Override
             public void run() {
 
-                if (connectionsHash != HashUtils.sha256(Utils.serialize(node.getConnections()))
+                if (!Utils.toString(connectionsHash).equals(Utils.toString(HashUtils.sha256(Utils.serialize(node.getConnections()))))
                         || numTrustedKeys != node.getTrustedSignees().size()
                         || numBlacklistedKeys != node.getBlacklistedKeys().size()) {
 
@@ -77,7 +77,9 @@ public class ConnectionsWindow {
         for (ConnectedNode connection : node.getConnections()) {
 
             window.addSelectableTextField(connection.getIp().toString());
-            window.addSelectableTextField("Encryption Public Key: " + Utils.toHexString(connection.getEcPubKey().getEncoded()));
+            window.addSelectableTextField("Encryption Public Key: "
+                    + connection.getEcPubKey() == null ? " Not yet known"
+                    : Utils.toHexString(connection.getEcPubKey().getEncoded()));
 
             window.addVerticalSpace(5);
 

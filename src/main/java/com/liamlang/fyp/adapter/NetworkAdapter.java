@@ -11,7 +11,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.security.KeyPair;
-import java.security.PublicKey;
 
 public class NetworkAdapter {
 
@@ -36,7 +35,7 @@ public class NetworkAdapter {
         SignedMessage m = new SignedMessage("BLOCK " + Integer.toString(height) + " " + block);
         m.sign(myDsaKeyPair, myName);
 
-        encryptAndSendPacket(m, connection.getIp(), connection.getEcPubKey());
+        encryptAndSendPacket(m, connection);
     }
 
     public static void sendConnectionsPacket(String connections, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
@@ -44,7 +43,7 @@ public class NetworkAdapter {
         SignedMessage m = new SignedMessage("CONNECTIONS " + connections);
         m.sign(myDsaKeyPair, myName);
 
-        encryptAndSendPacket(m, connection.getIp(), connection.getEcPubKey());
+        encryptAndSendPacket(m, connection);
     }
 
     public static void sendTransactionsPacket(String transactionSet, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
@@ -52,16 +51,23 @@ public class NetworkAdapter {
         SignedMessage m = new SignedMessage("UNCONFIRMED_TRANSACTION_SET " + transactionSet);
         m.sign(myDsaKeyPair, myName);
 
-        encryptAndSendPacket(m, connection.getIp(), connection.getEcPubKey());
+        encryptAndSendPacket(m, connection);
     }
 
-    public static void encryptAndSendPacket(SignedMessage message, InetAddress ip, PublicKey peerEcKey) throws Exception {
+    public static void encryptAndSendPacket(SignedMessage message, ConnectedNode connection) throws Exception {
 
-        byte[] cleartext = Utils.serialize(message);
+        if (connection.getEcPubKey() != null) {
 
-        EncryptedMessage encryptedMessage = EncryptionUtils.encrypt(cleartext, peerEcKey);
+            byte[] cleartext = Utils.serialize(message);
 
-        sendPacket(encryptedMessage, ip);
+            EncryptedMessage encryptedMessage = EncryptionUtils.encrypt(cleartext, connection.getEcPubKey());
+
+            sendPacket(encryptedMessage, connection.getIp());
+
+        } else {
+
+            sendPacket(message, connection.getIp());
+        }
     }
 
     public static void sendPacket(Serializable message, InetAddress ip) throws Exception {

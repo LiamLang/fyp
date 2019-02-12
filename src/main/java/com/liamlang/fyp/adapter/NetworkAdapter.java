@@ -1,5 +1,6 @@
 package com.liamlang.fyp.adapter;
 
+import com.liamlang.fyp.Model.ConnectedNode;
 import com.liamlang.fyp.Model.EncryptedMessage;
 import com.liamlang.fyp.Model.SignedMessage;
 import com.liamlang.fyp.Utils.EncryptionUtils;
@@ -22,36 +23,36 @@ public class NetworkAdapter {
         return InetAddress.getLocalHost().getHostAddress();
     }
 
-    public static void sendSyncPacket(int height, int numConnections, String unconfirmedTransactionSetHash, String myEcPubKey, InetAddress ip, KeyPair myDsaKeyPair, String myName) throws Exception {
+    public static void sendSyncPacket(int height, int numConnections, String unconfirmedTransactionSetHash, String myEcPubKey, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
 
         SignedMessage m = new SignedMessage("SYNC " + getMyIp() + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash + " " + myEcPubKey);
         m.sign(myDsaKeyPair, myName);
 
-        sendPacket(m, ip);
+        sendPacket(m, connection.getIp());
     }
 
-    public static void sendBlockPacket(int height, String block, InetAddress ip, KeyPair myDsaKeyPair, String myName, PublicKey peerEcPubKey) throws Exception {
+    public static void sendBlockPacket(int height, String block, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
 
         SignedMessage m = new SignedMessage("BLOCK " + Integer.toString(height) + " " + block);
         m.sign(myDsaKeyPair, myName);
 
-        encryptAndSendPacket(m, ip, peerEcPubKey);
+        encryptAndSendPacket(m, connection.getIp(), connection.getEcPubKey());
     }
 
-    public static void sendConnectionsPacket(String connections, InetAddress ip, KeyPair myDsaKeyPair, String myName, PublicKey peerEcPubKey) throws Exception {
+    public static void sendConnectionsPacket(String connections, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
 
         SignedMessage m = new SignedMessage("CONNECTIONS " + connections);
         m.sign(myDsaKeyPair, myName);
 
-        encryptAndSendPacket(m, ip, peerEcPubKey);
+        encryptAndSendPacket(m, connection.getIp(), connection.getEcPubKey());
     }
 
-    public static void sendTransactionsPacket(String transactionSet, InetAddress ip, KeyPair myDsaKeyPair, String myName, PublicKey peerEcPubKey) throws Exception {
+    public static void sendTransactionsPacket(String transactionSet, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
 
         SignedMessage m = new SignedMessage("UNCONFIRMED_TRANSACTION_SET " + transactionSet);
         m.sign(myDsaKeyPair, myName);
 
-        encryptAndSendPacket(m, ip, peerEcPubKey);
+        encryptAndSendPacket(m, connection.getIp(), connection.getEcPubKey());
     }
 
     public static void encryptAndSendPacket(SignedMessage message, InetAddress ip, PublicKey peerEcKey) throws Exception {

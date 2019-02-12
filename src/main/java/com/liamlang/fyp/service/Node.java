@@ -4,8 +4,7 @@ import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.BlockData;
 import com.liamlang.fyp.Model.Blockchain;
 import com.liamlang.fyp.Model.Component;
-import com.liamlang.fyp.Model.EncryptedMessage;
-import com.liamlang.fyp.Model.SignedMessage;
+import com.liamlang.fyp.Model.ConnectedNode;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Model.TrustedSignee;
 import com.liamlang.fyp.Utils.EncryptionUtils;
@@ -30,7 +29,7 @@ public class Node implements Serializable {
 
     private Blockchain bc;
 
-    private ArrayList<InetAddress> connections = new ArrayList<>();
+    private ArrayList<ConnectedNode> connections = new ArrayList<>();
 
     private ArrayList<Transaction> unconfirmedTransactionSet = new ArrayList<>();
 
@@ -92,15 +91,29 @@ public class Node implements Serializable {
         }
     }
 
-    public void addConnection(InetAddress ip) {
-        for (InetAddress connection : connections) {
-            if (connection.equals(ip)) {
-                return;
+    public void addConnection(ConnectedNode newConnection) {
+        
+        ConnectedNode connectionForDeletion = null;
+        
+        for (ConnectedNode connection : connections) {
+            if (connection.getIp().equals(newConnection.getIp())) {
+                
+                connectionForDeletion = connection;
             }
         }
-        connections.add(ip);
+        
+        // If a connection with the same IP is present delete the old one
+        // (i.e. replacing the encryption key with the new one)
+        // This does not open a vulnetability, as messages not signed with a
+        // trusted signing key will be ignored
+        if (connectionForDeletion != null) {
+            connections.remove(connectionForDeletion);
+        }
+        
+        connections.add(newConnection);
         saveSelf();
-        packetSender.sendConnections(ip);
+        
+        packetSender.sendConnections(newConnection);
     }
 
     public void broadcastTransaction(Transaction t) {
@@ -143,14 +156,8 @@ public class Node implements Serializable {
     }
 
     public String toString() {
-        String res = "My blockchain:" + bc.toString() + "\nMy connections:";
-        if (!connections.isEmpty()) {
-            for (InetAddress connection : connections) {
-                res = res + "\n" + connection.toString();
-            }
-        }
-        res += "\nI have " + Integer.toString(unconfirmedTransactionSet.size()) + " unconfirmed transactions";
-        return res;
+        return "My blockchain:" + bc.toString() + "\nMy connections: " + Integer.toString(connections.size())
+                + "\nI have " + Integer.toString(unconfirmedTransactionSet.size()) + " unconfirmed transactions";
     }
 
     public void saveSelf() {
@@ -163,8 +170,8 @@ public class Node implements Serializable {
 
     private void syncWithConnections() {
         if (!connections.isEmpty()) {
-            for (InetAddress ip : connections) {
-                syncWithConnection(ip);
+            for (ConnectedNode connection : connections) {
+                syncWithConnection(connection);
             }
         } else {
             System.out.println("No connections");
@@ -189,8 +196,9 @@ public class Node implements Serializable {
         }
     }
 
-    private void syncWithConnection(InetAddress ip) {
-        packetSender.sendSync(ip, bc.getHeight(), connections.size(), unconfirmedTransactionSet, ecKeyPair.getPublic());
+    private void syncWithConnection(ConnectedNode connection) {
+        
+        packetSender.sendSync(connection, bc.getHeight(), connections.size(), unconfirmedTransactionSet, ecKeyPair.getPublic());
     }
 
     public boolean keyIsTrusted(PublicKey pub, String signee) {
@@ -243,7 +251,7 @@ public class Node implements Serializable {
         return bc;
     }
 
-    public ArrayList<InetAddress> getConnections() {
+    public ArrayList<ConnectedNode> getConnections() {
         return connections;
     }
 

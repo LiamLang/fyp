@@ -1,6 +1,7 @@
 package com.liamlang.fyp.service;
 
 import com.liamlang.fyp.Model.Block;
+import com.liamlang.fyp.Model.ConnectedNode;
 import com.liamlang.fyp.Model.EncryptedMessage;
 import com.liamlang.fyp.Model.SignedMessage;
 import com.liamlang.fyp.Model.Transaction;
@@ -10,6 +11,7 @@ import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.adapter.NetworkAdapter;
 import java.io.Serializable;
 import java.net.InetAddress;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -125,20 +127,22 @@ public class ReceivedPacketHandler implements Serializable {
 
     private void onSyncPacketReceived(String ip, String heightStr, String numConnections, String unconfirmedTransactionSetHash, String ecPubKeyString) {
         try {
-            
-            node.addConnection(NetworkUtils.toIp(ip));
-            
-            TODO do something with the received key
-            
+
+            InetAddress inetAddress = NetworkUtils.toIp(ip);
+            PublicKey ecPubKey = (PublicKey) Utils.deserialize(Utils.toByteArray(ecPubKeyString));
+            ConnectedNode newConnection = new ConnectedNode(inetAddress, ecPubKey);
+
+            node.addConnection(newConnection);
+
             int height = Integer.parseInt(heightStr);
             if (height < node.getBlockchain().getHeight()) {
-                node.getPacketSender().sendBlocks(InetAddress.getByName(ip), height, node.getBlockchain().getHeight());
+                node.getPacketSender().sendBlocks(newConnection, height, node.getBlockchain().getHeight());
             }
             if (Integer.parseInt(numConnections) < node.getConnections().size()) {
-                node.getPacketSender().sendConnections(InetAddress.getByName(ip));
+                node.getPacketSender().sendConnections(newConnection);
             }
             if (!unconfirmedTransactionSetHash.equals(Utils.toHexString(HashUtils.sha256(Utils.serialize(node.getUnconfirmedTransactionSet()))))) {
-                node.getPacketSender().sendTransactions(InetAddress.getByName(ip));
+                node.getPacketSender().sendTransactions(newConnection);
             }
         } catch (Exception ex) {
             System.out.println("Exception in Node.onSyncPacketReceived");
@@ -172,7 +176,8 @@ public class ReceivedPacketHandler implements Serializable {
             ArrayList<InetAddress> otherConnections = (ArrayList<InetAddress>) Utils.deserialize(Utils.toByteArray(otherConnectionsStr));
             for (InetAddress ip : otherConnections) {
                 if (!node.getConnections().contains(ip) && !ip.getHostAddress().equals(NetworkAdapter.getMyIp())) {
-                    node.getConnections().add(ip);
+
+                    node.getConnections().add(new ConnectedNode(ip));
                 }
             }
             node.saveSelf();

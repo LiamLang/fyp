@@ -1,5 +1,6 @@
 package com.liamlang.fyp.gui;
 
+import com.liamlang.fyp.Model.ConnectedNode;
 import com.liamlang.fyp.Model.TrustedSignee;
 import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.NetworkUtils;
@@ -18,13 +19,13 @@ public class ConnectionsWindow {
 
     private final Node node;
 
-    private int numConnections;
+    private byte[] connectionsHash;
     private int numTrustedKeys;
     private int numBlacklistedKeys;
 
     public ConnectionsWindow(Node node) {
         this.node = node;
-        this.numConnections = node.getConnections().size();
+        this.connectionsHash = HashUtils.sha256(Utils.serialize(node.getConnections()));
         this.numTrustedKeys = node.getTrustedSignees().size();
         this.numBlacklistedKeys = node.getBlacklistedKeys().size();
     }
@@ -42,10 +43,11 @@ public class ConnectionsWindow {
             @Override
             public void run() {
 
-                if (numConnections != node.getConnections().size() || numTrustedKeys != node.getTrustedSignees().size()
+                if (connectionsHash != HashUtils.sha256(Utils.serialize(node.getConnections()))
+                        || numTrustedKeys != node.getTrustedSignees().size()
                         || numBlacklistedKeys != node.getBlacklistedKeys().size()) {
 
-                    numConnections = node.getConnections().size();
+                    connectionsHash = HashUtils.sha256(Utils.serialize(node.getConnections()));
                     numTrustedKeys = node.getTrustedSignees().size();
                     numBlacklistedKeys = node.getBlacklistedKeys().size();
 
@@ -72,9 +74,10 @@ public class ConnectionsWindow {
 
         window.addVerticalSpace(10);
 
-        for (InetAddress connection : node.getConnections()) {
+        for (ConnectedNode connection : node.getConnections()) {
 
-            window.addSelectableTextField(connection.toString());
+            window.addSelectableTextField(connection.getIp().toString());
+            window.addSelectableTextField("Encryption Public Key: " + Utils.toHexString(connection.getEcPubKey().getEncoded()));
 
             window.addVerticalSpace(5);
 
@@ -104,7 +107,7 @@ public class ConnectionsWindow {
 
                 try {
                     InetAddress ip = NetworkUtils.toIp(text);
-                    node.addConnection(ip);
+                    node.addConnection(new ConnectedNode(ip));
 
                     Utils.showOkPopup("Added connection to " + ip.toString() + "!");
                 } catch (Exception ex) {

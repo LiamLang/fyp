@@ -10,6 +10,7 @@ import java.security.Security;
 import java.security.spec.ECGenParameterSpec;
 import javax.crypto.Cipher;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.bouncycastle.jce.spec.IESParameterSpec;
 
 public class EncryptionUtils {
 
@@ -38,10 +39,13 @@ public class EncryptionUtils {
             Cipher ecies = Cipher.getInstance("ECIESwithAES-CBC");
             ecies.init(Cipher.ENCRYPT_MODE, pubKey);
 
-            byte[] ciphertext = ecies.doFinal(cleartext);
             AlgorithmParameters params = ecies.getParameters();
+            IESParameterSpec paramSpec = params.getParameterSpec(IESParameterSpec.class);
+                       
+            byte[] ciphertext = ecies.doFinal(cleartext);
 
-            return new EncryptedMessage(ciphertext, params.getEncoded());
+            return new EncryptedMessage(ciphertext, paramSpec.getDerivationV(), paramSpec.getEncodingV(), paramSpec.getMacKeySize(),
+                    paramSpec.getCipherKeySize(), paramSpec.getNonce(), paramSpec.getPointCompression());
 
         } catch (Exception ex) {
 
@@ -53,13 +57,15 @@ public class EncryptionUtils {
         }
     }
 
-    public static byte[] decrypt(byte[] ciphertext, byte[] params, PrivateKey privKey) {
+    public static byte[] decrypt(byte[] ciphertext, byte[] derivation, byte[] encoding, int macKeySize, 
+            int cipherKeySize, byte[] nonce, boolean usePointCompression, PrivateKey privKey) {
 
-        try {            
+        try {
             Security.addProvider(new BouncyCastleProvider());
             Cipher ecies = Cipher.getInstance("ECIESwithAES-CBC");
             AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance("IES");
-            algorithmParameters.init(params);
+            IESParameterSpec paramSpec = new IESParameterSpec(derivation, encoding, macKeySize, cipherKeySize, nonce, usePointCompression);
+            algorithmParameters.init(paramSpec);
             ecies.init(Cipher.DECRYPT_MODE, privKey, algorithmParameters);
 
             return ecies.doFinal(ciphertext);

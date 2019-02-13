@@ -194,8 +194,19 @@ public class ReceivedPacketHandler implements Serializable {
         try {
             ArrayList<Transaction> otherUnconfirmedTransactionSet = (ArrayList<Transaction>) Utils.deserialize(Utils.toByteArray(otherUnconfirmedTransactionSetStr));
             for (Transaction t : otherUnconfirmedTransactionSet) {
-                if (!node.getUnconfirmedTransactionSet().contains(t) && !node.getBlockchain().isConfirmed(t)) {
+                
+                boolean matchFound = false;
+                
+                for (Transaction existing : node.getUnconfirmedTransactionSet()) {
+                    if (existing.equals(t)) {
+                        matchFound = true;
+                    }
+                }                    
+                    
+                if (!matchFound && !node.getBlockchain().isConfirmed(t)) {
+                    
                     node.getUnconfirmedTransactionSet().add(t);
+                    
                     Collections.sort(node.getUnconfirmedTransactionSet());
                 }
             }

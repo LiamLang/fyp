@@ -38,7 +38,7 @@ public class PacketSender implements Serializable {
         }
     }
 
-    public void sendConnections(ConnectedNode connection, boolean test) {
+    public void sendConnections(ConnectedNode connection) {
         try {
             String str = Utils.toString(Utils.serialize(node.getConnections()));
             NetworkAdapter.sendConnectionsPacket(str, connection, node.getDsaKeyPair(), node.getOwnerName());

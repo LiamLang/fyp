@@ -158,7 +158,7 @@ public class ReceivedPacketHandler implements Serializable {
             if (height == node.getBlockchain().getHeight() + 1) {
                 Block block = (Block) Utils.deserialize(Utils.toByteArray(blockStr));
 
-                if (node.getBlockchain().addToTop(block)) {
+                if (node.getBlockchain().addToTop(block, node)) {
 
                     for (Transaction t : block.getData().getTransactions()) {
 
@@ -194,7 +194,7 @@ public class ReceivedPacketHandler implements Serializable {
         try {
             ArrayList<Transaction> otherUnconfirmedTransactionSet = (ArrayList<Transaction>) Utils.deserialize(Utils.toByteArray(otherUnconfirmedTransactionSetStr));
             for (Transaction t : otherUnconfirmedTransactionSet) {
-                if (!node.getUnconfirmedTransactionSet().contains(t) && node.isValidTransaction(t) && !node.getBlockchain().isConfirmed(t)) {
+                if (!node.getUnconfirmedTransactionSet().contains(t) && !node.getBlockchain().isConfirmed(t)) {
                     node.getUnconfirmedTransactionSet().add(t);
                     Collections.sort(node.getUnconfirmedTransactionSet());
                 }

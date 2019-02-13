@@ -161,7 +161,6 @@ public class Node implements Serializable {
 
     public void saveSelf() {
         
-        System.out.println("Saving state to " + saveFileName);
         try {
             FileUtils.saveToFile(this, saveFileName);
         } catch (Exception ex) {
@@ -189,7 +188,7 @@ public class Node implements Serializable {
             Block block = new Block(bc.getTop(), blockData);
             unconfirmedTransactionSet = new ArrayList<>();
 
-            bc.addToTop(block);
+            bc.addToTop(block, this);
             saveSelf();
 
         } catch (IOException ex) {

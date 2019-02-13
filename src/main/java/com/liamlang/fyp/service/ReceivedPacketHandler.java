@@ -74,7 +74,7 @@ public class ReceivedPacketHandler implements Serializable {
             return;
         }
         String[] parts = messageStr.split(" ");
-        
+
         System.out.println("Received: " + messageStr + "\n");
 
         if (parts[0].equals("SYNC") && parts.length >= 6) {
@@ -177,7 +177,7 @@ public class ReceivedPacketHandler implements Serializable {
         try {
             ArrayList<ConnectedNode> otherConnections = (ArrayList<ConnectedNode>) Utils.deserialize(Utils.toByteArray(otherConnectionsStr));
             for (ConnectedNode connection : otherConnections) {
-                
+
                 if (!node.getConnections().contains(connection) && !connection.getIp().getHostAddress().equals(NetworkAdapter.getMyIp())) {
 
                     node.getConnections().add(connection);
@@ -194,19 +194,19 @@ public class ReceivedPacketHandler implements Serializable {
         try {
             ArrayList<Transaction> otherUnconfirmedTransactionSet = (ArrayList<Transaction>) Utils.deserialize(Utils.toByteArray(otherUnconfirmedTransactionSetStr));
             for (Transaction t : otherUnconfirmedTransactionSet) {
-                
+
                 boolean matchFound = false;
-                
+
                 for (Transaction existing : node.getUnconfirmedTransactionSet()) {
                     if (existing.equals(t)) {
                         matchFound = true;
                     }
-                }                    
-                    
-                if (!matchFound && !node.getBlockchain().isConfirmed(t)) {
-                    
+                }
+
+                if (!matchFound && !node.getBlockchain().isConfirmed(t) && node.verifyTransaction(t, false)) {
+
                     node.getUnconfirmedTransactionSet().add(t);
-                    
+
                     Collections.sort(node.getUnconfirmedTransactionSet());
                 }
             }

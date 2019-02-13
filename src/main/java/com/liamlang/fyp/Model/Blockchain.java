@@ -49,9 +49,13 @@ public class Blockchain implements Serializable {
         if (isValidTop(block)) {
 
             for (Transaction t : block.getData().getTransactions()) {
-                if (!node.isValidTransaction(t)) {
+                if (!node.verifyTransaction(t, false)) {
                     return false;
                 }
+            }
+
+            for (Transaction t : block.getData().getTransactions()) {
+                node.verifyTransaction(t, true);
             }
 
             blocks.add(block);

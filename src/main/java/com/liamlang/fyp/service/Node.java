@@ -187,7 +187,15 @@ public class Node implements Serializable {
                 return;
             }
 
-            BlockData blockData = new BlockData(unconfirmedTransactionSet);
+            ArrayList<Transaction> validTransactions = new ArrayList<>();
+            
+            for (Transaction t : unconfirmedTransactionSet) {
+                if (verifyTransaction(t, false)) {
+                    validTransactions.add(t);
+                }
+            }
+            
+            BlockData blockData = new BlockData(validTransactions);
             Block block = new Block(bc.getTop(), blockData);
             unconfirmedTransactionSet = new ArrayList<>();
 
@@ -238,8 +246,8 @@ public class Node implements Serializable {
         return null;
     }
 
-    public boolean isValidTransaction(Transaction t) {
-        return transactionVerifier.verify(t);
+    public boolean verifyTransaction(Transaction t, boolean commitResults) {
+        return transactionVerifier.verify(t, commitResults);
     }
 
     public PacketSender getPacketSender() {

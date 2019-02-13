@@ -49,6 +49,19 @@ public class PacketSender implements Serializable {
 
     public void sendTransactions(ConnectedNode connection) {
         try {
+
+            ArrayList<Transaction> invalidTransactions = new ArrayList<>();
+
+            for (Transaction t : node.getUnconfirmedTransactionSet()) {
+                if (!node.verifyTransaction(t, false)) {
+                    invalidTransactions.add(t);
+                }
+            }
+
+            for (Transaction t : invalidTransactions) {
+                node.getUnconfirmedTransactionSet().remove(t);
+            }
+
             String str = Utils.toString(Utils.serialize(node.getUnconfirmedTransactionSet()));
             NetworkAdapter.sendTransactionsPacket(str, connection, node.getDsaKeyPair(), node.getOwnerName());
         } catch (Exception ex) {

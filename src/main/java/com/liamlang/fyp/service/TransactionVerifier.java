@@ -14,7 +14,7 @@ public class TransactionVerifier implements Serializable {
         this.node = node;
     }
 
-    public boolean verify(Transaction transaction) {
+    public boolean verify(Transaction transaction, boolean commitResults) {
 
         if (transaction.getInputHashes().isEmpty()) {
 
@@ -26,9 +26,11 @@ public class TransactionVerifier implements Serializable {
                 }
             }
 
-            for (Component component : transaction.getComponentsCreated()) {
+            if (commitResults) {
+                for (Component component : transaction.getComponentsCreated()) {
 
-                node.getUnspentComponents().add(component);
+                    node.getUnspentComponents().add(component);
+                }
             }
 
             return true;
@@ -47,26 +49,26 @@ public class TransactionVerifier implements Serializable {
                 }
             }
         }
-        
+
         // If one component is being disassembled from another, the 'old component' is not unspent,
         // but is a subcomponent of the old parent component
         ArrayList<Component> oldComponents2 = new ArrayList<>();
-        
+
         for (String inputHash : transaction.getInputHashes()) {
-            
+
             for (Component oldComponent : oldComponents) {
-                
+
                 for (Component subcomponent : oldComponent.getSubcomponents()) {
-                    
+
                     if (subcomponent.getHash().equals(inputHash)) {
-                        
+
                         // Can't add to ArrayList oldComponents at same time as iterating over it
                         oldComponents2.add(subcomponent);
                     }
                 }
             }
         }
-        
+
         for (Component oldComponent : oldComponents2) {
             oldComponents.add(oldComponent);
         }
@@ -99,14 +101,17 @@ public class TransactionVerifier implements Serializable {
                 }
             }
 
-            // Remove old components from node's unspent component list
-            for (Component oldComponent : oldComponents) {
-                node.getUnspentComponents().remove(oldComponent);
-            }
+            if (commitResults) {
 
-            // Add newly created components to the node's unspent component list
-            for (Component newComponent : transaction.getComponentsCreated()) {
-                node.getUnspentComponents().add(newComponent);
+                // Remove old components from node's unspent component list
+                for (Component oldComponent : oldComponents) {
+                    node.getUnspentComponents().remove(oldComponent);
+                }
+
+                // Add newly created components to the node's unspent component list
+                for (Component newComponent : transaction.getComponentsCreated()) {
+                    node.getUnspentComponents().add(newComponent);
+                }
             }
 
             return true;
@@ -217,16 +222,17 @@ public class TransactionVerifier implements Serializable {
             }
         }
 
-        // Remove old components from node's unspent component list
-        for (Component oldComponent : oldComponents) {
-            node.getUnspentComponents().remove(oldComponent);
-        }
+        if (commitResults) {
+            // Remove old components from node's unspent component list
+            for (Component oldComponent : oldComponents) {
+                node.getUnspentComponents().remove(oldComponent);
+            }
 
-        // Add newly created components to the node's unspent component list
-        for (Component newComponent : transaction.getComponentsCreated()) {
-            node.getUnspentComponents().add(newComponent);
+            // Add newly created components to the node's unspent component list
+            for (Component newComponent : transaction.getComponentsCreated()) {
+                node.getUnspentComponents().add(newComponent);
+            }
         }
-
         return true;
     }
 }

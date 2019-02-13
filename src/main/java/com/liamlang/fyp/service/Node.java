@@ -15,7 +15,6 @@ import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.adapter.NetworkAdapter;
 import java.io.IOException;
 import java.io.Serializable;
-import java.net.InetAddress;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -78,6 +77,10 @@ public class Node implements Serializable {
                 syncWithConnections();
             }
         });
+        
+        if (isCreatingBlocks) {
+            startCreatingBlocks();
+        }
 
         System.out.println("Started node with IP " + getMyIp());
     }
@@ -116,7 +119,7 @@ public class Node implements Serializable {
     }
 
     public void broadcastTransaction(Transaction t) {
-        if (t != null && isValidTransaction(t)) {
+        if (t != null) {
             unconfirmedTransactionSet.add(t);
         }
         saveSelf();

@@ -58,7 +58,7 @@ public class EncryptionUtils {
         try {            
             Security.addProvider(new BouncyCastleProvider());
             Cipher ecies = Cipher.getInstance("ECIESwithAES-CBC");
-            AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance("ECIESwithAES-CBC");
+            AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance("IES");
             algorithmParameters.init(params);
             ecies.init(Cipher.DECRYPT_MODE, privKey, algorithmParameters);
 

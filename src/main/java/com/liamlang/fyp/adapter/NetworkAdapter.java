@@ -27,6 +27,8 @@ public class NetworkAdapter {
         SignedMessage m = new SignedMessage("SYNC " + getMyIp() + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash + " " + myEcPubKey);
         m.sign(myDsaKeyPair, myName);
 
+        System.out.println("Sending unencrypted sync to " + connection.getIp().toString() + ": " + m.getMessage() + "\n");
+
         sendPacket(m, connection.getIp());
     }
 
@@ -62,9 +64,13 @@ public class NetworkAdapter {
 
             EncryptedMessage encryptedMessage = EncryptionUtils.encrypt(cleartext, connection.getEcPubKey());
 
+            System.out.println("Sending [encrypted] to " + connection.getIp().toString() + ": " + message.getMessage() + "\n");
+
             sendPacket(encryptedMessage, connection.getIp());
 
         } else {
+
+            System.out.println("Sending [unencrypted] to " + connection.getIp().toString() + ": " + message.getMessage() + "\n");
 
             sendPacket(message, connection.getIp());
         }

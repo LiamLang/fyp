@@ -74,6 +74,8 @@ public class ReceivedPacketHandler implements Serializable {
             return;
         }
         String[] parts = messageStr.split(" ");
+        
+        System.out.println("Received: " + messageStr + "\n");
 
         if (parts[0].equals("SYNC") && parts.length >= 6) {
 

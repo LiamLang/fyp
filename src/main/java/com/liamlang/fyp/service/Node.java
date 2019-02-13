@@ -95,11 +95,7 @@ public class Node implements Serializable {
 
         ConnectedNode connectionForDeletion = null;
 
-        for (ConnectedNode connection : connections) {
-            
-            String old = connection.getIp().getHostAddress();
-            String n = newConnection.getIp().getHostAddress();
-            
+        for (ConnectedNode connection : connections) {          
             
             if (connection.getIp().getHostAddress().equals(newConnection.getIp().getHostAddress())) {
 
@@ -117,8 +113,6 @@ public class Node implements Serializable {
 
         connections.add(newConnection);
         saveSelf();
-
-        packetSender.sendConnections(newConnection);
     }
 
     public void broadcastTransaction(Transaction t) {
@@ -166,6 +160,8 @@ public class Node implements Serializable {
     }
 
     public void saveSelf() {
+        
+        System.out.println("Saving state to " + saveFileName);
         try {
             FileUtils.saveToFile(this, saveFileName);
         } catch (Exception ex) {

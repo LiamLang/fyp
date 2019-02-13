@@ -2,15 +2,14 @@ package com.liamlang.fyp.Model;
 
 import com.liamlang.fyp.Utils.EncryptionUtils;
 import java.io.Serializable;
-import java.security.AlgorithmParameters;
 import java.security.PrivateKey;
 
 public class EncryptedMessage implements Serializable {
 
     private final byte[] ciphertext;
-    private final AlgorithmParameters params;
+    private final byte[] params;
 
-    public EncryptedMessage(byte[] ciphertext, AlgorithmParameters params) {
+    public EncryptedMessage(byte[] ciphertext, byte[] params) {
 
         this.ciphertext = ciphertext;
         this.params = params;

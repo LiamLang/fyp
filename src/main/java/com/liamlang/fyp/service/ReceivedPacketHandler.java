@@ -145,7 +145,7 @@ public class ReceivedPacketHandler implements Serializable {
                 node.getPacketSender().sendTransactions(newConnection);
             }
         } catch (Exception ex) {
-            System.out.println("Exception in Node.onSyncPacketReceived");
+            System.out.println("Exception in ReceivedPacketHandler.onSyncPacketReceived");
         }
     }
 
@@ -167,23 +167,24 @@ public class ReceivedPacketHandler implements Serializable {
             }
 
         } catch (Exception ex) {
-            System.out.println("Exception in Node.onBlockPacketReceived");
+            System.out.println("Exception in ReceivedPacketHandler.onBlockPacketReceived");
         }
     }
 
     private void onConnectionsPacketReceived(String otherConnectionsStr) {
         try {
-            ArrayList<InetAddress> otherConnections = (ArrayList<InetAddress>) Utils.deserialize(Utils.toByteArray(otherConnectionsStr));
-            for (InetAddress ip : otherConnections) {
-                if (!node.getConnections().contains(ip) && !ip.getHostAddress().equals(NetworkAdapter.getMyIp())) {
+            ArrayList<ConnectedNode> otherConnections = (ArrayList<ConnectedNode>) Utils.deserialize(Utils.toByteArray(otherConnectionsStr));
+            for (ConnectedNode connection : otherConnections) {
+                
+                if (!node.getConnections().contains(connection) && !connection.getIp().getHostAddress().equals(NetworkAdapter.getMyIp())) {
 
-                    node.getConnections().add(new ConnectedNode(ip));
+                    node.getConnections().add(connection);
                 }
             }
             node.saveSelf();
 
         } catch (Exception ex) {
-            System.out.println("Exception in Node.onConnectionsPacketRecevied");
+            System.out.println("Exception in ReceivedPacketHandler.onConnectionsPacketRecevied");
         }
     }
 
@@ -199,7 +200,7 @@ public class ReceivedPacketHandler implements Serializable {
             node.saveSelf();
 
         } catch (Exception ex) {
-            System.out.println("Exception in Node.onTransactionsPacketRecevied");
+            System.out.println("Exception in ReceivedPacketHandler.onTransactionsPacketRecevied");
         }
     }
 }

@@ -78,6 +78,8 @@ public class WindowBase {
 
         frame.pack();
         SwingUtilities.updateComponentTreeUI(frame);
+        
+        frame.setSize(width, frame.getHeight());
     }
 
     public void close() {

@@ -77,11 +77,13 @@ public class ConnectionsWindow {
         for (ConnectedNode connection : node.getConnections()) {
 
             window.addSelectableTextField(connection.getIp().toString());
-            window.addSelectableTextField("Encryption Public Key: "
-                    + connection.getEcPubKey() == null ? " Not yet known"
-                    : Utils.toHexString(connection.getEcPubKey().getEncoded()));
+            if (connection.getEcPubKey() != null) {
+                window.addSelectableTextField("Encryption Public Key: " + Utils.toHexString(connection.getEcPubKey().getEncoded()));
+            } else {
+                window.addSelectableTextField("Encryption Public Key: Not yet known");
+            }
 
-            window.addVerticalSpace(5);
+            window.addVerticalSpace(10);
 
         }
 

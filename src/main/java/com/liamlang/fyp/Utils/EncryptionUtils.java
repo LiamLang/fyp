@@ -41,7 +41,7 @@ public class EncryptionUtils {
             byte[] ciphertext = ecies.doFinal(cleartext);
             AlgorithmParameters params = ecies.getParameters();
 
-            return new EncryptedMessage(ciphertext, params);
+            return new EncryptedMessage(ciphertext, params.getEncoded());
 
         } catch (Exception ex) {
 
@@ -53,12 +53,14 @@ public class EncryptionUtils {
         }
     }
 
-    public static byte[] decrypt(byte[] ciphertext, AlgorithmParameters params, PrivateKey privKey) {
+    public static byte[] decrypt(byte[] ciphertext, byte[] params, PrivateKey privKey) {
 
-        try {
+        try {            
             Security.addProvider(new BouncyCastleProvider());
             Cipher ecies = Cipher.getInstance("ECIESwithAES-CBC");
-            ecies.init(Cipher.DECRYPT_MODE, privKey, params);
+            AlgorithmParameters algorithmParameters = AlgorithmParameters.getInstance("ECIESwithAES-CBC");
+            algorithmParameters.init(params);
+            ecies.init(Cipher.DECRYPT_MODE, privKey, algorithmParameters);
 
             return ecies.doFinal(ciphertext);
 

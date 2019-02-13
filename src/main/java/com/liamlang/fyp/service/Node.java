@@ -92,16 +92,21 @@ public class Node implements Serializable {
     }
 
     public void addConnection(ConnectedNode newConnection) {
-        
+
         ConnectedNode connectionForDeletion = null;
-        
+
         for (ConnectedNode connection : connections) {
-            if (connection.getIp().equals(newConnection.getIp())) {
-                
+            
+            String old = connection.getIp().getHostAddress();
+            String n = newConnection.getIp().getHostAddress();
+            
+            
+            if (connection.getIp().getHostAddress().equals(newConnection.getIp().getHostAddress())) {
+
                 connectionForDeletion = connection;
             }
         }
-        
+
         // If a connection with the same IP is present delete the old one
         // (i.e. replacing the encryption key with the new one)
         // This does not open a vulnetability, as messages not signed with a
@@ -109,10 +114,10 @@ public class Node implements Serializable {
         if (connectionForDeletion != null) {
             connections.remove(connectionForDeletion);
         }
-        
+
         connections.add(newConnection);
         saveSelf();
-        
+
         packetSender.sendConnections(newConnection);
     }
 
@@ -197,7 +202,7 @@ public class Node implements Serializable {
     }
 
     private void syncWithConnection(ConnectedNode connection) {
-        
+
         packetSender.sendSync(connection, bc.getHeight(), connections.size(), unconfirmedTransactionSet, ecKeyPair.getPublic());
     }
 

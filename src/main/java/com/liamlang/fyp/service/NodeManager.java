@@ -5,16 +5,16 @@ import com.liamlang.fyp.Utils.FileUtils;
 
 public class NodeManager {
 
-    public static Node startNodeWithEmptyBlockchain(String ownerName, String saveFileName) throws Exception {
+    public static Node startNodeWithEmptyBlockchain(String ownerName, String ip, String saveFileName) throws Exception {
         Blockchain bc = new Blockchain(false);
-        Node node = new Node(bc, ownerName, saveFileName);
+        Node node = new Node(bc, ownerName, ip, saveFileName);
         node.init();
         return node;
     }
 
-    public static Node startNodeWithFirstBlock(String ownerName, String saveFileName) throws Exception {
+    public static Node startNodeWithFirstBlock(String ownerName, String ip, String saveFileName) throws Exception {
         Blockchain bc = new Blockchain(true);
-        Node node = new Node(bc, ownerName, saveFileName);
+        Node node = new Node(bc, ownerName, ip, saveFileName);
         node.init();
         return node;
     }

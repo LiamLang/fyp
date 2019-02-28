@@ -9,22 +9,16 @@ import java.io.Serializable;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.security.KeyPair;
 
 public class NetworkAdapter {
 
     static final int PORT = 12345;
     static final int MAX_PACKET_SIZE = 1000000;
+    
+    public static void sendSyncPacket(String myIp, int height, int numConnections, String unconfirmedTransactionSetHash, String myEcPubKey, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
 
-    public static String getMyIp() throws UnknownHostException {
-
-        return InetAddress.getLocalHost().getHostAddress();
-    }
-
-    public static void sendSyncPacket(int height, int numConnections, String unconfirmedTransactionSetHash, String myEcPubKey, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
-
-        SignedMessage m = new SignedMessage("SYNC " + getMyIp() + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash + " " + myEcPubKey);
+        SignedMessage m = new SignedMessage("SYNC " + myIp + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash + " " + myEcPubKey);
         m.sign(myDsaKeyPair, myName);
 
         System.out.println("Sending unencrypted sync to " + connection.getIp().toString() + ": " + m.getMessage() + "\n");

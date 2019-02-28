@@ -44,14 +44,17 @@ public class Node implements Serializable {
 
     private boolean isCreatingBlocks;
 
+    private String myIp;
+
     private String saveFileName;
 
-    public Node(Blockchain bc, String ownerName, String saveFileName) {
+    public Node(Blockchain bc, String ownerName, String myIp, String saveFileName) {
         this.bc = bc;
         this.ownerName = ownerName;
         this.dsaKeyPair = SignatureUtils.generateDsaKeyPair();
         this.ecKeyPair = EncryptionUtils.generateEcKeyPair();
         this.isCreatingBlocks = false;
+        this.myIp = myIp;
         this.saveFileName = saveFileName;
     }
 
@@ -77,7 +80,7 @@ public class Node implements Serializable {
                 syncWithConnections();
             }
         });
-        
+
         if (isCreatingBlocks) {
             startCreatingBlocks();
         }
@@ -85,21 +88,12 @@ public class Node implements Serializable {
         System.out.println("Started node with IP " + getMyIp());
     }
 
-    public String getMyIp() {
-        try {
-            return NetworkAdapter.getMyIp();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return "Error getting my IP!";
-        }
-    }
-
     public void addConnection(ConnectedNode newConnection) {
 
         ConnectedNode connectionForDeletion = null;
 
-        for (ConnectedNode connection : connections) {          
-            
+        for (ConnectedNode connection : connections) {
+
             if (connection.getIp().getHostAddress().equals(newConnection.getIp().getHostAddress())) {
 
                 connectionForDeletion = connection;
@@ -163,7 +157,7 @@ public class Node implements Serializable {
     }
 
     public void saveSelf() {
-        
+
         try {
             FileUtils.saveToFile(this, saveFileName);
         } catch (Exception ex) {
@@ -188,13 +182,13 @@ public class Node implements Serializable {
             }
 
             ArrayList<Transaction> validTransactions = new ArrayList<>();
-            
+
             for (Transaction t : unconfirmedTransactionSet) {
                 if (verifyTransaction(t, false)) {
                     validTransactions.add(t);
                 }
             }
-            
+
             BlockData blockData = new BlockData(validTransactions);
             Block block = new Block(bc.getTop(), blockData);
             unconfirmedTransactionSet = new ArrayList<>();
@@ -296,5 +290,9 @@ public class Node implements Serializable {
 
     public ArrayList<PublicKey> getBlacklistedKeys() {
         return blacklistedKeys;
+    }
+
+    public String getMyIp() {
+        return myIp;
     }
 }

@@ -19,7 +19,7 @@ public class EncryptionUtils {
         try {
             Security.addProvider(new BouncyCastleProvider());
             KeyPairGenerator keyGen = KeyPairGenerator.getInstance("EC", BouncyCastleProvider.PROVIDER_NAME);
-            keyGen.initialize(new ECGenParameterSpec("secp256r1"));
+            keyGen.initialize(new ECGenParameterSpec("secp128r1"));
 
             return keyGen.generateKeyPair();
 

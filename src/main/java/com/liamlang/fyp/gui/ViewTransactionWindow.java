@@ -26,7 +26,7 @@ public class ViewTransactionWindow {
         WindowBase window = new WindowBase("View Transaction", 700);
         window.init();
 
-        window.addImage("src/main/resources/transaction.png");
+        window.addImage("resources/transaction.png");
 
         window.addVerticalSpace(20);
 

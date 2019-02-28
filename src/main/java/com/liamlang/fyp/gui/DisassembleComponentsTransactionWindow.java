@@ -40,7 +40,7 @@ public class DisassembleComponentsTransactionWindow {
         WindowBase window = new WindowBase("Disassemble Components (Transaction)", 600);
         window.init();
 
-        window.addImage("src/main/resources/disassembly.png");
+        window.addImage("resources/disassembly.png");
 
         window.addVerticalSpace(20);
 

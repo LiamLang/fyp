@@ -55,7 +55,7 @@ public class ViewComponentWindow {
 
         window.removeAll();
 
-        window.addImage("src/main/resources/component.png");
+        window.addImage("resources/component.png");
 
         window.addVerticalSpace(20);
 

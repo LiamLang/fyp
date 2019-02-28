@@ -17,7 +17,7 @@ public class MyDetailsWindow {
         WindowBase window = new WindowBase("My Details", 700);
         window.init();
 
-        window.addImage("src/main/resources/person.png");
+        window.addImage("resources/person.png");
 
         window.addVerticalSpace(20);
 

@@ -23,7 +23,7 @@ public class ViewBlockWindow {
         WindowBase window = new WindowBase("View Block", 600);
         window.init();
         
-        window.addImage("src/main/resources/block.png");
+        window.addImage("resources/block.png");
 
         window.addVerticalSpace(20);
 

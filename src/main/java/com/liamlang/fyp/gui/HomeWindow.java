@@ -67,7 +67,7 @@ public class HomeWindow {
 
         window.removeAll();
 
-        window.addImage("src/main/resources/home.png");
+        window.addImage("resources/home.png");
 
         window.addVerticalSpace(20);
 

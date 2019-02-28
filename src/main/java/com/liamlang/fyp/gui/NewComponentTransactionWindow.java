@@ -22,7 +22,7 @@ public class NewComponentTransactionWindow {
         WindowBase window = new WindowBase("Create Component (Transaction)", 600);
         window.init();
 
-        window.addImage("src/main/resources/new_component.png");
+        window.addImage("resources/new_component.png");
 
         window.addVerticalSpace(20);
 

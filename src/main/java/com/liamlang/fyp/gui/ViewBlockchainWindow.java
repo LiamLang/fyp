@@ -57,7 +57,7 @@ public class ViewBlockchainWindow {
 
         window.removeAll();
 
-        window.addImage("src/main/resources/blockchain.png");
+        window.addImage("resources/blockchain.png");
 
         window.addVerticalSpace(20);
 
@@ -107,7 +107,7 @@ public class ViewBlockchainWindow {
             }
         }
 
-        if (!node.isCreatingBlocks()) {
+        if (!node.isCreatingBlocks() && node.getBlockchain().getHeight() > 0) {
 
             window.addVerticalSpace(20);
 

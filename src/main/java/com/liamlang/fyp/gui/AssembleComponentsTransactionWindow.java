@@ -40,7 +40,7 @@ public class AssembleComponentsTransactionWindow {
         WindowBase window = new WindowBase("Assemble Components (Transaction)", 600);
         window.init();
 
-        window.addImage("src/main/resources/assembly.png");
+        window.addImage("resources/assembly.png");
 
         window.addVerticalSpace(20);
 

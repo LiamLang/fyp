@@ -18,7 +18,7 @@ public class NodeLoaderWindow {
         WindowBase window = new WindowBase("Entry Point", 500);
         window.init();
         
-        window.addImage("src/main/resources/folder.png");
+        window.addImage("resources/folder.png");
         
         window.addVerticalSpace(20);
         

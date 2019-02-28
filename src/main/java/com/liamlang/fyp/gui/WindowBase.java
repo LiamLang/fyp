@@ -78,7 +78,7 @@ public class WindowBase {
 
         frame.pack();
         SwingUtilities.updateComponentTreeUI(frame);
-        
+
         frame.setSize(width, frame.getHeight());
     }
 
@@ -132,9 +132,15 @@ public class WindowBase {
             return;
         }
 
+        File file = null;
+
         try {
-            panel.add(new JLabel(new ImageIcon(ImageIO.read(new File(path)))));
+            file = new File(path);
+            panel.add(new JLabel(new ImageIcon(ImageIO.read(file))));
         } catch (IOException ex) {
+            if (file != null) {
+                System.out.println("Exception loading image: " + file.getAbsolutePath());
+            }
             System.out.println(ex.getMessage());
         }
     }

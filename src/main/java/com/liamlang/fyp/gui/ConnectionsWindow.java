@@ -62,7 +62,7 @@ public class ConnectionsWindow {
 
         window.removeAll();
 
-        window.addImage("src/main/resources/connections.png");
+        window.addImage("resources/connections.png");
 
         window.addVerticalSpace(20);
 
@@ -125,7 +125,7 @@ public class ConnectionsWindow {
 
         window.addVerticalSpace(20);
 
-        window.addImage("src/main/resources/key.png");
+        window.addImage("resources/key.png");
 
         window.addVerticalSpace(20);
 

@@ -33,7 +33,7 @@ public class ChangeOwnershipTransactionWindow {
         WindowBase window = new WindowBase("Change Component Ownership (Transaction)", 600);
         window.init();
 
-        window.addImage("src/main/resources/change_ownership.png");
+        window.addImage("resources/change_ownership.png");
 
         window.addVerticalSpace(20);
 

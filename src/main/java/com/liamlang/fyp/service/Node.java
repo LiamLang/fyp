@@ -196,7 +196,7 @@ public class Node implements Serializable {
 
     public void createBlock() {
 
-        if (nodeType != NodeType.LIGHTWEIGHT) {
+        if (nodeType == NodeType.LIGHTWEIGHT) {
             return;
         }
 

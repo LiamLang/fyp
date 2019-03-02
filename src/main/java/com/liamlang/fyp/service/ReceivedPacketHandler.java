@@ -1,6 +1,7 @@
 package com.liamlang.fyp.service;
 
 import com.liamlang.fyp.Model.Block;
+import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.ConnectedNode;
 import com.liamlang.fyp.Model.EncryptedMessage;
 import com.liamlang.fyp.Model.SignedMessage;
@@ -8,6 +9,7 @@ import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.NetworkUtils;
 import com.liamlang.fyp.Utils.Utils;
+import com.liamlang.fyp.gui.ViewComponentWindow;
 import com.liamlang.fyp.service.Node.NodeType;
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -77,16 +79,16 @@ public class ReceivedPacketHandler implements Serializable {
 
         System.out.println("Received: " + messageStr + "\n");
 
-        if (parts[0].equals("SYNC") && parts.length >= 6) {
+        if (parts[0].equals("SYNC") && parts.length >= 7) {
 
             // Recombine parts of the serialized ec public key which may be split up because there happen to be spaces present
             String keyStr = "";
-            for (int i = 5; i < parts.length; i++) {
+            for (int i = 6; i < parts.length; i++) {
                 keyStr += parts[i] + " ";
             }
             keyStr = keyStr.substring(0, keyStr.length() - 1);
 
-            onSyncPacketReceived(parts[1], parts[2], parts[3], parts[4], keyStr);
+            onSyncPacketReceived(parts[1], parts[2], parts[3], parts[4], parts[5], keyStr);
 
         }
 
@@ -125,16 +127,41 @@ public class ReceivedPacketHandler implements Serializable {
 
             onTransactionsPacketReceived(transactionsStr);
         }
+
+        if (parts[0].equals("COMPONENT_HASH_REQUEST") && parts.length == 3) {
+
+            onComponentHashRequestReceived(parts[1], parts[2]);
+        }
+
+        if (parts[0].equals("SHOW_COMPONENT_REQUEST") && parts.length >= 2) {
+
+            // Recombine parts of the serialized component object which may be split up because there happen to be spaces present
+            String componentStr = "";
+            for (int i = 1; i < parts.length; i++) {
+                componentStr += parts[i] + " ";
+            }
+            componentStr = componentStr.substring(0, componentStr.length() - 1);
+
+            onShowComponentRequestReceived(componentStr);
+        }
     }
 
-    private void onSyncPacketReceived(String ip, String heightStr, String numConnections, String unconfirmedTransactionSetHash, String ecPubKeyString) {
+    private void onSyncPacketReceived(String ip, String heightStr, String numConnections, String unconfirmedTransactionSetHash, String isSupernodeStr, String ecPubKeyString) {
         try {
 
             InetAddress inetAddress = NetworkUtils.toIp(ip);
             PublicKey ecPubKey = (PublicKey) Utils.deserialize(Utils.toByteArray(ecPubKeyString));
             ConnectedNode newConnection = new ConnectedNode(inetAddress, ecPubKey);
 
-            node.addConnection(newConnection);
+            boolean isSupernode = isSupernodeStr.equals("super");
+
+            if (node.getNodeType() == NodeType.LIGHTWEIGHT) {
+                if (isSupernode) {
+                    node.addConnection(newConnection);
+                }
+            } else {
+                node.addConnection(newConnection);
+            }
 
             int height = Integer.parseInt(heightStr);
             if (height < node.getBlockchain().getHeight()) {
@@ -152,11 +179,11 @@ public class ReceivedPacketHandler implements Serializable {
     }
 
     private void onBlockPacketReceived(String heightStr, String blockStr) {
-        
+
         if (node.getNodeType() == NodeType.LIGHTWEIGHT) {
             return;
         }
-        
+
         try {
             int height = Integer.parseInt(heightStr);
 
@@ -219,6 +246,45 @@ public class ReceivedPacketHandler implements Serializable {
 
         } catch (Exception ex) {
             System.out.println("Exception in ReceivedPacketHandler.onTransactionsPacketRecevied");
+        }
+    }
+
+    private void onComponentHashRequestReceived(String ip, String hash) {
+
+        if (node.getNodeType() != NodeType.SUPERNODE) {
+            return;
+        }
+
+        if (hash.equals("")) {
+            return;
+        }
+
+        for (Component component : node.getUnspentComponents()) {
+
+            if (component.getHash().equals(hash)) {
+
+                node.getPacketSender().sendShowComponentRequest(ip, component);
+
+                return;
+            }
+        }
+    }
+
+    private void onShowComponentRequestReceived(String componentStr) {
+
+        if (node.getNodeType() != NodeType.LIGHTWEIGHT) {
+            return;
+        }
+
+        try {
+
+            Component component = (Component) Utils.deserialize(Utils.toByteArray(componentStr));
+
+            ViewComponentWindow win = new ViewComponentWindow(component, node);
+            win.show();
+
+        } catch (Exception ex) {
+            System.out.println("Exception in ReceivedPacketHandler.onShowComponentRequestReceived");
         }
     }
 }

@@ -179,13 +179,23 @@ public class HomeWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                // TODO adapt for light node
-                
                 boolean resultFound = false;
 
                 String hash = componentHashTextField.getText();
 
                 if (hash.equals("")) {
+                    return;
+                }
+
+                if (node.getNodeType() == NodeType.LIGHTWEIGHT) {
+
+                    if (node.getConnections().size() < 1) {
+                        Utils.showOkPopup("Not connected to any supernodes.");
+                        return;
+                    }
+
+                    node.getPacketSender().sendComponentHashRequest(node.getConnections().get(0), hash);
+
                     return;
                 }
 
@@ -225,9 +235,8 @@ public class HomeWindow {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                // TODO adapt for light node
 
+                // TODO adapt for light node
                 boolean resultFound = false;
 
                 String info = componentInfoTextField.getText();
@@ -273,9 +282,8 @@ public class HomeWindow {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                
-                // TODO adapt for light node
 
+                // TODO adapt for light node
                 String hash = blockHashTextField.getText();
 
                 if (hash.equals("")) {

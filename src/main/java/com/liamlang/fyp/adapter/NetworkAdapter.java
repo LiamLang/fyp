@@ -15,10 +15,10 @@ public class NetworkAdapter {
 
     static final int PORT = 12345;
     static final int MAX_PACKET_SIZE = 1000000;
-    
-    public static void sendSyncPacket(String myIp, int height, int numConnections, String unconfirmedTransactionSetHash, String myEcPubKey, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
 
-        SignedMessage m = new SignedMessage("SYNC " + myIp + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash + " " + myEcPubKey);
+    public static void sendSyncPacket(String myIp, int height, int numConnections, String unconfirmedTransactionSetHash, String myEcPubKey, ConnectedNode connection, KeyPair myDsaKeyPair, String myName, String isSupernode) throws Exception {
+
+        SignedMessage m = new SignedMessage("SYNC " + myIp + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash + " " + isSupernode + " " + myEcPubKey);
         m.sign(myDsaKeyPair, myName);
 
         System.out.println("Sending unencrypted sync to " + connection.getIp().toString() + ": " + m.getMessage() + "\n");
@@ -45,6 +45,22 @@ public class NetworkAdapter {
     public static void sendTransactionsPacket(String transactionSet, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
 
         SignedMessage m = new SignedMessage("UNCONFIRMED_TRANSACTION_SET " + transactionSet);
+        m.sign(myDsaKeyPair, myName);
+
+        encryptAndSendPacket(m, connection);
+    }
+
+    public static void sendComponentHashRequest(String myIp, String hash, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
+
+        SignedMessage m = new SignedMessage("COMPONENT_HASH_REQUEST " + myIp + " " + hash);
+        m.sign(myDsaKeyPair, myName);
+
+        encryptAndSendPacket(m, connection);
+    }
+
+    public static void sendShowComponentRequest(String component, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
+
+        SignedMessage m = new SignedMessage("SHOW_COMPONENT_REQUEST " + component);
         m.sign(myDsaKeyPair, myName);
 
         encryptAndSendPacket(m, connection);

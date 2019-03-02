@@ -4,6 +4,7 @@ import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.service.Node;
+import com.liamlang.fyp.service.Node.NodeType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -71,6 +72,10 @@ public class HomeWindow {
 
         window.addVerticalSpace(20);
 
+        window.addLabel("Node type: " + (node.getNodeType() == NodeType.NORMAL ? "Normal (full node)" : node.getNodeType() == NodeType.LIGHTWEIGHT ? "Lightweight" : "Supernode"));
+
+        window.addVerticalSpace(10);
+
         window.addLabel("Connections: " + numConnections);
 
         window.addVerticalSpace(5);
@@ -119,20 +124,27 @@ public class HomeWindow {
 
         window.addVerticalSpace(5);
 
-        JButton viewBlockchainButton = new JButton("View Blockchain");
+        if (node.getNodeType() == NodeType.LIGHTWEIGHT) {
 
-        viewBlockchainButton.addActionListener(new ActionListener() {
+            window.addLabel("Light node does not store a copy of the blockchain.");
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        } else {
 
-                ViewBlockchainWindow win = new ViewBlockchainWindow(node.getBlockchain(), node);
-                win.show();
-            }
-        });
+            JButton viewBlockchainButton = new JButton("View Blockchain");
 
-        window.add(viewBlockchainButton);
+            viewBlockchainButton.addActionListener(new ActionListener() {
 
+                @Override
+                public void actionPerformed(ActionEvent e) {
+
+                    ViewBlockchainWindow win = new ViewBlockchainWindow(node.getBlockchain(), node);
+                    win.show();
+                }
+            });
+
+            window.add(viewBlockchainButton);
+
+        }
         window.addVerticalSpace(20);
 
         JButton createComponentButton = new JButton("Create Component...");
@@ -167,6 +179,8 @@ public class HomeWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
 
+                // TODO adapt for light node
+                
                 boolean resultFound = false;
 
                 String hash = componentHashTextField.getText();
@@ -211,6 +225,8 @@ public class HomeWindow {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                
+                // TODO adapt for light node
 
                 boolean resultFound = false;
 
@@ -257,6 +273,8 @@ public class HomeWindow {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                
+                // TODO adapt for light node
 
                 String hash = blockHashTextField.getText();
 

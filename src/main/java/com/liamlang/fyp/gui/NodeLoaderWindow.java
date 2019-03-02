@@ -3,6 +3,7 @@ package com.liamlang.fyp.gui;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.gui.ChooseMyIpWindow.ChooseIpCallback;
 import com.liamlang.fyp.service.Node;
+import com.liamlang.fyp.service.Node.NodeType;
 import com.liamlang.fyp.service.NodeManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +13,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 public class NodeLoaderWindow {
+
+    JRadioButton normalRadioButton = new JRadioButton("Normal (full node)");
+    JRadioButton lightRadioButton = new JRadioButton("Lightweight node");
+    JRadioButton superRadioButton = new JRadioButton("Supernode");
 
     public NodeLoaderWindow() {
     }
@@ -85,10 +90,6 @@ public class NodeLoaderWindow {
 
         window.addVerticalSpace(10);
 
-        JRadioButton normalRadioButton = new JRadioButton("Normal (full node)");
-        JRadioButton lightRadioButton = new JRadioButton("Lightweight node");
-        JRadioButton superRadioButton = new JRadioButton("Supernode");
-
         ButtonGroup group = new ButtonGroup();
 
         group.add(normalRadioButton);
@@ -99,8 +100,8 @@ public class NodeLoaderWindow {
         window.add(lightRadioButton);
         window.add(superRadioButton);
 
-        normalRadioButton.setEnabled(true);
-        
+        normalRadioButton.setSelected(true);
+
         JButton createNodeButton = new JButton("Create new Node for existing Blockchain");
 
         createNodeButton.addActionListener(new ActionListener() {
@@ -119,7 +120,7 @@ public class NodeLoaderWindow {
                         public void callback(String ip) {
 
                             try {
-                                Node node = NodeManager.startNodeWithEmptyBlockchain(ownerNameTextField.getText(), ip, savePathTextField.getText());
+                                Node node = NodeManager.startNodeWithEmptyBlockchain(getSelectedType(), ownerNameTextField.getText(), ip, savePathTextField.getText());
 
                                 HomeWindow homeWindow = new HomeWindow(node);
                                 homeWindow.show();
@@ -160,7 +161,7 @@ public class NodeLoaderWindow {
                         public void callback(String ip) {
 
                             try {
-                                Node node = NodeManager.startNodeWithFirstBlock(ownerNameTextField.getText(), ip, savePathTextField.getText());
+                                Node node = NodeManager.startNodeWithFirstBlock(getSelectedType(), ownerNameTextField.getText(), ip, savePathTextField.getText());
 
                                 HomeWindow homeWindow = new HomeWindow(node);
                                 homeWindow.show();
@@ -184,5 +185,18 @@ public class NodeLoaderWindow {
         window.add(createNodeAndBlockchainButton);
 
         window.show();
+    }
+
+    private NodeType getSelectedType() {
+
+        if (normalRadioButton.isSelected()) {
+            return NodeType.NORMAL;
+        } else if (lightRadioButton.isSelected()) {
+            return NodeType.LIGHTWEIGHT;
+        } else if (superRadioButton.isSelected()) {
+            return NodeType.SUPERNODE;
+        }
+
+        return NodeType.NORMAL;
     }
 }

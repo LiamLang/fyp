@@ -21,6 +21,12 @@ import java.util.ArrayList;
 
 public class Node implements Serializable {
 
+    TODO
+            // Confirmed/unconfirmed + spent/unspent status of component needs to come form supernode
+            // Also query for components based on info, and tx based on hash
+            // Sending transactions by request to supernode
+            // Test on RPi
+    
     public enum NodeType {
         NORMAL,
         LIGHTWEIGHT,

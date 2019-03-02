@@ -6,9 +6,9 @@ import com.liamlang.fyp.service.Node;
 import com.liamlang.fyp.service.NodeManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 public class NodeLoaderWindow {
@@ -85,6 +85,22 @@ public class NodeLoaderWindow {
 
         window.addVerticalSpace(10);
 
+        JRadioButton normalRadioButton = new JRadioButton("Normal (full node)");
+        JRadioButton lightRadioButton = new JRadioButton("Lightweight node");
+        JRadioButton superRadioButton = new JRadioButton("Supernode");
+
+        ButtonGroup group = new ButtonGroup();
+
+        group.add(normalRadioButton);
+        group.add(lightRadioButton);
+        group.add(superRadioButton);
+
+        window.add(normalRadioButton);
+        window.add(lightRadioButton);
+        window.add(superRadioButton);
+
+        normalRadioButton.setEnabled(true);
+        
         JButton createNodeButton = new JButton("Create new Node for existing Blockchain");
 
         createNodeButton.addActionListener(new ActionListener() {

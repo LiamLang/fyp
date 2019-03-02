@@ -21,6 +21,14 @@ import java.util.ArrayList;
 
 public class Node implements Serializable {
 
+    public enum NodeType {
+        NORMAL,
+        LIGHTWEIGHT,
+        SUPERNODE
+    }
+
+    private NodeType nodeType;
+
     private ReceivedPacketHandler receivedPacketHandler;
     private PacketSender packetSender;
     private TransactionBuilder transactionBuilder;
@@ -48,7 +56,8 @@ public class Node implements Serializable {
 
     private String saveFileName;
 
-    public Node(Blockchain bc, String ownerName, String myIp, String saveFileName) {
+    public Node(NodeType nodeType, Blockchain bc, String ownerName, String myIp, String saveFileName) {
+        this.nodeType = nodeType;
         this.bc = bc;
         this.ownerName = ownerName;
         this.dsaKeyPair = SignatureUtils.generateDsaKeyPair();
@@ -74,7 +83,9 @@ public class Node implements Serializable {
             }
         });
 
-        Utils.scheduleRepeatingTask(2000, new Runnable() {
+        int syncIntervalMillis = nodeType == NodeType.LIGHTWEIGHT ? 10000 : 2000;
+        
+        Utils.scheduleRepeatingTask(syncIntervalMillis, new Runnable() {
             @Override
             public void run() {
                 syncWithConnections();
@@ -121,6 +132,10 @@ public class Node implements Serializable {
 
     public void startCreatingBlocks() {
 
+        if (nodeType == NodeType.LIGHTWEIGHT) {
+            return;
+        }
+
         isCreatingBlocks = true;
 
         Utils.scheduleRepeatingTask(5000, new Runnable() {
@@ -139,6 +154,10 @@ public class Node implements Serializable {
     }
 
     public boolean isUnspent(Component component) {
+
+        if (nodeType == NodeType.LIGHTWEIGHT) {
+            return false;
+        }
 
         for (Component unspentComponent : unspentComponents) {
 
@@ -176,6 +195,11 @@ public class Node implements Serializable {
     }
 
     public void createBlock() {
+
+        if (nodeType != NodeType.LIGHTWEIGHT) {
+            return;
+        }
+
         try {
             if (bc.getHeight() == 0) {
                 return;
@@ -231,6 +255,10 @@ public class Node implements Serializable {
 
     public Component getUnspentComponent(String hash) {
 
+        if (nodeType == NodeType.LIGHTWEIGHT) {
+            return null;
+        }
+
         for (Component component : unspentComponents) {
             if (component.getHash().equals(hash)) {
                 return component;
@@ -241,7 +269,16 @@ public class Node implements Serializable {
     }
 
     public boolean verifyTransaction(Transaction t, boolean commitResults) {
+
+        if (nodeType == NodeType.LIGHTWEIGHT) {
+            return false;
+        }
+
         return transactionVerifier.verify(t, commitResults);
+    }
+
+    public NodeType getNodeType() {
+        return nodeType;
     }
 
     public PacketSender getPacketSender() {

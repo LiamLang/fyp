@@ -3,6 +3,7 @@ package com.liamlang.fyp.service;
 import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.OwnershipChangeSignature;
 import com.liamlang.fyp.Model.Transaction;
+import com.liamlang.fyp.service.Node.NodeType;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -15,6 +16,10 @@ public class TransactionVerifier implements Serializable {
     }
 
     public boolean verify(Transaction transaction, boolean commitResults) {
+
+        if (node.getNodeType() == NodeType.LIGHTWEIGHT) {
+            return false;
+        }
 
         if (transaction.getInputHashes().isEmpty()) {
 

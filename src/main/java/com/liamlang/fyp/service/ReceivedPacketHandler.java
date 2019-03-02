@@ -8,7 +8,7 @@ import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.NetworkUtils;
 import com.liamlang.fyp.Utils.Utils;
-import com.liamlang.fyp.adapter.NetworkAdapter;
+import com.liamlang.fyp.service.Node.NodeType;
 import java.io.Serializable;
 import java.net.InetAddress;
 import java.security.PublicKey;
@@ -152,6 +152,11 @@ public class ReceivedPacketHandler implements Serializable {
     }
 
     private void onBlockPacketReceived(String heightStr, String blockStr) {
+        
+        if (node.getNodeType() == NodeType.LIGHTWEIGHT) {
+            return;
+        }
+        
         try {
             int height = Integer.parseInt(heightStr);
 

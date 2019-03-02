@@ -5,6 +5,7 @@ import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.adapter.NetworkAdapter;
+import com.liamlang.fyp.service.Node.NodeType;
 import java.io.Serializable;
 import java.security.PublicKey;
 import java.util.ArrayList;
@@ -19,6 +20,11 @@ public class PacketSender implements Serializable {
 
     public void sendSync(ConnectedNode connection, int bcHeight, int numConnections, ArrayList<Transaction> unconfirmedTransactionSet, PublicKey myEcPubKey) {
         try {
+            
+            if (node.getNodeType() == NodeType.LIGHTWEIGHT) {
+                bcHeight = Integer.MAX_VALUE;
+            }
+            
             NetworkAdapter.sendSyncPacket(node.getMyIp(), bcHeight, numConnections, Utils.toHexString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))),
                     Utils.toString(Utils.serialize(node.getEcKeyPair().getPublic())), connection, node.getDsaKeyPair(), node.getOwnerName());
         } catch (Exception ex) {

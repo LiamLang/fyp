@@ -80,7 +80,7 @@ public class NewComponentTransactionWindow {
                                 info, quantity, node.getOwnerName(), node.getDsaKeyPair().getPublic());
 
                         Utils.showOkPopup("Sent request to supernode at " + node.getConnections().get(supernodeIndex).getIp().toString()
-                                + " to create this component");
+                                + " to create this component.");
 
                         window.close();
                         return;

@@ -290,8 +290,6 @@ public class ReceivedPacketHandler implements Serializable {
                 String confirmationStatus = supernodeGetComponentConfirmationStatus(component);
 
                 node.getPacketSender().sendShowComponentRequest(ip, component, confirmationStatus);
-
-                return;
             }
         }
     }
@@ -314,8 +312,6 @@ public class ReceivedPacketHandler implements Serializable {
                 String confirmationStatus = supernodeGetComponentConfirmationStatus(component);
 
                 node.getPacketSender().sendShowComponentRequest(ip, component, confirmationStatus);
-
-                return;
             }
         }
     }

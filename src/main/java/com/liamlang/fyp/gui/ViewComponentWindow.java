@@ -19,11 +19,22 @@ public class ViewComponentWindow {
     private boolean isUnspent;
     private Transaction confirmingTx;
 
+    private String confirmationStatus;
+
     public ViewComponentWindow(Component component, Node node) {
         this.component = component;
         this.node = node;
         this.isUnspent = node.isUnspent(component);
         this.confirmingTx = node.getBlockchain().getTransactionConfirmingComponent(component);
+    }
+
+    // This constructor is used for light nodes, which do not maintain a copy of the blockchain
+    public ViewComponentWindow(Component component, Node node, String confirmationStatus) {
+        this.component = component;
+        this.node = node;
+        this.isUnspent = false;
+        this.confirmingTx = null;
+        this.confirmationStatus = confirmationStatus;
     }
 
     public void show() {
@@ -63,30 +74,37 @@ public class ViewComponentWindow {
 
         window.addVerticalSpace(20);
 
-        if (confirmingTx != null) {
+        if (confirmationStatus != null && !confirmationStatus.equals("")) {
 
-            window.addLabel(isUnspent ? "Unspent" : "SPENT");
-
-            window.addVerticalSpace(5);
-
-            JButton viewConfirmingTxButton = new JButton("Confirmed at " + Utils.toHumanReadableTime(confirmingTx.getTimestamp()));
-
-            viewConfirmingTxButton.addActionListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-
-                    ViewTransactionWindow vtw = new ViewTransactionWindow(confirmingTx, node);
-                    vtw.show();
-                }
-            });
-
-            window.add(viewConfirmingTxButton);
+            // Light node, confirmation status is supplied by supernode
+            window.addLabel(confirmationStatus);
 
         } else {
 
-            window.addLabel("UNCONFIRMED");
+            if (confirmingTx != null) {
 
+                window.addLabel(isUnspent ? "Unspent" : "SPENT");
+
+                window.addVerticalSpace(5);
+
+                JButton viewConfirmingTxButton = new JButton("Confirmed at " + Utils.toHumanReadableTime(confirmingTx.getTimestamp()));
+
+                viewConfirmingTxButton.addActionListener(new ActionListener() {
+
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+
+                        ViewTransactionWindow vtw = new ViewTransactionWindow(confirmingTx, node);
+                        vtw.show();
+                    }
+                });
+
+                window.add(viewConfirmingTxButton);
+
+            } else {
+
+                window.addLabel("UNCONFIRMED");
+            }
         }
 
         window.addVerticalSpace(20);

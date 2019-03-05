@@ -133,16 +133,16 @@ public class ReceivedPacketHandler implements Serializable {
             onComponentHashRequestReceived(parts[1], parts[2]);
         }
 
-        if (parts[0].equals("SHOW_COMPONENT_REQUEST") && parts.length >= 2) {
+        if (parts[0].equals("SHOW_COMPONENT_REQUEST") && parts.length >= 3) {
 
             // Recombine parts of the serialized component object which may be split up because there happen to be spaces present
             String componentStr = "";
-            for (int i = 1; i < parts.length; i++) {
+            for (int i = 2; i < parts.length; i++) {
                 componentStr += parts[i] + " ";
             }
             componentStr = componentStr.substring(0, componentStr.length() - 1);
 
-            onShowComponentRequestReceived(componentStr);
+            onShowComponentRequestReceived(parts[1], componentStr);
         }
     }
 
@@ -263,14 +263,32 @@ public class ReceivedPacketHandler implements Serializable {
 
             if (component.getHash().equals(hash)) {
 
-                node.getPacketSender().sendShowComponentRequest(ip, component);
+                Transaction confirmingTx = node.getBlockchain().getTransactionConfirmingComponent(component);
+                boolean isUnspent = node.isUnspent(component);
+
+                String confirmationStatus;
+
+                if (confirmingTx == null) {
+                    confirmationStatus = "UNCONFIRMED";
+                } else {
+                    if (isUnspent) {
+                        confirmationStatus = "Unspent";
+                    } else {
+                        confirmationStatus = "SPENT";
+                    }
+                    String time = Utils.toHumanReadableTime(confirmingTx.getTimestamp());
+                    time.replace(" ", "_");
+                    confirmationStatus = confirmationStatus + "_" + time;
+                }
+
+                node.getPacketSender().sendShowComponentRequest(ip, component, confirmationStatus);
 
                 return;
             }
         }
     }
 
-    private void onShowComponentRequestReceived(String componentStr) {
+    private void onShowComponentRequestReceived(String confirmationStatus, String componentStr) {
 
         if (node.getNodeType() != NodeType.LIGHTWEIGHT) {
             return;
@@ -280,7 +298,7 @@ public class ReceivedPacketHandler implements Serializable {
 
             Component component = (Component) Utils.deserialize(Utils.toByteArray(componentStr));
 
-            ViewComponentWindow win = new ViewComponentWindow(component, node);
+            ViewComponentWindow win = new ViewComponentWindow(component, node, confirmationStatus);
             win.show();
 
         } catch (Exception ex) {

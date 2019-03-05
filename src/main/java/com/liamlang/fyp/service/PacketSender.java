@@ -85,7 +85,7 @@ public class PacketSender implements Serializable {
         }
     }
 
-    public void sendShowComponentRequest(String ip, Component component) {
+    public void sendShowComponentRequest(String ip, Component component, String confirmationStatus) {
         try {
 
             for (ConnectedNode connection : node.getConnections()) {
@@ -93,7 +93,7 @@ public class PacketSender implements Serializable {
 
                     String str = Utils.toString(Utils.serialize(component));
 
-                    NetworkAdapter.sendShowComponentRequest(str, connection, node.getDsaKeyPair(), node.getOwnerName());
+                    NetworkAdapter.sendShowComponentRequest(str, confirmationStatus, connection, node.getDsaKeyPair(), node.getOwnerName());
 
                     return;
                 }

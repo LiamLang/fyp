@@ -58,9 +58,9 @@ public class NetworkAdapter {
         encryptAndSendPacket(m, connection);
     }
 
-    public static void sendShowComponentRequest(String component, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
+    public static void sendShowComponentRequest(String component, String confirmationStatus, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
 
-        SignedMessage m = new SignedMessage("SHOW_COMPONENT_REQUEST " + component);
+        SignedMessage m = new SignedMessage("SHOW_COMPONENT_REQUEST " + confirmationStatus + " " + component);
         m.sign(myDsaKeyPair, myName);
 
         encryptAndSendPacket(m, connection);

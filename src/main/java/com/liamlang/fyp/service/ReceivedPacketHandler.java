@@ -156,6 +156,18 @@ public class ReceivedPacketHandler implements Serializable {
 
             onShowComponentRequestReceived(parts[1], componentStr);
         }
+
+        if (parts[0].equals("CREATE_COMPONENT_TRANSACTION_REQUEST") && parts.length >= 5) {
+
+            // Recombine parts of the serialized public key object which may be split up because there happen to be spaces present
+            String pubKeyStr = "";
+            for (int i = 4; i < parts.length; i++) {
+                pubKeyStr += parts[i] + " ";
+            }
+            pubKeyStr = pubKeyStr.substring(0, pubKeyStr.length() - 1);
+
+            onCreateComponentTransactionRequestReceived(parts[1], parts[2], parts[3], pubKeyStr);
+        }
     }
 
     private void onSyncPacketReceived(String ip, String heightStr, String numConnections, String unconfirmedTransactionSetHash, String isSupernodeStr, String ecPubKeyString) {
@@ -326,6 +338,33 @@ public class ReceivedPacketHandler implements Serializable {
         }
     }
 
+    private void onCreateComponentTransactionRequestReceived(String info, String quantityStr, String ownerName, String pubKeyStr) {
+
+        if (node.getNodeType() != NodeType.SUPERNODE) {
+            return;
+        }
+
+        try {
+
+            info = info.replace("_", " ");
+            long quantity = Long.parseLong(quantityStr);
+            ownerName = ownerName.replace("_", " ");
+            PublicKey pubKey = (PublicKey) Utils.deserialize(Utils.toByteArray(pubKeyStr));
+
+            Transaction transaction = node.getTransactionBuilder().buildNewComponentTransaction(info, quantity, ownerName, pubKey);
+
+            if (node.verifyTransaction(transaction, false)) {
+                node.broadcastTransaction(transaction);
+                System.out.println("Broadcasting valid transaction created on request from connected light node!");
+            } else {
+                System.out.println("Transaction created on request from connected light node was INVALID!");
+            }
+
+        } catch (Exception ex) {
+            System.out.println("Exception caught processing create component transaction request");
+        }
+    }
+
     private String supernodeGetComponentConfirmationStatus(Component component) {
 
         Transaction confirmingTx = node.getBlockchain().getTransactionConfirmingComponent(component);
@@ -342,7 +381,7 @@ public class ReceivedPacketHandler implements Serializable {
                 res = "SPENT";
             }
             String time = Utils.toHumanReadableTime(confirmingTx.getTimestamp());
-            time.replace(" ", "_");
+            time = time.replace(" ", "_");
             res = res + "_-_Confirmed_at:_" + time;
         }
 

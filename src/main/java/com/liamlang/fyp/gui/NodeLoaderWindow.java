@@ -154,6 +154,11 @@ public class NodeLoaderWindow {
                     return;
                 }
 
+                if (getSelectedType() == NodeType.LIGHTWEIGHT) {
+                    Utils.showOkPopup("Can't create light node with new blockchain!");
+                    return;
+                }
+
                 try {
 
                     ChooseMyIpWindow chooseMyIpWindow = new ChooseMyIpWindow(new ChooseIpCallback() {

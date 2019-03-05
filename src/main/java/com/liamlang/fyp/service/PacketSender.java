@@ -112,4 +112,19 @@ public class PacketSender implements Serializable {
             System.out.println("Exception in PacketSender.sendShowComponentRequest");
         }
     }
+
+    public void sendCreateComponentTransactionRequest(ConnectedNode connection, String info, long quantity, String ownerName, PublicKey ownerDsaPubKey) {
+        try {
+
+            info = info.replace(" ", "_");
+            String quantityStr = Long.toString(quantity);
+            ownerName = ownerName.replace(" ", "_");
+            String pubKeyStr = Utils.toString(Utils.serialize(ownerDsaPubKey));
+
+            NetworkAdapter.sendCreateComponentTransactionRequest(info, quantityStr, ownerName, pubKeyStr, connection, node.getDsaKeyPair(), node.getOwnerName());
+
+        } catch (Exception ex) {
+            System.out.println("Exception in PacketSender.sendCreateComponentTransactionRequest");
+        }
+    }
 }

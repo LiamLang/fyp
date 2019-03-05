@@ -4,8 +4,10 @@ import com.liamlang.fyp.Model.ComponentInfo;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.service.Node;
+import com.liamlang.fyp.service.Node.NodeType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
@@ -69,9 +71,23 @@ public class NewComponentTransactionWindow {
                         throw new Exception();
                     }
 
-                    ComponentInfo componentInfo = new ComponentInfo(info);
+                    if (node.getNodeType() == NodeType.LIGHTWEIGHT) {
 
-                    Transaction transaction = node.getTransactionBuilder().buildNewComponentTransaction(componentInfo, quantity);
+                        Random random = new Random();
+                        int supernodeIndex = random.nextInt(node.getConnections().size());
+
+                        node.getPacketSender().sendCreateComponentTransactionRequest(node.getConnections().get(supernodeIndex),
+                                info, quantity, node.getOwnerName(), node.getDsaKeyPair().getPublic());
+
+                        Utils.showOkPopup("Sent request to supernode at " + node.getConnections().get(supernodeIndex).getIp().toString()
+                                + " to create this component");
+
+                        window.close();
+                        return;
+                    }
+
+                    Transaction transaction = node.getTransactionBuilder().buildNewComponentTransaction(info,
+                            quantity, node.getOwnerName(), node.getDsaKeyPair().getPublic());
 
                     node.broadcastTransaction(transaction);
 

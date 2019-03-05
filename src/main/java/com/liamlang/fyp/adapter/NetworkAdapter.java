@@ -74,6 +74,14 @@ public class NetworkAdapter {
         encryptAndSendPacket(m, connection);
     }
 
+    public static void sendCreateComponentTransactionRequest(String info, String quantity, String ownerName, String ownerPubKey, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
+
+        SignedMessage m = new SignedMessage("CREATE_COMPONENT_TRANSACTION_REQUEST " + info + " " + quantity + " " + ownerName + " " + ownerPubKey);
+        m.sign(myDsaKeyPair, myName);
+
+        encryptAndSendPacket(m, connection);
+    }
+
     public static void encryptAndSendPacket(SignedMessage message, ConnectedNode connection) throws Exception {
 
         if (connection.getEcPubKey() != null) {

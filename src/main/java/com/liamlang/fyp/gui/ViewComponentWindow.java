@@ -76,7 +76,7 @@ public class ViewComponentWindow {
 
         if (confirmationStatus != null && !confirmationStatus.equals("")) {
 
-            confirmationStatus.replace("_", " ");
+            confirmationStatus = confirmationStatus.replace("_", " ");
 
             // Light node, confirmation status is supplied by supernode
             window.addLabel(confirmationStatus);

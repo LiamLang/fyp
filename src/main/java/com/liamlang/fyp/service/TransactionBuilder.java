@@ -16,9 +16,9 @@ public class TransactionBuilder implements Serializable {
         this.node = node;
     }
 
-    public Transaction buildNewComponentTransaction(ComponentInfo info, long quantity) {
+    public Transaction buildNewComponentTransaction(String info, long quantity, String ownerName, PublicKey ownerDsaPubKey) {
 
-        Component component = new Component(info, new ArrayList<>(), quantity, node.getOwnerName(), node.getDsaKeyPair().getPublic());
+        Component component = new Component(new ComponentInfo(info), new ArrayList<>(), quantity, ownerName, ownerDsaPubKey);
 
         ArrayList<Component> components = new ArrayList<>();
         components.add(component);

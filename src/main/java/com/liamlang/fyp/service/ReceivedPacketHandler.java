@@ -133,6 +133,18 @@ public class ReceivedPacketHandler implements Serializable {
             onComponentHashRequestReceived(parts[1], parts[2]);
         }
 
+        if (parts[0].equals("COMPONENT_INFO_REQUEST") && parts.length >= 3) {
+
+            // Recombine parts of the component info String which may be split up because there happen to be spaces present
+            String infoStr = "";
+            for (int i = 2; i < parts.length; i++) {
+                infoStr += parts[i] + " ";
+            }
+            infoStr = infoStr.substring(0, infoStr.length() - 1);
+
+            onComponentInfoRequestReceived(parts[1], infoStr);
+        }
+
         if (parts[0].equals("SHOW_COMPONENT_REQUEST") && parts.length >= 3) {
 
             // Recombine parts of the serialized component object which may be split up because there happen to be spaces present
@@ -263,23 +275,31 @@ public class ReceivedPacketHandler implements Serializable {
 
             if (component.getHash().equals(hash)) {
 
-                Transaction confirmingTx = node.getBlockchain().getTransactionConfirmingComponent(component);
-                boolean isUnspent = node.isUnspent(component);
+                String confirmationStatus = supernodeGetComponentConfirmationStatus(component);
 
-                String confirmationStatus;
+                node.getPacketSender().sendShowComponentRequest(ip, component, confirmationStatus);
 
-                if (confirmingTx == null) {
-                    confirmationStatus = "UNCONFIRMED";
-                } else {
-                    if (isUnspent) {
-                        confirmationStatus = "Unspent";
-                    } else {
-                        confirmationStatus = "SPENT";
-                    }
-                    String time = Utils.toHumanReadableTime(confirmingTx.getTimestamp());
-                    time.replace(" ", "_");
-                    confirmationStatus = confirmationStatus + "_" + time;
-                }
+                return;
+            }
+        }
+    }
+
+    private void onComponentInfoRequestReceived(String ip, String info) {
+
+        if (node.getNodeType() != NodeType.SUPERNODE) {
+            return;
+        }
+
+        if (info.equals("")) {
+            return;
+        }
+
+        for (Component component : node.getUnspentComponents()) {
+
+            // Inefficient, but it'll do for this proof of concept
+            if (component.getInfo().toString().contains(info)) {
+
+                String confirmationStatus = supernodeGetComponentConfirmationStatus(component);
 
                 node.getPacketSender().sendShowComponentRequest(ip, component, confirmationStatus);
 
@@ -304,5 +324,28 @@ public class ReceivedPacketHandler implements Serializable {
         } catch (Exception ex) {
             System.out.println("Exception in ReceivedPacketHandler.onShowComponentRequestReceived");
         }
+    }
+
+    private String supernodeGetComponentConfirmationStatus(Component component) {
+
+        Transaction confirmingTx = node.getBlockchain().getTransactionConfirmingComponent(component);
+        boolean isUnspent = node.isUnspent(component);
+
+        String res;
+
+        if (confirmingTx == null) {
+            res = "UNCONFIRMED";
+        } else {
+            if (isUnspent) {
+                res = "Unspent";
+            } else {
+                res = "SPENT";
+            }
+            String time = Utils.toHumanReadableTime(confirmingTx.getTimestamp());
+            time.replace(" ", "_");
+            res = res + "_-_Confirmed_at:_" + time;
+        }
+
+        return res;
     }
 }

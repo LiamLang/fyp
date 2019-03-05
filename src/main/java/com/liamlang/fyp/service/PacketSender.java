@@ -85,6 +85,15 @@ public class PacketSender implements Serializable {
         }
     }
 
+    public void sendComponentInfoRequest(ConnectedNode connection, String info) {
+        try {
+
+            NetworkAdapter.sendComponentInfoRequest(node.getMyIp(), info, connection, node.getDsaKeyPair(), node.getOwnerName());
+        } catch (Exception ex) {
+            System.out.println("Exception in PacketSender.sendComponentInfoRequest");
+        }
+    }
+
     public void sendShowComponentRequest(String ip, Component component, String confirmationStatus) {
         try {
 

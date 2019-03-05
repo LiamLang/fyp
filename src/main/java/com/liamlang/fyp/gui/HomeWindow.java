@@ -7,6 +7,7 @@ import com.liamlang.fyp.service.Node;
 import com.liamlang.fyp.service.Node.NodeType;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
@@ -194,7 +195,10 @@ public class HomeWindow {
                         return;
                     }
 
-                    node.getPacketSender().sendComponentHashRequest(node.getConnections().get(0), hash);
+                    Random random = new Random();
+                    int supernodeIndex = random.nextInt(node.getConnections().size());
+
+                    node.getPacketSender().sendComponentHashRequest(node.getConnections().get(supernodeIndex), hash);
 
                     return;
                 }
@@ -236,12 +240,26 @@ public class HomeWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                // TODO adapt for light node
                 boolean resultFound = false;
 
                 String info = componentInfoTextField.getText();
 
                 if (info.equals("")) {
+                    return;
+                }
+
+                if (node.getNodeType() == NodeType.LIGHTWEIGHT) {
+
+                    if (node.getConnections().size() < 1) {
+                        Utils.showOkPopup("Not connected to any supernodes.");
+                        return;
+                    }
+
+                    Random random = new Random();
+                    int supernodeIndex = random.nextInt(node.getConnections().size());
+
+                    node.getPacketSender().sendComponentInfoRequest(node.getConnections().get(supernodeIndex), info);
+
                     return;
                 }
 
@@ -267,44 +285,45 @@ public class HomeWindow {
 
         window.addVerticalSpace(20);
 
-        window.addLabel("Find Block by Hash:");
+        if (node.getNodeType() != NodeType.LIGHTWEIGHT) {
 
-        window.addVerticalSpace(5);
+            window.addLabel("Find Block by Hash:");
 
-        JTextField blockHashTextField = new JTextField();
-        window.add(blockHashTextField);
+            window.addVerticalSpace(5);
 
-        window.addVerticalSpace(5);
+            JTextField blockHashTextField = new JTextField();
+            window.add(blockHashTextField);
 
-        JButton findBlockButton = new JButton("Find");
+            window.addVerticalSpace(5);
 
-        findBlockButton.addActionListener(new ActionListener() {
+            JButton findBlockButton = new JButton("Find");
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
+            findBlockButton.addActionListener(new ActionListener() {
 
-                // TODO adapt for light node
-                String hash = blockHashTextField.getText();
+                @Override
+                public void actionPerformed(ActionEvent e) {
 
-                if (hash.equals("")) {
-                    return;
+                    String hash = blockHashTextField.getText();
+
+                    if (hash.equals("")) {
+                        return;
+                    }
+
+                    Block block = node.getBlockchain().getBlockWithHash(hash);
+
+                    if (block == null) {
+                        Utils.showOkPopup("No results found!");
+                        return;
+                    }
+
+                    ViewBlockWindow win = new ViewBlockWindow(block, node);
+                    win.show();
                 }
+            });
 
-                Block block = node.getBlockchain().getBlockWithHash(hash);
+            window.add(findBlockButton);
 
-                if (block == null) {
-                    Utils.showOkPopup("No results found!");
-                    return;
-                }
-
-                ViewBlockWindow win = new ViewBlockWindow(block, node);
-                win.show();
-            }
-        });
-
-        window.add(findBlockButton);
-
-        window.addVerticalSpace(20);
-
+            window.addVerticalSpace(20);
+        }
     }
 }

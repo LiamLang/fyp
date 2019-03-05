@@ -58,6 +58,14 @@ public class NetworkAdapter {
         encryptAndSendPacket(m, connection);
     }
 
+    public static void sendComponentInfoRequest(String myIp, String info, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
+
+        SignedMessage m = new SignedMessage("COMPONENT_INFO_REQUEST " + myIp + " " + info);
+        m.sign(myDsaKeyPair, myName);
+
+        encryptAndSendPacket(m, connection);
+    }
+
     public static void sendShowComponentRequest(String component, String confirmationStatus, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
 
         SignedMessage m = new SignedMessage("SHOW_COMPONENT_REQUEST " + confirmationStatus + " " + component);

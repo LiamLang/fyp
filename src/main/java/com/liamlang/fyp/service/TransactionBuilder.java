@@ -110,4 +110,21 @@ public class TransactionBuilder implements Serializable {
 
         return new Transaction(inputHashes, components, signatures);
     }
+
+    // Used by supernode to create transactions on behalf of light node    
+    public Transaction changeOwner(Component component, String newOwner, OwnershipChangeSignature signature) throws Exception {
+
+        ArrayList<OwnershipChangeSignature> signatures = new ArrayList<>();
+        signatures.add(signature);
+
+        Component newComponent = new Component(component.getInfo(), (ArrayList<Component>) component.getSubcomponents().clone(), component.getQuantity(), newOwner, signature.getNewOwnerPubKey());
+
+        ArrayList<Component> components = new ArrayList<>();
+        components.add(newComponent);
+
+        ArrayList<String> inputHashes = new ArrayList<>();
+        inputHashes.add(component.getHash());
+
+        return new Transaction(inputHashes, components, signatures);
+    }
 }

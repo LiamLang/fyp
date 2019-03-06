@@ -7,6 +7,7 @@ import com.liamlang.fyp.service.Node;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Random;
 import javax.swing.JButton;
 import javax.swing.JTextField;
 
@@ -73,6 +74,21 @@ public class AssembleComponentsTransactionWindow {
                 String childHash = childTextField.getText();
 
                 if (parentHash.equals("") || childHash.equals("")) {
+                    return;
+                }
+
+                if (node.getNodeType() == Node.NodeType.LIGHTWEIGHT) {
+
+                    Random random = new Random();
+                    int supernodeIndex = random.nextInt(node.getConnections().size());
+
+                    node.getPacketSender().sendAssembleComponentsTransactionRequest(node.getConnections().get(supernodeIndex),
+                            parentHash, childHash);
+
+                    Utils.showOkPopup("Sent request to supernode at " + node.getConnections().get(supernodeIndex).getIp().toString()
+                            + " to create this transaction.");
+
+                    window.close();
                     return;
                 }
 

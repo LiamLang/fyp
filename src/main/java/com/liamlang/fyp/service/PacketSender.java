@@ -2,6 +2,7 @@ package com.liamlang.fyp.service;
 
 import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.ConnectedNode;
+import com.liamlang.fyp.Model.OwnershipChangeSignature;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.HashUtils;
 import com.liamlang.fyp.Utils.Utils;
@@ -125,6 +126,39 @@ public class PacketSender implements Serializable {
 
         } catch (Exception ex) {
             System.out.println("Exception in PacketSender.sendCreateComponentTransactionRequest");
+        }
+    }
+
+    public void sendAssembleComponentsTransactionRequest(ConnectedNode connection, String parentHash, String childHash) {
+        try {
+
+            NetworkAdapter.sendAssembleComponentsTransactionRequest(parentHash, childHash, connection, node.getDsaKeyPair(), node.getOwnerName());
+
+        } catch (Exception ex) {
+            System.out.println("Exception in PacketSender.sendAssembleComponentsTransactionRequest");
+        }
+    }
+
+    public void sendDisassembleComponentsTransactionRequest(ConnectedNode connection, String parentHash, String childHash) {
+        try {
+
+            NetworkAdapter.sendDisassembleComponentsTransactionRequest(parentHash, childHash, connection, node.getDsaKeyPair(), node.getOwnerName());
+
+        } catch (Exception ex) {
+            System.out.println("Exception in PacketSender.sendDisassembleComponentsTransactionRequest");
+        }
+    }
+
+    public void sendChangeOwnershipTransactionRequest(ConnectedNode connection, String hash, String newOwner, OwnershipChangeSignature signature) {
+        try {
+
+            String signatureStr = Utils.toString(Utils.serialize(signature));
+            newOwner = newOwner.replace(" ", "_");
+
+            NetworkAdapter.sendChangeOwnershipTransactionRequest(hash, newOwner, signatureStr, connection, node.getDsaKeyPair(), node.getOwnerName());
+
+        } catch (Exception ex) {
+            System.out.println("Exception in PacketSender.sendChangeOwnershipTransactionRequest");
         }
     }
 }

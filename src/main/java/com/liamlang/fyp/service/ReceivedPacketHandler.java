@@ -4,6 +4,7 @@ import com.liamlang.fyp.Model.Block;
 import com.liamlang.fyp.Model.Component;
 import com.liamlang.fyp.Model.ConnectedNode;
 import com.liamlang.fyp.Model.EncryptedMessage;
+import com.liamlang.fyp.Model.OwnershipChangeSignature;
 import com.liamlang.fyp.Model.SignedMessage;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.HashUtils;
@@ -90,9 +91,7 @@ public class ReceivedPacketHandler implements Serializable {
 
             onSyncPacketReceived(parts[1], parts[2], parts[3], parts[4], parts[5], keyStr);
 
-        }
-
-        if (parts[0].equals("BLOCK") && parts.length >= 3) {
+        } else if (parts[0].equals("BLOCK") && parts.length >= 3) {
 
             // Recombine parts of the serialized block which may be split up because there happen to be spaces present
             String blockStr = "";
@@ -102,9 +101,8 @@ public class ReceivedPacketHandler implements Serializable {
             blockStr = blockStr.substring(0, blockStr.length() - 1);
 
             onBlockPacketReceived(parts[1], blockStr);
-        }
 
-        if (parts[0].equals("CONNECTIONS") && parts.length >= 2) {
+        } else if (parts[0].equals("CONNECTIONS") && parts.length >= 2) {
 
             // Recombine parts of the serialized connections object which may be split up because there happen to be spaces present
             String connectionsStr = "";
@@ -114,9 +112,8 @@ public class ReceivedPacketHandler implements Serializable {
             connectionsStr = connectionsStr.substring(0, connectionsStr.length() - 1);
 
             onConnectionsPacketReceived(connectionsStr);
-        }
 
-        if (parts[0].equals("UNCONFIRMED_TRANSACTION_SET") && parts.length >= 2) {
+        } else if (parts[0].equals("UNCONFIRMED_TRANSACTION_SET") && parts.length >= 2) {
 
             // Recombine parts of the serialized unconfirmed transactions set object which may be split up because there happen to be spaces present
             String transactionsStr = "";
@@ -126,14 +123,12 @@ public class ReceivedPacketHandler implements Serializable {
             transactionsStr = transactionsStr.substring(0, transactionsStr.length() - 1);
 
             onTransactionsPacketReceived(transactionsStr);
-        }
 
-        if (parts[0].equals("COMPONENT_HASH_REQUEST") && parts.length == 3) {
+        } else if (parts[0].equals("COMPONENT_HASH_REQUEST") && parts.length == 3) {
 
             onComponentHashRequestReceived(parts[1], parts[2]);
-        }
 
-        if (parts[0].equals("COMPONENT_INFO_REQUEST") && parts.length >= 3) {
+        } else if (parts[0].equals("COMPONENT_INFO_REQUEST") && parts.length >= 3) {
 
             // Recombine parts of the component info String which may be split up because there happen to be spaces present
             String infoStr = "";
@@ -143,9 +138,8 @@ public class ReceivedPacketHandler implements Serializable {
             infoStr = infoStr.substring(0, infoStr.length() - 1);
 
             onComponentInfoRequestReceived(parts[1], infoStr);
-        }
 
-        if (parts[0].equals("SHOW_COMPONENT_REQUEST") && parts.length >= 3) {
+        } else if (parts[0].equals("SHOW_COMPONENT_REQUEST") && parts.length >= 3) {
 
             // Recombine parts of the serialized component object which may be split up because there happen to be spaces present
             String componentStr = "";
@@ -155,9 +149,8 @@ public class ReceivedPacketHandler implements Serializable {
             componentStr = componentStr.substring(0, componentStr.length() - 1);
 
             onShowComponentRequestReceived(parts[1], componentStr);
-        }
 
-        if (parts[0].equals("CREATE_COMPONENT_TRANSACTION_REQUEST") && parts.length >= 5) {
+        } else if (parts[0].equals("CREATE_COMPONENT_TRANSACTION_REQUEST") && parts.length >= 5) {
 
             // Recombine parts of the serialized public key object which may be split up because there happen to be spaces present
             String pubKeyStr = "";
@@ -167,6 +160,24 @@ public class ReceivedPacketHandler implements Serializable {
             pubKeyStr = pubKeyStr.substring(0, pubKeyStr.length() - 1);
 
             onCreateComponentTransactionRequestReceived(parts[1], parts[2], parts[3], pubKeyStr);
+
+        } else if (parts[0].equals("ASSEMBLE_COMPONENTS_TRANSACTION_REQUEST") && parts.length == 3) {
+
+            onAssembleComponentsTransactionRequestReceived(parts[1], parts[2]);
+
+        } else if (parts[0].equals("DISASSEMBLE_COMPONENTS_TRANSACTION_REQUEST") && parts.length == 3) {
+
+            onDisassembleComponentsTransactionRequestReceived(parts[1], parts[2]);
+
+        } else if (parts[0].equals("CHANGE_OWNERSHIP_TRANSACTION_REQUEST") && parts.length >= 4) {
+
+            // Recombine parts of the serialized signature object which may be split up because there happen to be spaces present
+            String sigStr = "";
+            for (int i = 3; i < parts.length; i++) {
+                sigStr += parts[i] + " ";
+            }
+
+            onChangeOwnershipTransactionRequestReceived(parts[1], parts[2], sigStr);
         }
     }
 
@@ -358,6 +369,142 @@ public class ReceivedPacketHandler implements Serializable {
 
         } catch (Exception ex) {
             System.out.println("Exception caught processing create component transaction request");
+        }
+    }
+
+    private void onAssembleComponentsTransactionRequestReceived(String parentHash, String childHash) {
+
+        if (node.getNodeType() != NodeType.SUPERNODE) {
+            return;
+        }
+
+        try {
+
+            Component parentComponent = null;
+            Component childComponent = null;
+
+            for (Component component : node.getUnspentComponents()) {
+
+                if (component.getHash().equals(parentHash)) {
+                    parentComponent = component;
+                } else if (component.getHash().equals(childHash)) {
+                    childComponent = component;
+                }
+
+                if (parentComponent != null && childComponent != null) {
+                    break;
+                }
+            }
+
+            if (parentComponent == null || childComponent == null) {
+                return;
+            }
+
+            ArrayList<Component> children = new ArrayList<>();
+            children.add(childComponent);
+
+            Transaction transaction = node.getTransactionBuilder().addComponetsToOther(parentComponent, children);
+
+            if (node.verifyTransaction(transaction, false)) {
+                node.broadcastTransaction(transaction);
+                System.out.println("Broadcasting valid transaction created on request from connected light node!");
+            } else {
+                System.out.println("Transaction created on request from connected light node was INVALID!");
+            }
+
+        } catch (Exception ex) {
+            System.out.println("Exception caught processing assemble components transaction request");
+        }
+    }
+
+    private void onDisassembleComponentsTransactionRequestReceived(String parentHash, String childHash) {
+
+        if (node.getNodeType() != NodeType.SUPERNODE) {
+            return;
+        }
+
+        try {
+
+            Component parentComponent = null;
+
+            for (Component component : node.getUnspentComponents()) {
+
+                if (component.getHash().equals(parentHash)) {
+                    parentComponent = component;
+                    break;
+                }
+            }
+
+            if (parentComponent == null) {
+                return;
+            }
+
+            Component childComponent = null;
+
+            for (Component subcomponent : parentComponent.getSubcomponents()) {
+
+                if (subcomponent.getHash().equals(childHash)) {
+                    childComponent = subcomponent;
+                    break;
+                }
+            }
+
+            if (childComponent == null) {
+                return;
+            }
+
+            ArrayList<Component> children = new ArrayList<>();
+            children.add(childComponent);
+
+            Transaction transaction = node.getTransactionBuilder().removeComponentsFromOther(parentComponent, children);
+
+            if (node.verifyTransaction(transaction, false)) {
+                node.broadcastTransaction(transaction);
+                System.out.println("Broadcasting valid transaction created on request from connected light node!");
+            } else {
+                System.out.println("Transaction created on request from connected light node was INVALID!");
+            }
+
+        } catch (Exception ex) {
+            System.out.println("Exception caught processing disassemble components transaction request");
+        }
+    }
+
+    private void onChangeOwnershipTransactionRequestReceived(String hash, String newOwner, String sigStr) {
+
+        if (node.getNodeType() != NodeType.SUPERNODE) {
+            return;
+        }
+
+        try {
+            newOwner = newOwner.replace("_", " ");
+            OwnershipChangeSignature signature = (OwnershipChangeSignature) Utils.deserialize(Utils.toByteArray(sigStr));
+
+            Component oldComponent = null;
+
+            for (Component component : node.getUnspentComponents()) {
+
+                if (component.getHash().equals(hash)) {
+                    oldComponent = component;
+                    break;
+                }
+            }
+
+            if (oldComponent == null) {
+                return;
+            }
+
+            Transaction transaction = node.getTransactionBuilder().changeOwner(oldComponent, newOwner, signature);
+
+            if (node.verifyTransaction(transaction, false)) {
+                node.broadcastTransaction(transaction);
+                System.out.println("Broadcasting valid transaction created on request from connected light node!");
+            } else {
+                System.out.println("Transaction created on request from connected light node was INVALID!");
+            }
+
+        } catch (Exception ex) {
+            System.out.println("Exception caught processing ownership change transaction request");
         }
     }
 

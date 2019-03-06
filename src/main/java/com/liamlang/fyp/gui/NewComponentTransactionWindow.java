@@ -1,6 +1,5 @@
 package com.liamlang.fyp.gui;
 
-import com.liamlang.fyp.Model.ComponentInfo;
 import com.liamlang.fyp.Model.Transaction;
 import com.liamlang.fyp.Utils.Utils;
 import com.liamlang.fyp.service.Node;

@@ -82,6 +82,30 @@ public class NetworkAdapter {
         encryptAndSendPacket(m, connection);
     }
 
+    public static void sendAssembleComponentsTransactionRequest(String parentHash, String childHash, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
+
+        SignedMessage m = new SignedMessage("ASSEMBLE_COMPONENTS_TRANSACTION_REQUEST " + parentHash + " " + childHash);
+        m.sign(myDsaKeyPair, myName);
+
+        encryptAndSendPacket(m, connection);
+    }
+
+    public static void sendDisassembleComponentsTransactionRequest(String parentHash, String childHash, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
+
+        SignedMessage m = new SignedMessage("DISASSEMBLE_COMPONENTS_TRANSACTION_REQUEST " + parentHash + " " + childHash);
+        m.sign(myDsaKeyPair, myName);
+
+        encryptAndSendPacket(m, connection);
+    }
+
+    public static void sendChangeOwnershipTransactionRequest(String hash, String newOwner, String signature, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
+
+        SignedMessage m = new SignedMessage("CHANGE_OWNERSHIP_TRANSACTION_REQUEST " + hash + " " + newOwner + " " + signature);
+        m.sign(myDsaKeyPair, myName);
+
+        encryptAndSendPacket(m, connection);
+    }
+
     public static void encryptAndSendPacket(SignedMessage message, ConnectedNode connection) throws Exception {
 
         if (connection.getEcPubKey() != null) {

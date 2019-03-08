@@ -66,7 +66,7 @@ public class ConnectionsWindow {
 
         window.addVerticalSpace(20);
 
-        window.addSelectableTextField("My IP: " + node.getMyIp());
+        window.addSelectableTextField("My IP and Port: " + node.getMyIp() + ":" + Integer.toString(node.getMyPort()));
 
         window.addVerticalSpace(20);
 
@@ -76,7 +76,7 @@ public class ConnectionsWindow {
 
         for (ConnectedNode connection : node.getConnections()) {
 
-            window.addSelectableTextField(connection.getIp().toString());
+            window.addSelectableTextField(connection.getIp().toString() + ":" + Integer.toString(connection.getPort()));
             if (connection.getEcPubKey() != null) {
                 window.addSelectableTextField("Encryption Public Key: " + Utils.toHexString(connection.getEcPubKey().getEncoded()));
             } else {
@@ -89,12 +89,16 @@ public class ConnectionsWindow {
 
         window.addVerticalSpace(10);
 
-        window.addLabel("Connect to new Node:");
+        window.addLabel("Connect to new Node (IP, Port):");
 
         window.addVerticalSpace(5);
 
         JTextField ipAddressField = new JTextField();
         window.add(ipAddressField);
+        
+        JTextField portField = new JTextField();
+        window.add(portField);
+        portField.setText("12345");
 
         window.addVerticalSpace(5);
 
@@ -104,16 +108,23 @@ public class ConnectionsWindow {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                String text = ipAddressField.getText();
-                if (text.equals("")) {
+                String ipText = ipAddressField.getText();
+                String portText = portField.getText();
+                if (ipText.equals("") || portText.equals("")) {
                     return;
                 }
 
                 try {
-                    InetAddress ip = NetworkUtils.toIp(text);
-                    node.addConnection(new ConnectedNode(ip));
+                    InetAddress ip = NetworkUtils.toIp(ipText);
+                    int port = Integer.parseInt(portText);
+                    
+                    if (port < 0 || port > 65535) {
+                        throw new Exception();
+                    }
+                    
+                    node.addConnection(new ConnectedNode(ip, port));
 
-                    Utils.showOkPopup("Added connection to " + ip.toString() + "!");
+                    Utils.showOkPopup("Added connection to " + ip.toString() + ":" + Integer.toString(port));
                 } catch (Exception ex) {
 
                     Utils.showOkPopup("Error!");

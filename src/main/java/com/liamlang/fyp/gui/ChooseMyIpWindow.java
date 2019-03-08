@@ -1,5 +1,6 @@
 package com.liamlang.fyp.gui;
 
+import com.liamlang.fyp.Utils.Utils;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
@@ -7,12 +8,13 @@ import java.net.NetworkInterface;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import javax.swing.JButton;
+import javax.swing.JTextField;
 
 public class ChooseMyIpWindow {
 
     public interface ChooseIpCallback {
 
-        public void callback(String ip);
+        public void callback(String ip, int port);
     }
 
     private ChooseIpCallback callback;
@@ -23,14 +25,24 @@ public class ChooseMyIpWindow {
 
     public void show() {
 
-        WindowBase window = new WindowBase("Choose IP", 600);
+        WindowBase window = new WindowBase("Network Settings", 600);
         window.init();
 
         window.addImage("resources/connections.png");
 
         window.addVerticalSpace(20);
 
-        window.addLabel("Choose the IP address at which you would like to be contacted:");
+        window.addLabel("Choose port:");
+
+        JTextField portTextField = new JTextField();
+
+        window.add(portTextField);
+
+        portTextField.setText("12345");
+
+        window.addVerticalSpace(20);
+
+        window.addLabel("Choose the IP address other nodes should use to contact you:");
 
         window.addVerticalSpace(10);
 
@@ -47,9 +59,28 @@ public class ChooseMyIpWindow {
                     @Override
                     public void actionPerformed(ActionEvent e) {
 
-                        callback.callback(ip);
-                        
-                        window.close();
+                        if (portTextField.getText() == null || portTextField.getText().equals("")) {
+                            return;
+                        }
+
+                        int port = 0;
+
+                        try {
+
+                            port = Integer.parseInt(portTextField.getText());
+                            if (port < 0 || port > 65535) {
+                                throw new Exception();
+                            }
+
+                            callback.callback(ip, port);
+                            window.close();
+                            
+                        } catch (Exception ex) {
+
+                            Utils.showOkPopup("Check port number!");
+                            return;
+                        }
+
                     }
                 });
 

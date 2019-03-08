@@ -6,16 +6,16 @@ import com.liamlang.fyp.service.Node.NodeType;
 
 public class NodeManager {
 
-    public static Node startNodeWithEmptyBlockchain(NodeType type, String ownerName, String ip, String saveFileName) throws Exception {
+    public static Node startNodeWithEmptyBlockchain(NodeType type, String ownerName, String ip, int port, String saveFileName) throws Exception {
         Blockchain bc = new Blockchain(false);
-        Node node = new Node(type, bc, ownerName, ip, saveFileName);
+        Node node = new Node(type, bc, ownerName, ip, port, saveFileName);
         node.init();
         return node;
     }
 
-    public static Node startNodeWithFirstBlock(NodeType type, String ownerName, String ip, String saveFileName) throws Exception {
+    public static Node startNodeWithFirstBlock(NodeType type, String ownerName, String ip, int port, String saveFileName) throws Exception {
         Blockchain bc = new Blockchain(true);
-        Node node = new Node(type, bc, ownerName, ip, saveFileName);
+        Node node = new Node(type, bc, ownerName, ip, port, saveFileName);
         node.init();
         return node;
     }

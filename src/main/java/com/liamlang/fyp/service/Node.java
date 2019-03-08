@@ -53,10 +53,11 @@ public class Node implements Serializable {
     private boolean isCreatingBlocks;
 
     private String myIp;
+    private int port;
 
     private String saveFileName;
 
-    public Node(NodeType nodeType, Blockchain bc, String ownerName, String myIp, String saveFileName) {
+    public Node(NodeType nodeType, Blockchain bc, String ownerName, String myIp, int port, String saveFileName) {
         this.nodeType = nodeType;
         this.bc = bc;
         this.ownerName = ownerName;
@@ -64,6 +65,7 @@ public class Node implements Serializable {
         this.ecKeyPair = EncryptionUtils.generateEcKeyPair();
         this.isCreatingBlocks = false;
         this.myIp = myIp;
+        this.port = port;
         this.saveFileName = saveFileName;
     }
 
@@ -74,7 +76,8 @@ public class Node implements Serializable {
         transactionBuilder = new TransactionBuilder(this);
         transactionVerifier = new TransactionVerifier(this);
 
-        NetworkAdapter.runWhenPacketReceived(new NetworkAdapter.PacketReceivedListener() {
+        NetworkAdapter.runWhenPacketReceived(port,
+                new NetworkAdapter.PacketReceivedListener() {
 
             @Override
             public void onPacketReceived(byte[] bytes) {
@@ -105,13 +108,14 @@ public class Node implements Serializable {
 
         for (ConnectedNode connection : connections) {
 
-            if (connection.getIp().getHostAddress().equals(newConnection.getIp().getHostAddress())) {
+            if (connection.getIp().getHostAddress().equals(newConnection.getIp().getHostAddress())
+                    && connection.getPort() == newConnection.getPort()) {
 
                 connectionForDeletion = connection;
             }
         }
 
-        // If a connection with the same IP is present delete the old one
+        // If a connection with the same IP and port is present delete the old one
         // (i.e. replacing the encryption key with the new one)
         // This does not open a vulnetability, as messages not signed with a
         // trusted signing key will be ignored
@@ -331,5 +335,9 @@ public class Node implements Serializable {
 
     public String getMyIp() {
         return myIp;
+    }
+    
+    public int getMyPort() {
+        return port;
     }
 }

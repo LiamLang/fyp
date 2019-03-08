@@ -13,17 +13,16 @@ import java.security.KeyPair;
 
 public class NetworkAdapter {
 
-    static final int PORT = 12345;
     static final int MAX_PACKET_SIZE = 1000000;
 
-    public static void sendSyncPacket(String myIp, int height, int numConnections, String unconfirmedTransactionSetHash, String myEcPubKey, ConnectedNode connection, KeyPair myDsaKeyPair, String myName, String isSupernode) throws Exception {
+    public static void sendSyncPacket(String myIp, int port, int height, int numConnections, String unconfirmedTransactionSetHash, String myEcPubKey, ConnectedNode connection, KeyPair myDsaKeyPair, String myName, String isSupernode) throws Exception {
 
-        SignedMessage m = new SignedMessage("SYNC " + myIp + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash + " " + isSupernode + " " + myEcPubKey);
+        SignedMessage m = new SignedMessage("SYNC " + myIp + " " + Integer.toString(port) + " " + Integer.toString(height) + " " + Integer.toString(numConnections) + " " + unconfirmedTransactionSetHash + " " + isSupernode + " " + myEcPubKey);
         m.sign(myDsaKeyPair, myName);
 
         System.out.println("Sending unencrypted sync to " + connection.getIp().toString() + ": " + m.getMessage() + "\n");
 
-        sendPacket(m, connection.getIp());
+        sendPacket(m, connection.getIp(), connection.getPort());
     }
 
     public static void sendBlockPacket(int height, String block, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
@@ -50,17 +49,17 @@ public class NetworkAdapter {
         encryptAndSendPacket(m, connection);
     }
 
-    public static void sendComponentHashRequest(String myIp, String hash, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
+    public static void sendComponentHashRequest(String myIp, int port, String hash, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
 
-        SignedMessage m = new SignedMessage("COMPONENT_HASH_REQUEST " + myIp + " " + hash);
+        SignedMessage m = new SignedMessage("COMPONENT_HASH_REQUEST " + myIp + " " + Integer.toString(port) + " " + hash);
         m.sign(myDsaKeyPair, myName);
 
         encryptAndSendPacket(m, connection);
     }
 
-    public static void sendComponentInfoRequest(String myIp, String info, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
+    public static void sendComponentInfoRequest(String myIp, int port, String info, ConnectedNode connection, KeyPair myDsaKeyPair, String myName) throws Exception {
 
-        SignedMessage m = new SignedMessage("COMPONENT_INFO_REQUEST " + myIp + " " + info);
+        SignedMessage m = new SignedMessage("COMPONENT_INFO_REQUEST " + myIp + " " + Integer.toString(port) + " " + info);
         m.sign(myDsaKeyPair, myName);
 
         encryptAndSendPacket(m, connection);
@@ -116,32 +115,32 @@ public class NetworkAdapter {
 
             System.out.println("Sending [encrypted] to " + connection.getIp().toString() + ": " + message.getMessage() + "\n");
 
-            sendPacket(encryptedMessage, connection.getIp());
+            sendPacket(encryptedMessage, connection.getIp(), connection.getPort());
 
         } else {
 
             System.out.println("Sending [unencrypted] to " + connection.getIp().toString() + ": " + message.getMessage() + "\n");
 
-            sendPacket(message, connection.getIp());
+            sendPacket(message, connection.getIp(), connection.getPort());
         }
     }
 
-    public static void sendPacket(Serializable message, InetAddress ip) throws Exception {
+    public static void sendPacket(Serializable message, InetAddress ip, int port) throws Exception {
 
         byte[] packet = Utils.serialize(message);
 
         DatagramSocket datagramSocket = new DatagramSocket();
 
-        DatagramPacket datagramPacket = new DatagramPacket(packet, packet.length, ip, PORT);
+        DatagramPacket datagramPacket = new DatagramPacket(packet, packet.length, ip, port);
 
         datagramSocket.send(datagramPacket);
 
         datagramSocket.close();
     }
 
-    public static byte[] receivePacket() throws Exception {
+    public static byte[] receivePacket(int port) throws Exception {
 
-        DatagramSocket datagramSocket = new DatagramSocket(PORT);
+        DatagramSocket datagramSocket = new DatagramSocket(port);
 
         byte[] buf = new byte[MAX_PACKET_SIZE];
 
@@ -159,7 +158,7 @@ public class NetworkAdapter {
         void onPacketReceived(byte[] bytes);
     }
 
-    public static void runWhenPacketReceived(PacketReceivedListener listener) {
+    public static void runWhenPacketReceived(int port, PacketReceivedListener listener) {
 
         Thread thread = new Thread() {
 
@@ -168,7 +167,7 @@ public class NetworkAdapter {
 
                 try {
 
-                    byte[] bytes = receivePacket();
+                    byte[] bytes = receivePacket(port);
 
                     listener.onPacketReceived(bytes);
 
@@ -176,7 +175,7 @@ public class NetworkAdapter {
                     System.out.println("Exception in NetworkAdapter.runWhenPacketReceived");
                 }
 
-                runWhenPacketReceived(listener);
+                runWhenPacketReceived(port, listener);
             }
         };
 

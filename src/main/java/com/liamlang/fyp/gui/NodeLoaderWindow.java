@@ -117,10 +117,10 @@ public class NodeLoaderWindow {
 
                     ChooseMyIpWindow chooseMyIpWindow = new ChooseMyIpWindow(new ChooseIpCallback() {
 
-                        public void callback(String ip) {
+                        public void callback(String ip, int port) {
 
                             try {
-                                Node node = NodeManager.startNodeWithEmptyBlockchain(getSelectedType(), ownerNameTextField.getText(), ip, savePathTextField.getText());
+                                Node node = NodeManager.startNodeWithEmptyBlockchain(getSelectedType(), ownerNameTextField.getText(), ip, port, savePathTextField.getText());
 
                                 HomeWindow homeWindow = new HomeWindow(node);
                                 homeWindow.show();
@@ -163,10 +163,10 @@ public class NodeLoaderWindow {
 
                     ChooseMyIpWindow chooseMyIpWindow = new ChooseMyIpWindow(new ChooseIpCallback() {
 
-                        public void callback(String ip) {
+                        public void callback(String ip, int port) {
 
                             try {
-                                Node node = NodeManager.startNodeWithFirstBlock(getSelectedType(), ownerNameTextField.getText(), ip, savePathTextField.getText());
+                                Node node = NodeManager.startNodeWithFirstBlock(getSelectedType(), ownerNameTextField.getText(), ip, port, savePathTextField.getText());
 
                                 HomeWindow homeWindow = new HomeWindow(node);
                                 homeWindow.show();

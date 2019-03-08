@@ -27,7 +27,7 @@ public class PacketSender implements Serializable {
                 bcHeight = Integer.MAX_VALUE;
             }
 
-            NetworkAdapter.sendSyncPacket(node.getMyIp(), bcHeight, numConnections, Utils.toHexString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))),
+            NetworkAdapter.sendSyncPacket(node.getMyIp(), node.getMyPort(), bcHeight, numConnections, Utils.toHexString(HashUtils.sha256(Utils.serialize(unconfirmedTransactionSet))),
                     Utils.toString(Utils.serialize(node.getEcKeyPair().getPublic())), connection, node.getDsaKeyPair(), node.getOwnerName(),
                     (node.getNodeType() == NodeType.SUPERNODE ? "super" : "n"));
         } catch (Exception ex) {
@@ -80,7 +80,7 @@ public class PacketSender implements Serializable {
     public void sendComponentHashRequest(ConnectedNode connection, String hash) {
         try {
 
-            NetworkAdapter.sendComponentHashRequest(node.getMyIp(), hash, connection, node.getDsaKeyPair(), node.getOwnerName());
+            NetworkAdapter.sendComponentHashRequest(node.getMyIp(), node.getMyPort(), hash, connection, node.getDsaKeyPair(), node.getOwnerName());
         } catch (Exception ex) {
             System.out.println("Exception in PacketSender.sendComponentHashRequest");
         }
@@ -89,17 +89,17 @@ public class PacketSender implements Serializable {
     public void sendComponentInfoRequest(ConnectedNode connection, String info) {
         try {
 
-            NetworkAdapter.sendComponentInfoRequest(node.getMyIp(), info, connection, node.getDsaKeyPair(), node.getOwnerName());
+            NetworkAdapter.sendComponentInfoRequest(node.getMyIp(), node.getMyPort(), info, connection, node.getDsaKeyPair(), node.getOwnerName());
         } catch (Exception ex) {
             System.out.println("Exception in PacketSender.sendComponentInfoRequest");
         }
     }
 
-    public void sendShowComponentRequest(String ip, Component component, String confirmationStatus) {
+    public void sendShowComponentRequest(String ip, int port, Component component, String confirmationStatus) {
         try {
 
             for (ConnectedNode connection : node.getConnections()) {
-                if (connection.getIp().getHostAddress().equals(ip)) {
+                if (connection.getIp().getHostAddress().equals(ip) && connection.getPort() == port) {
 
                     String str = Utils.toString(Utils.serialize(component));
 

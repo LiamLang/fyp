@@ -80,16 +80,16 @@ public class ReceivedPacketHandler implements Serializable {
 
         System.out.println("Received: " + messageStr + "\n");
 
-        if (parts[0].equals("SYNC") && parts.length >= 7) {
+        if (parts[0].equals("SYNC") && parts.length >= 8) {
 
             // Recombine parts of the serialized ec public key which may be split up because there happen to be spaces present
             String keyStr = "";
-            for (int i = 6; i < parts.length; i++) {
+            for (int i = 7; i < parts.length; i++) {
                 keyStr += parts[i] + " ";
             }
             keyStr = keyStr.substring(0, keyStr.length() - 1);
 
-            onSyncPacketReceived(parts[1], parts[2], parts[3], parts[4], parts[5], keyStr);
+            onSyncPacketReceived(parts[1], parts[2], parts[3], parts[4], parts[5], parts[6], keyStr);
 
         } else if (parts[0].equals("BLOCK") && parts.length >= 3) {
 
@@ -124,20 +124,20 @@ public class ReceivedPacketHandler implements Serializable {
 
             onTransactionsPacketReceived(transactionsStr);
 
-        } else if (parts[0].equals("COMPONENT_HASH_REQUEST") && parts.length == 3) {
+        } else if (parts[0].equals("COMPONENT_HASH_REQUEST") && parts.length == 4) {
 
-            onComponentHashRequestReceived(parts[1], parts[2]);
+            onComponentHashRequestReceived(parts[1], parts[2], parts[3]);
 
-        } else if (parts[0].equals("COMPONENT_INFO_REQUEST") && parts.length >= 3) {
+        } else if (parts[0].equals("COMPONENT_INFO_REQUEST") && parts.length >= 4) {
 
             // Recombine parts of the component info String which may be split up because there happen to be spaces present
             String infoStr = "";
-            for (int i = 2; i < parts.length; i++) {
+            for (int i = 3; i < parts.length; i++) {
                 infoStr += parts[i] + " ";
             }
             infoStr = infoStr.substring(0, infoStr.length() - 1);
 
-            onComponentInfoRequestReceived(parts[1], infoStr);
+            onComponentInfoRequestReceived(parts[1], parts[2], infoStr);
 
         } else if (parts[0].equals("SHOW_COMPONENT_REQUEST") && parts.length >= 3) {
 
@@ -181,12 +181,13 @@ public class ReceivedPacketHandler implements Serializable {
         }
     }
 
-    private void onSyncPacketReceived(String ip, String heightStr, String numConnections, String unconfirmedTransactionSetHash, String isSupernodeStr, String ecPubKeyString) {
+    private void onSyncPacketReceived(String ip, String portStr, String heightStr, String numConnections, String unconfirmedTransactionSetHash, String isSupernodeStr, String ecPubKeyString) {
         try {
 
             InetAddress inetAddress = NetworkUtils.toIp(ip);
+            int port = Integer.parseInt(portStr);
             PublicKey ecPubKey = (PublicKey) Utils.deserialize(Utils.toByteArray(ecPubKeyString));
-            ConnectedNode newConnection = new ConnectedNode(inetAddress, ecPubKey);
+            ConnectedNode newConnection = new ConnectedNode(inetAddress, port, ecPubKey);
 
             boolean isSupernode = isSupernodeStr.equals("super");
 
@@ -284,7 +285,7 @@ public class ReceivedPacketHandler implements Serializable {
         }
     }
 
-    private void onComponentHashRequestReceived(String ip, String hash) {
+    private void onComponentHashRequestReceived(String ip, String portStr, String hash) {
 
         if (node.getNodeType() != NodeType.SUPERNODE) {
             return;
@@ -294,18 +295,23 @@ public class ReceivedPacketHandler implements Serializable {
             return;
         }
 
-        for (Component component : node.getUnspentComponents()) {
+        try {
 
-            if (component.getHash().equals(hash)) {
+            for (Component component : node.getUnspentComponents()) {
 
-                String confirmationStatus = supernodeGetComponentConfirmationStatus(component);
+                if (component.getHash().equals(hash)) {
 
-                node.getPacketSender().sendShowComponentRequest(ip, component, confirmationStatus);
+                    String confirmationStatus = supernodeGetComponentConfirmationStatus(component);
+
+                    node.getPacketSender().sendShowComponentRequest(ip, Integer.parseInt(portStr), component, confirmationStatus);
+                }
             }
+        } catch (Exception ex) {
+            System.out.println("Exception in ReceivedPacketHandler.onComponentHashRequestReceived");
         }
     }
 
-    private void onComponentInfoRequestReceived(String ip, String info) {
+    private void onComponentInfoRequestReceived(String ip, String portStr, String info) {
 
         if (node.getNodeType() != NodeType.SUPERNODE) {
             return;
@@ -315,15 +321,20 @@ public class ReceivedPacketHandler implements Serializable {
             return;
         }
 
-        for (Component component : node.getUnspentComponents()) {
+        try {
 
-            // Inefficient, but it'll do for this proof of concept
-            if (component.getInfo().toString().contains(info)) {
+            for (Component component : node.getUnspentComponents()) {
 
-                String confirmationStatus = supernodeGetComponentConfirmationStatus(component);
+                // Inefficient, but it'll do for this proof of concept
+                if (component.getInfo().toString().contains(info)) {
 
-                node.getPacketSender().sendShowComponentRequest(ip, component, confirmationStatus);
+                    String confirmationStatus = supernodeGetComponentConfirmationStatus(component);
+
+                    node.getPacketSender().sendShowComponentRequest(ip, Integer.parseInt(portStr), component, confirmationStatus);
+                }
             }
+        } catch (Exception ex) {
+            System.out.println("Exception in ReceivedPacketHandler.onComponentInfoRequestReceived");
         }
     }
 

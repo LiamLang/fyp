@@ -8,8 +8,12 @@ public class Main {
 
         try {
 
-            NodeLoaderWindow win = new NodeLoaderWindow();
-            win.show();
+            for (int i = 0; i < 3; i++) {
+
+                NodeLoaderWindow win = new NodeLoaderWindow();
+                win.show();
+
+            }
 
         } catch (Exception ex) {
 

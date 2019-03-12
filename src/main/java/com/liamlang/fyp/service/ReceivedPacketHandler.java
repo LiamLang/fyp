@@ -246,7 +246,8 @@ public class ReceivedPacketHandler implements Serializable {
             ArrayList<ConnectedNode> otherConnections = (ArrayList<ConnectedNode>) Utils.deserialize(Utils.toByteArray(otherConnectionsStr));
             for (ConnectedNode connection : otherConnections) {
 
-                if (!node.getConnections().contains(connection) && !connection.getIp().getHostAddress().equals(node.getMyIp())) {
+                if (!node.getConnections().contains(connection) && 
+                        !(connection.getIp().getHostAddress().equals(node.getMyIp()) && connection.getPort() == node.getMyPort())) {
 
                     node.getConnections().add(connection);
                 }

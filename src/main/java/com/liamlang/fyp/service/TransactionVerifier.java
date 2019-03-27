@@ -21,12 +21,20 @@ public class TransactionVerifier implements Serializable {
             return false;
         }
 
+        // Make sure the hashes of all output components verify
+        for (Component component : transaction.getComponentsCreated()) {
+
+            if (!component.verifyHash()) {
+                return false;
+            }
+        }
+
         if (transaction.getInputHashes().isEmpty()) {
 
             // Transaction consists of newly created components
             for (Component component : transaction.getComponentsCreated()) {
 
-                if (!component.verifyHash() || !component.getSubcomponents().isEmpty()) {
+                if (!component.getSubcomponents().isEmpty()) {
                     return false;
                 }
             }

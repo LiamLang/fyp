@@ -249,7 +249,7 @@ public class ReceivedPacketHandler implements Serializable {
                 if (!node.getConnections().contains(connection) && 
                         !(connection.getIp().getHostAddress().equals(node.getMyIp()) && connection.getPort() == node.getMyPort())) {
 
-                    node.getConnections().add(connection);
+                    node.addConnection(connection);
                 }
             }
             node.saveSelf();

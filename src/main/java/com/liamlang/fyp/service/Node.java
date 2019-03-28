@@ -18,9 +18,10 @@ import java.io.Serializable;
 import java.security.KeyPair;
 import java.security.PublicKey;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Node implements Serializable {
-            
+
     public enum NodeType {
         NORMAL,
         LIGHTWEIGHT,
@@ -87,7 +88,7 @@ public class Node implements Serializable {
         });
 
         int syncIntervalMillis = nodeType == NodeType.LIGHTWEIGHT ? 10000 : 2000;
-        
+
         Utils.scheduleRepeatingTask(syncIntervalMillis, new Runnable() {
             @Override
             public void run() {
@@ -111,11 +112,19 @@ public class Node implements Serializable {
             if (connection.getIp().getHostAddress().equals(newConnection.getIp().getHostAddress())
                     && connection.getPort() == newConnection.getPort()) {
 
+                if (connection.getEcPubKey() != null && newConnection.getEcPubKey() != null
+                        && Arrays.equals(connection.getEcPubKey().getEncoded(), newConnection.getEcPubKey().getEncoded())) {
+
+                    // Connection is exactly the same as an existing one
+                    return;
+                }
+
                 connectionForDeletion = connection;
+                break;
             }
         }
 
-        // If a connection with the same IP and port is present delete the old one
+        // If a connection with the same IP and port is present, delete the old one
         // (i.e. replacing the encryption key with the new one)
         // This does not open a vulnetability, as messages not signed with a
         // trusted signing key will be ignored
@@ -124,6 +133,7 @@ public class Node implements Serializable {
         }
 
         connections.add(newConnection);
+
         saveSelf();
     }
 
@@ -336,7 +346,7 @@ public class Node implements Serializable {
     public String getMyIp() {
         return myIp;
     }
-    
+
     public int getMyPort() {
         return port;
     }

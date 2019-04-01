@@ -24,3 +24,6 @@ This application has been developed as my Final Year Project for a degree in Ele
 * The state of a node can be saved to a file, which could be used to migrate it to another machine. As the system has been developed in Java, it will run in a variety of environments.
 * A ‘light running’ version of the application has been developed, which allows for nodes that do not store a copy of the blockchain, saving storage space, and also the processing power required to verify incoming blocks. Light nodes query full nodes for information, and send them requests to create transactions.
 * Multiple nodes can be run on the same machine, using different ports to receive messages. This facilitates easy demonstration of the system.
+
+## Build Instructions
+It is recommended to build the project using the NetBeans IDE, which includes support for Maven, the build tool. A new Maven Java project should be created in the IDE, and the contents of the repository copied in.
